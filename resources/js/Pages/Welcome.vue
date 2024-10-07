@@ -27,7 +27,7 @@ function handleImageError() {
 </script>
 
 <template>
-    <Head title="Login" />
+    <Head title="Inicio" />
     <div class="bg-gray-50 text-black/50 dark:bg-black dark:text-white/50">
         <!-- Estilo y imagen a gusto 
         <img
@@ -58,7 +58,7 @@ function handleImageError() {
                                 >
                                     Log in
                                 </Link>
-    
+                                <!--
                                 <Link
                                     v-if="canRegister"
                                     :href="route('register')"
@@ -66,6 +66,7 @@ function handleImageError() {
                                 >
                                     Registro
                                 </Link>
+                                -->
                             </div>
                         </template>
                     </nav>
