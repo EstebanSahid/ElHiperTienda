@@ -19,9 +19,26 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    // Perfil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Reportes
+    Route::get('/reports', function () {
+        return Inertia::render('Reports/Reports');
+    })->name('reportes');
+
+    // Administracion Usuarios
+    Route::get('/users', function() {
+        return Inertia::render('Admin/Users/Users');
+    })->name('users');
+
+    // Administracion Tiendas
+    Route::get('/stores', function() {
+        return Inertia::render('Admin/Stores/Stores');
+    })->name('stores');
+
 });
 
 require __DIR__.'/auth.php';

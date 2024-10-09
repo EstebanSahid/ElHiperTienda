@@ -4,14 +4,14 @@ import { Head } from '@inertiajs/vue3';
 </script>
 
 <template>
-    <Head title="Tiendas" />
+    <Head title="Informes" />
 
     <AuthenticatedLayout>
         <template #header>
             <h2
                 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200"
             >
-                Tiendas
+                Informes
             </h2>
         </template>
 
@@ -21,7 +21,7 @@ import { Head } from '@inertiajs/vue3';
                     class="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800"
                 >
                     <div class="p-6 text-gray-900 dark:text-gray-100">
-                        Aqui las Tiendas
+                        Aqui los Reportes por filtro
                     </div>
                 </div>
             </div>
