@@ -29,33 +29,28 @@ const showingNavigationDropdown = ref(false);
                                 </Link>
                             </div>
 
-                            <!-- Navigation Links -->
+                            <!-- Menu Navegacion-->
                             <div
                                 class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
                             >
+                                <!-- Links no Administradores -->
                                 <NavLink
                                     :href="route('dashboard')"
                                     :active="route().current('dashboard')"
                                 >
                                     Inicio
                                 </NavLink>
+
                                 <NavLink
                                     :href="route('reportes')"
                                 >
                                     Informes
                                 </NavLink>
-                                <!--
-                                <NavLink
-                                    v-if="$page.props.auth.user.id_rol  == 1"
-                                >
-                                    Administrador
-                                </NavLink>
-                                -->
 
+                                <!-- Administrador -->
                                 <div v-if="$page.props.auth.user.id_rol  == 1" 
                                     class="hidden sm:ms-6 sm:flex sm:items-center"
                                 >
-                                    <!-- Settings Dropdown -->
                                     <div class="relative ms-3">
                                         <Dropdown align="left" width="48">
                                             <template #trigger>
@@ -88,6 +83,11 @@ const showingNavigationDropdown = ref(false);
                                                     Usuarios
                                                 </DropdownLink>
                                                 <DropdownLink
+                                                    :href="route('products')"
+                                                >
+                                                    Productos
+                                                </DropdownLink>
+                                                <DropdownLink
                                                     :href="route('stores')"
                                                 >
                                                     Tiendas
@@ -99,8 +99,8 @@ const showingNavigationDropdown = ref(false);
                             </div>
                         </div>
 
+                        <!-- Dropdown Configuration -->
                         <div class="hidden sm:ms-6 sm:flex sm:items-center">
-                            <!-- Settings Dropdown -->
                             <div class="relative ms-3">
                                 <Dropdown align="right" width="48">
                                     <template #trigger>
@@ -196,6 +196,7 @@ const showingNavigationDropdown = ref(false);
                     }"
                     class="sm:hidden"
                 >
+                    <!-- Links no Administradores -->
                     <div class="space-y-1 pb-3 pt-2">
                         <ResponsiveNavLink
                             :href="route('dashboard')"
@@ -208,6 +209,44 @@ const showingNavigationDropdown = ref(false);
                         >
                             Informes
                         </ResponsiveNavLink>
+                    </div>
+
+                    <!-- Administrador-->
+                    <div 
+                        v-if="$page.props.auth.user.id_rol  == 1"
+                        class="border-t border-gray-200 pb-1 pt-4 dark:border-gray-600"
+                    >
+                        <div class="px-4">
+                            <div
+                                class="text-base font-medium text-gray-800 dark:text-gray-200"
+                            >
+                                Administración
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3 space-y-1">
+                            <ResponsiveNavLink :href="route('users')">
+                                Usuarios
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('products')">
+                                Productos
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('stores')">
+                                Tiendas
+                            </ResponsiveNavLink>
+                            <!--
+                            <ResponsiveNavLink :href="route('profile.edit')">
+                                Perfil
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink
+                                :href="route('logout')"
+                                method="post"
+                                as="button"
+                            >
+                                Cerrar Sesión
+                            </ResponsiveNavLink>
+                            -->
+                        </div>
                     </div>
 
                     <!-- Responsive Settings Options -->

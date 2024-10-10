@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 </script>
 
 <template>
@@ -8,11 +8,21 @@ import { Head } from '@inertiajs/vue3';
 
     <AuthenticatedLayout>
         <template #header>
-            <h2
-                class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200"
-            >
-                Lista de Usuarios
-            </h2>
+            <div class="flex justify-between">
+                <h2
+                    class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200"
+                >
+                    Lista de Usuarios
+                </h2>
+                <Link
+                    :href="route('register')"
+                    class="rounded-md px-2 leading-tight text-black ring-1 ring-transparent transition 
+                    hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] 
+                    dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
+                >
+                    Nuevo Usuario
+                </Link>
+            </div>
         </template>
 
         <div class="py-12">

@@ -39,6 +39,11 @@ Route::middleware('auth')->group(function () {
         return Inertia::render('Admin/Stores/Stores');
     })->name('stores');
 
+    // Administracion de Produtos
+    Route::get('/products', function() {
+        return Inertia::render(('Products/Products'));
+    })->name('products');
+
 });
 
 require __DIR__.'/auth.php';

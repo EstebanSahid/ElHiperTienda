@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('accesos', function (Blueprint $table) {
             $table->id('id_acceso');
-            $table->foreignId('id_usuario')->constrained('usuarios', 'id_usuario')->onUpdate('cascade')->onDelete('restrict');
+            $table->foreignId('id_user')->constrained('users', 'id')->onUpdate('cascade')->onDelete('restrict');
             $table->foreignId('id_tienda')->constrained('tienda', 'id_tienda')->onUpdate('cascade')->onDelete('restrict');
             $table->string('estado');
             $table->unsignedBigInteger('usuario_crea');
