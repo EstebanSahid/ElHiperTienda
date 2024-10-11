@@ -4,7 +4,7 @@ import { Head, Link } from '@inertiajs/vue3';
 </script>
 
 <template>
-    <Head title="Informes" />
+    <Head title="Nueva Orden" />
 
     <AuthenticatedLayout>
         <template #header>
@@ -12,15 +12,15 @@ import { Head, Link } from '@inertiajs/vue3';
                 <h2
                     class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200"
                 >
-                    Lista de Usuarios
+                    Generar una Orden
                 </h2>
                 <Link
-                    :href="route('registro.user')"
+                    :href="route('dashboard')"
                     class="rounded-md px-2 leading-tight text-black ring-1 ring-transparent transition 
                     hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] 
                     dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
                 >
-                    Nuevo Usuario
+                    Regresar
                 </Link>
             </div>
         </template>
@@ -31,7 +31,7 @@ import { Head, Link } from '@inertiajs/vue3';
                     class="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800"
                 >
                     <div class="p-6 text-gray-900 dark:text-gray-100">
-                        Aqui los usuarios para su CRUD
+                        Aqui los productos
                     </div>
                 </div>
             </div>

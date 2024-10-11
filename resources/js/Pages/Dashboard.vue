@@ -56,7 +56,9 @@ defineProps({
 
                                         <TableBodyTd>
                                             <div v-if="tienda.procesado == 0">
-                                                <PrimaryButton>Generar</PrimaryButton>
+                                                <PrimaryButton>
+                                                    <a :href="route('order.create')">Generar</a>
+                                                </PrimaryButton>
                                             </div>
                                             <div v-else>
                                                 <PrimaryButton class="mr-3">Editar</PrimaryButton>

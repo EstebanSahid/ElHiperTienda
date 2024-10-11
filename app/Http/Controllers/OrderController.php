@@ -15,7 +15,7 @@ use Inertia\Response;
 
 class OrderController extends Controller
 {
-    // Mostrar para Insertar Pedidos
+    /* LISTAR TIENDAS PARA GENERAR ORDENES */
     public function index(Request $request) {
         $userId = $request->user()->id;
         $rol = $request->user()->id_rol;
@@ -93,5 +93,10 @@ class OrderController extends Controller
         }
     
         return $tiendas;
+    }
+
+    /* GENERAR ORDEN */
+    public function create() {
+        return Inertia::render('Orders/InsertOrder');
     }
 }

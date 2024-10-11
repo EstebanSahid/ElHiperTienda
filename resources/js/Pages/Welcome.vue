@@ -59,6 +59,7 @@ function handleImageError() {
                                     Iniciar Sesión
                                 </Link>
                                 <!--
+                                    -->
                                     <Link
                                     v-if="canRegister"
                                     :href="route('register')"
@@ -66,7 +67,6 @@ function handleImageError() {
                                     >
                                     Registro
                                 </Link>
-                                -->
                             </div>
                         </template>
                     </nav>

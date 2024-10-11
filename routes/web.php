@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -18,19 +19,22 @@ Route::get('/', function () {
 /*
 Route::get('/dashboard', function () {
     //return Inertia::render('Dashboard');
-    
 })->middleware(['auth', 'verified'])->name('dashboard');
 */
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Perfil
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::controller(ProfileController::class)->group(function() {
+        Route::get('/profile', 'edit')->name('profile.edit');
+        Route::patch('/profile', 'update')->name('profile.update');
+        Route::delete('/profile', 'destroy')->name('profile.destroy');
+    });
 
     // Ordenes
-    // Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
-    Route::get('/dashboard', [OrderController::class, 'index'])->name('dashboard');
+    Route::controller(OrderController::class)->group(function () {
+        Route::get('/dashboard', 'index')->name('dashboard');
+        Route::get('/order', 'create')->name('order.create');
+    });
 
     // Reportes
     Route::get('/reports', function () {
@@ -41,6 +45,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/users', function() {
         return Inertia::render('Admin/Users/Users');
     })->name('users');
+
+    Route::get('/registerUser', [UserController::class, 'store'])->name('registro.user');
 
     // Administracion Tiendas
     Route::get('/stores', function() {
