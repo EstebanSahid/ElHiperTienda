@@ -13,11 +13,23 @@ class Tienda extends Model
 
     public $timestamps = true;
 
+    protected $table = "tienda";
+
+    protected $primaryKey = 'id_tienda';
+
     protected $fillable = [
-        'id_user',
         'id_tienda',
+        'nombre',
+        'codigo',
+        'direccion',
+        'telefono',
         'estado',
         'usuario_crea',
         'usuario_modifica',
     ];
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'accesos', 'id_tienda', 'id_user');
+    }
 }
