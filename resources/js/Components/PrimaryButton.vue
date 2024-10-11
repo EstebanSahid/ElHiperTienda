@@ -1,6 +1,6 @@
 <template>
     <button
-        class="button-hiper inline-flex items-center 
+        class="p-2 button-hiper inline-flex items-center 
         rounded-md border border-transparent 
         bg-[#97a907]
         px-4 py-2 text-xs font-semibold 

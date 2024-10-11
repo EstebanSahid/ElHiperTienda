@@ -1,6 +1,11 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import Table from '@/Components/Table.vue';
+import TableTh from '@/Components/TableTh.vue';
+import TableBodytr from '@/Components/TableBodytr.vue';
+import TableBodyTd from '@/Components/TableBodyTd.vue';
 
 defineProps({
     tiendas: {
@@ -22,47 +27,45 @@ defineProps({
             </h2>
         </template>
 
-        <div class="py-12">
+        <div class="py-12 z-0">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div
                     class="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800"
                 >
-                    <!--
-                    <div class="p-6 text-gray-900 dark:text-gray-100">
-                        Aqui las Tiendas
-                    </div>
-                    -->
                     <!-- Table Index -->
-                    <div class="bg-white rounded-md shadow overflow-x-auto">
-                        <table class="w-full whitespace-nowrap" >
+                    <div class="bg-white rounded-md shadow overflow-x-auto dark:bg-gray-800">
+                        <Table>
                             <thead>
-                                <tr class="text-left font-bold">
-                                    <th class="pb-4 pt-6 px-6">Codigo</th>
-                                    <th class="pb-4 pt-6 px-6">Nombre</th>
-                                    <th class="pb-4 pt-6 px-6" colspan="2">Acciones</th>
+                                <tr class="text-center font-bold">
+                                    <TableTh>Codigo</TableTh>
+                                    <TableTh>Nombre</TableTh>
+                                    <TableTh>Acciones</TableTh>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr  
+                                <TableBodytr  
                                     v-for="tienda in tiendas" :key="tienda.id"
-                                    class="hover:bg-gray-100 focus-within:bg-gray-100"
                                 >
-                                        <td class="border-t px-6 py-4">
+                                        <TableBodyTd>
                                             {{ tienda.codigo }}
-                                        </td>
+                                        </TableBodyTd>
                                     
-                                    
-                                        <td class="border-t px-6 py-4">
+                                        <TableBodyTd>
                                             {{ tienda.nombre }}
-                                        </td>
+                                        </TableBodyTd>
 
-                                        <td class="border-t px-6 py-4">
-                                            Agregar/Editar/Ver
-                                        </td>
-                                    
-                                </tr>
+                                        <TableBodyTd>
+                                            <div v-if="tienda.procesado == 0">
+                                                <PrimaryButton>Generar</PrimaryButton>
+                                            </div>
+                                            <div v-else>
+                                                <PrimaryButton class="mr-3">Editar</PrimaryButton>
+                                                <PrimaryButton>Visualizar</PrimaryButton>
+                                            </div>
+                                        </TableBodyTd>
+                                </TableBodytr>
                             </tbody>
-                        </table>
+                        </Table>
                     </div>
                 </div>
             </div>
