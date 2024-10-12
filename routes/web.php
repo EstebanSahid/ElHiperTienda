@@ -30,6 +30,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/profile', 'destroy')->name('profile.destroy');
     });
 
+    // Administrar Usuarios
+    Route::controller(UserController::class)->group(function() {
+        Route::get('/users', 'index')->name('users');
+        Route::get('/registerUser', 'create')->name('registro.user');
+        Route::post('/users', 'store')->name('users.store');
+    });
+    
+    // Administracion Usuarios
+    /*Route::get('/users', function() {
+        return Inertia::render('Admin/Users/Users');
+    })->name('users');*/
+
     // Ordenes
     Route::controller(OrderController::class)->group(function () {
         Route::get('/dashboard', 'index')->name('dashboard');
@@ -41,12 +53,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('Reports/Reports');
     })->name('reportes');
 
-    // Administracion Usuarios
-    Route::get('/users', function() {
-        return Inertia::render('Admin/Users/Users');
-    })->name('users');
 
-    Route::get('/registerUser', [UserController::class, 'store'])->name('registro.user');
+    
 
     // Administracion Tiendas
     Route::get('/stores', function() {
