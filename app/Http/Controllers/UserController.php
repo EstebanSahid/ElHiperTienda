@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
-use App\Models\User;
+use App\Models\Access;
 use App\Models\Rol;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Inertia\Inertia;
 
 
 class UserController extends Controller
@@ -36,6 +37,7 @@ class UserController extends Controller
     }
 
     public function store(Request $request) {
+
         // Validación
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
@@ -45,6 +47,9 @@ class UserController extends Controller
             'id_rol' => 'required',
         ]);
 
+        // Creamos el Usuario
+        DB::beginTransaction();
+
         $user = new User();
         $user->name = $validatedData['name'];
         $user->email = $validatedData['email'];
@@ -52,10 +57,26 @@ class UserController extends Controller
         $user->telefono = $validatedData['telefono'];
         $user->estado = 'Activo';
         $user->id_rol = $validatedData['id_rol'];
-
         $user->save();
 
-        // Puedes devolver una respuesta, redirigir o mostrar un mensaje de éxito
-        //return redirect()->route('usuarios.index')->with('success', 'Usuario creado exitosamente');
+        // Obtenemos el ID para los permisos
+        $userId = $user->id;
+        if(!empty($request->tiendasAsignadas)) {
+            foreach ($request->tiendasAsignadas as $permiso) {
+                $acceso = new Access();
+                $acceso->id_user = $userId;
+                $acceso->id_tienda = $permiso;
+                $acceso->estado = 'Activo';
+                $acceso->usuario_crea = $request->user()->id;
+                if (!$acceso->save()) {
+                    DB::rollBack();
+                    return redirect()->back()->withErrors(['error' => 'Error al guardar los permisos.']);
+                }
+            }
+        } 
+        
+        DB::commit();
+
+        return redirect()->route('users')->with('success', 'Usuario creado exitosamente');
     }
 }

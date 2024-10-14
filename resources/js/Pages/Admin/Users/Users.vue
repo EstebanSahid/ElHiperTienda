@@ -1,5 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import Notification from '@/Components/Notification.vue';
 import { Head, Link } from '@inertiajs/vue3';
 </script>
 
@@ -25,6 +26,8 @@ import { Head, Link } from '@inertiajs/vue3';
             </div>
         </template>
 
+        <Notification />
+
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div
@@ -38,3 +41,11 @@ import { Head, Link } from '@inertiajs/vue3';
         </div>
     </AuthenticatedLayout>
 </template>
+
+<script>
+export default {
+    props: {
+        flash: Object,
+    },
+};
+</script>
