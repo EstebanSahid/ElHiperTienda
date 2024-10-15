@@ -21,38 +21,33 @@ class OrderController extends Controller
         $rol = $request->user()->id_rol;
 
         if ($rol == 1) {
-            $showTiendas = $this->indexAdmin($userId);
+            $showTiendas = $this->indexAdmin();
         } else {
             $showTiendas = $this->indexEncargado($userId);
         }
         $showTiendas = $this->verificarExistencia($showTiendas);
         //$showTiendas = $this->validacionMostrar($showTiendas);
-
-        // dd($showTiendas);
+        //dd($showTiendas);
         return Inertia::render('Dashboard', [
             'tiendas' => $showTiendas,
         ]);
     }
 
     private function indexAdmin() {
-        return DB::select("
-        SELECT  
-            id_tienda, nombre, codigo
-        FROM tienda 
-        WHERE estado = 'Activo'
-        ORDER BY nombre");
+        return DB::table('tienda')
+            ->select('id_tienda', 'nombre', 'codigo')
+            ->where('estado', 'Activo')
+            ->orderBy('nombre')
+            ->paginate(5);
     }
 
     private function indexEncargado($userId) {
-        return DB::select("
-            SELECT 
-                t.id_tienda, t.nombre, t.codigo 
-            FROM tienda t
-                INNER JOIN accesos a ON t.id_tienda = a.id_tienda
-            WHERE a.id_user = :id
-                ORDER BY t.nombre", 
-            ['id' => $userId]
-        );
+        return DB::table('tienda as t')
+            ->join('accesos as a', 'a.id_tienda', '=', 't.id_tienda')
+            ->select('t.id_tienda', 't.nombre', 't.codigo')
+            ->where('a.id_user', $userId)
+            ->orderBy('t.nombre')
+            ->paginate(5);
     }
 
     private function validacionMostrar($tiendas) {
@@ -67,7 +62,7 @@ class OrderController extends Controller
     }
 
     private function Procesados($tiendas) {
-        foreach ($tiendas as $tienda) {
+        foreach ($tiendas->items() as $tienda) {
             $tienda->procesado = 1;
         }
         return $tiendas;
@@ -76,7 +71,8 @@ class OrderController extends Controller
     private function verificarExistencia($tiendas) {
         $hoy = date('Y-m-d');
 
-        foreach ($tiendas as $tienda) {
+        // Recorremos los datos de una pagina
+        foreach ($tiendas->items() as $tienda) {
             $pedido = DB::selectOne("
                 SELECT id_pedido 
                 FROM pedidos 
@@ -88,7 +84,6 @@ class OrderController extends Controller
                 ]
             );
     
-            // Si encontramos un pedido, procesado será 1, de lo contrario 0
             $tienda->procesado = $pedido ? 1 : 0;
         }
     

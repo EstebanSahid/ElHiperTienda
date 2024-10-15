@@ -2,11 +2,25 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Notification from '@/Components/Notification.vue';
 import { Head, Link } from '@inertiajs/vue3';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import Pagination from '@/Components/Pagination.vue';
+import Table from '@/Components/Table.vue';
+import TableTh from '@/Components/TableTh.vue';
+import TableBodyTr from '@/Components/TableBodyTr.vue';
+import TableBodyTd from '@/Components/TableBodyTd.vue';
+
+defineProps({
+    users: {
+        type: Array
+    }
+});
 </script>
 
 <template>
     <Head title="Informes" />
+
     <Notification />
+
     <AuthenticatedLayout>
         <template #header>
             <div class="flex justify-between">
@@ -31,11 +45,34 @@ import { Head, Link } from '@inertiajs/vue3';
                 <div
                     class="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800"
                 >
-                    <div class="p-6 text-gray-900 dark:text-gray-100">
-                        Aqui los usuarios para su CRUD
+                    <div class="bg-white rounded-md shadow overflow-x-auto dark:bg-gray-800">
+                        <Table>
+                            <thead>
+                                <tr class="text-center font-bold">
+                                    <TableTh>Nombre</TableTh>
+                                    <TableTh>Rol</TableTh>
+                                    <TableTh>Correo</TableTh>
+                                    <TableTh>Telefono</TableTh>
+                                    <TableTh>Estado</TableTh>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <TableBodyTr v-for="user in users.data" :key="user.id">
+                                    <TableBodyTd>{{ user.name }}</TableBodyTd>
+                                    <TableBodyTd>{{ user.descripcion }}</TableBodyTd>
+                                    <TableBodyTd>{{ user.email }}</TableBodyTd>
+                                    <TableBodyTd>{{ user.telefono }}</TableBodyTd>
+                                    <TableBodyTd>{{ user.estado }}</TableBodyTd>
+                                </TableBodyTr>
+                            </tbody>
+                        </Table>
+
                     </div>
                 </div>
             </div>
+
+            <!-- Paginación -->
+            <Pagination :links="users.links" />
         </div>
     </AuthenticatedLayout>
 </template>

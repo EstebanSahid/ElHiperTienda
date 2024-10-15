@@ -17,12 +17,6 @@ Route::get('/', function () {
     ]);
 });
 
-/*
-Route::get('/dashboard', function () {
-    //return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-*/
-
 /* CONTROL DE TRAFICO HTTP */
 Route::middleware(['auth', 'verified'])->group(function () {
     /* PARA TODOS LOS USUARIOS AUTENTICADOS */

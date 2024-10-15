@@ -2,9 +2,10 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import Pagination from '@/Components/Pagination.vue';
 import Table from '@/Components/Table.vue';
 import TableTh from '@/Components/TableTh.vue';
-import TableBodytr from '@/Components/TableBodytr.vue';
+import TableBodyTr from '@/Components/TableBodyTr.vue';
 import TableBodyTd from '@/Components/TableBodyTd.vue';
 
 defineProps({
@@ -39,42 +40,39 @@ defineProps({
                                 <tr class="text-center font-bold">
                                     <TableTh>Codigo</TableTh>
                                     <TableTh>Nombre</TableTh>
+                                    <TableTh>Registrado</TableTh>
                                     <TableTh>Acciones</TableTh>
                                 </tr>
                             </thead>
                             <tbody>
-                                <TableBodytr  
-                                    v-for="tienda in tiendas" :key="tienda.id"
+                                <TableBodyTr  
+                                    v-for="tienda in tiendas.data" :key="tienda.id_tienda"
                                 >
-                                        <TableBodyTd>
-                                            {{ tienda.codigo }}
-                                        </TableBodyTd>
-                                    
-                                        <TableBodyTd>
-                                            {{ tienda.nombre }}
-                                        </TableBodyTd>
-
-                                        <TableBodyTd>
-                                            <div v-if="tienda.procesado == 0">
-                                                <PrimaryButton
-                                                    class="ms-4">
-                                                    <Link :href="route('order.create')">
-                                                        Generar
-                                                    </Link>
-                                                </PrimaryButton>
-                                            </div>
-                                            <div v-else>
-                                                <PrimaryButton class="mr-3">Editar</PrimaryButton>
-                                                <PrimaryButton>Visualizar</PrimaryButton>
-                                            </div>
-                                        </TableBodyTd>
-                                </TableBodytr>
+                                    <TableBodyTd>{{ tienda.codigo }}</TableBodyTd>
+                                    <TableBodyTd>{{ tienda.nombre }}</TableBodyTd>
+                                    <TableBodyTd>{{ tienda.procesado ? 'Si' : 'No' }}</TableBodyTd>
+                                    <TableBodyTd>
+                                        <div v-if="tienda.procesado == 0">
+                                            <PrimaryButton
+                                                class="ms-4">
+                                                <Link :href="route('order.create')">
+                                                    Generar
+                                                </Link>
+                                            </PrimaryButton>
+                                        </div>
+                                        <div v-else>
+                                            <PrimaryButton class="mr-3">Editar</PrimaryButton>
+                                            <PrimaryButton>Visualizar</PrimaryButton>
+                                        </div>
+                                    </TableBodyTd>
+                                </TableBodyTr>
                             </tbody>
                         </Table>
                     </div>
                 </div>
             </div>
-
+            <!-- Paginación -->
+            <Pagination :links="tiendas.links" />
         </div>
     </AuthenticatedLayout>
 

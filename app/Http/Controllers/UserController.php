@@ -16,19 +16,31 @@ class UserController extends Controller
 {
     /* INDEX */
     public function index() {
-        return Inertia::render('Admin/Users/Users');
+
+        $users = DB::table('users as u')
+        ->join('roles as r', 'u.id_rol', '=', 'r.id_rol')
+        ->select('u.id', 'u.name', 'r.descripcion', 'u.email', 'u.telefono', 'u.estado')
+        ->orderBy('r.descripcion')
+        ->orderBy('u.name')
+        ->paginate(5);
+
+        return Inertia::render('Admin/Users/Users', [
+            'users' => $users,
+        ]);
     }
 
     /* NUEVO USUARIO */
     public function create() {
         $roles = Rol::all();
+
         $tiendas = DB::select("
             SELECT 
                 id_tienda, CONCAT('Tienda: ',codigo, ' - ',nombre) as nombre_tienda
             FROM tienda
             WHERE estado = :estado
                 ORDER  BY codigo
-        ", ['estado' => 'Activo']);
+            ", ['estado' => 'Activo']
+        );
 
         return Inertia::render('Admin/Users/RegisterUser', [
             'roles' => $roles,
@@ -37,7 +49,6 @@ class UserController extends Controller
     }
 
     public function store(Request $request) {
-
         // Validación
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
