@@ -66,6 +66,10 @@ defineProps({
                                         </div>
                                     </TableBodyTd>
                                 </TableBodyTr>
+                                
+                                <TableBodyTr v-if="tiendas.data.length === 0">
+                                    <TableBodyTd colspan="4"> No hay tiendas registradas.</TableBodyTd>
+                                </TableBodyTr>
                             </tbody>
                         </Table>
                     </div>

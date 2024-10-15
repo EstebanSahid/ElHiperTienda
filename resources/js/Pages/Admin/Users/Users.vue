@@ -64,6 +64,10 @@ defineProps({
                                     <TableBodyTd>{{ user.telefono }}</TableBodyTd>
                                     <TableBodyTd>{{ user.estado }}</TableBodyTd>
                                 </TableBodyTr>
+                                
+                                <TableBodyTr v-if="users.data.length === 0">
+                                    <TableBodyTd colspan="4"> No hay usuarios registrados.</TableBodyTd>
+                                </TableBodyTr>
                             </tbody>
                         </Table>
 

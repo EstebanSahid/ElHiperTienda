@@ -27,6 +27,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/profile', 'update')->name('profile.update');
         Route::delete('/profile', 'destroy')->name('profile.destroy');
     });
+    
+    // Ordenes
+    Route::controller(OrderController::class)->group(function () {
+        Route::get('/dashboard', 'index')->name('dashboard');
+        Route::get('/order', 'create')->name('order.create');
+    });
 
     /* PARA ADMINISTRADORES */
 
@@ -46,17 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/users', 'store')->name('users.store')->middleware(CheckRol::class);
     });
     */
-    
-    // Administracion Usuarios
-    /*Route::get('/users', function() {
-        return Inertia::render('Admin/Users/Users');
-    })->name('users');*/
 
-    // Ordenes
-    Route::controller(OrderController::class)->group(function () {
-        Route::get('/dashboard', 'index')->name('dashboard');
-        Route::get('/order', 'create')->name('order.create');
-    });
 
     // Reportes
     Route::get('/reports', function () {
