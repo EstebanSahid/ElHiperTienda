@@ -3,6 +3,7 @@
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
+use App\http\Middleware\CheckRol;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -22,7 +23,10 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 */
 
+/* CONTROL DE TRAFICO HTTP */
 Route::middleware(['auth', 'verified'])->group(function () {
+    /* PARA TODOS LOS USUARIOS AUTENTICADOS */
+
     // Perfil
     Route::controller(ProfileController::class)->group(function() {
         Route::get('/profile', 'edit')->name('profile.edit');
@@ -30,12 +34,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/profile', 'destroy')->name('profile.destroy');
     });
 
+    /* PARA ADMINISTRADORES */
+
     // Administrar Usuarios
-    Route::controller(UserController::class)->group(function() {
-        Route::get('/users', 'index')->name('users');
-        Route::get('/registerUser', 'create')->name('registro.user');
-        Route::post('/users', 'store')->name('users.store');
+    Route::middleware(CheckRol::class)->group(function () {
+        Route::controller(UserController::class)->group(function() {
+            Route::get('/users', 'index')->name('users');
+            Route::get('/registerUser', 'create')->name('registro.user');
+            Route::post('/users', 'store')->name('users.store');
+        });
     });
+    
+    /*
+    Route::controller(UserController::class)->group(function() {
+        Route::get('/users', 'index')->name('users')->middleware(CheckRol::class);
+        Route::get('/registerUser', 'create')->name('registro.user')->middleware(CheckRol::class);
+        Route::post('/users', 'store')->name('users.store')->middleware(CheckRol::class);
+    });
+    */
     
     // Administracion Usuarios
     /*Route::get('/users', function() {

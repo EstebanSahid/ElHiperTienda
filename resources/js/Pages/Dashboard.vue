@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import Table from '@/Components/Table.vue';
 import TableTh from '@/Components/TableTh.vue';
@@ -27,7 +27,7 @@ defineProps({
             </h2>
         </template>
 
-        <div class="py-12 z-0">
+        <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div
                     class="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800"
@@ -56,8 +56,11 @@ defineProps({
 
                                         <TableBodyTd>
                                             <div v-if="tienda.procesado == 0">
-                                                <PrimaryButton>
-                                                    <a :href="route('order.create')">Generar</a>
+                                                <PrimaryButton
+                                                    class="ms-4">
+                                                    <Link :href="route('order.create')">
+                                                        Generar
+                                                    </Link>
                                                 </PrimaryButton>
                                             </div>
                                             <div v-else>
@@ -77,3 +80,11 @@ defineProps({
 
     
 </template>
+
+<script>
+export default {
+    methods: {
+        
+    }
+}
+</script>

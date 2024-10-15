@@ -6,7 +6,7 @@ import { Head, Link } from '@inertiajs/vue3';
 
 <template>
     <Head title="Informes" />
-
+    <Notification />
     <AuthenticatedLayout>
         <template #header>
             <div class="flex justify-between">
@@ -25,8 +25,6 @@ import { Head, Link } from '@inertiajs/vue3';
                 </Link>
             </div>
         </template>
-
-        <Notification />
 
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
