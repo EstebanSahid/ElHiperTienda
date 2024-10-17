@@ -5,6 +5,7 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
+import InputLabel from '@/Components/InputLabel.vue';
 import { Link } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
@@ -98,6 +99,12 @@ const showingNavigationDropdown = ref(false);
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        
+                        <div class="sm:ms-6 sm:flex sm:items-center">
+                            <InputLabel
+                                :value="'Fecha: ' + fechaActual"
+                            />
                         </div>
 
                         <!-- Dropdown Configuration -->
@@ -298,3 +305,13 @@ const showingNavigationDropdown = ref(false);
         </div>
     </div>
 </template>
+
+<script>
+export default {
+    data() {
+        return {
+            fechaActual: new Date().toLocaleDateString()
+        }
+    }
+}
+</script>

@@ -4,7 +4,8 @@
             <template v-for="(link, key) in links">
                 <div 
                     v-if="link.url === null" :key="key" 
-                    class="mb-1 mr-1 px-4 py-3 dark:text-gray-700 text-gray-400 text-sm leading-4 border rounded" v-html="link.label" />
+                    class="mb-1 mr-1 px-4 py-3 dark:text-gray-700 text-gray-400 text-sm leading-4 border rounded" v-html="link.label" 
+                />
                 <Link 
                     v-else :key="`link-${key}`" 
                     class="mb-1 mr-1 px-4 py-3 rounded border 

@@ -227,9 +227,5 @@ export default {
             this.store()
         },
     },
-
-    mounted() {
-        console.log(this.tiendas)
-    }
 }
 </script>

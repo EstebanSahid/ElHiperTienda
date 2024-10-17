@@ -20,6 +20,7 @@ Route::get('/', function () {
 /* CONTROL DE TRAFICO HTTP */
 Route::middleware(['auth', 'verified'])->group(function () {
     /* PARA TODOS LOS USUARIOS AUTENTICADOS */
+    Route::get('/getProducts', [OrderController::class, 'getProducts'])->name('order.getProducts');
 
     // Perfil
     Route::controller(ProfileController::class)->group(function() {
@@ -27,11 +28,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/profile', 'update')->name('profile.update');
         Route::delete('/profile', 'destroy')->name('profile.destroy');
     });
-    
+
     // Ordenes
     Route::controller(OrderController::class)->group(function () {
         Route::get('/dashboard', 'index')->name('dashboard');
-        Route::get('/order', 'create')->name('order.create');
+        Route::get('/order/{id}', 'create')->name('order.create');
     });
 
     /* PARA ADMINISTRADORES */

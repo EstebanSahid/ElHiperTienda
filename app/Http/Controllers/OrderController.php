@@ -7,7 +7,6 @@ use App\Models\Access;
 use App\Models\Tienda;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -91,7 +90,79 @@ class OrderController extends Controller
     }
 
     /* GENERAR ORDEN */
-    public function create() {
-        return Inertia::render('Orders/InsertOrder');
+    public function create(Request $request, $id) {
+        //dd($id);
+        $buscador = $request->input('search');
+
+        // Construimos la consulta con el QueryBuilder
+        $productos = DB::table('productos')
+            ->select('plus', 'nombre', 'id_producto')
+            ->where('nombre', 'LIKE', '%' . $buscador . '%')
+            ->orWhere('plus', 'LIKE', '%' . $buscador . '%')
+            ->orderBy('nombre')
+            ->paginate(6)
+            ->withQueryString()
+            ->through(fn ($producto) => [
+                'plus' => $producto->plus,
+                'nombre' => $producto->nombre,
+                'id_producto' => $producto->id_producto,
+            ]);
+
+        $unidadPedido = DB::table('unidad_pedido')
+            ->select('id_unidad_pedido', 'codigo')
+            ->get();
+
+        $tienda = DB::table('tienda')
+            ->select('nombre', 'id_tienda')
+            ->where('id_tienda', $id)
+            ->get();
+
+        //dd($tienda);
+
+        return Inertia::render('Orders/InsertOrder', [
+            'productos' => $productos,
+            'filtro' => $request->all('search'),
+            'unidadMedida' => $unidadPedido,
+            'tienda' => $tienda
+        ]);
     }
+
+    /*
+    public function create1(Request $request) {
+        $buscador = $request->input('params.buscador');
+        //dd($buscador);
+        if ($buscador == null){
+            return Inertia::render('Orders/InsertOrder', [
+                'productos' => []
+            ]);
+        } else {
+            $productos = DB::table('productos')
+                ->select('plus', 'nombre', 'id_producto')
+                ->where('nombre', 'LIKE', '%'. $buscador .'%')
+                ->orWhere('plus', 'LIKE', '%'. $buscador .'%')
+                ->orderBy('nombre')
+                ->paginate(6);
+            
+            return Inertia::render('Orders/InsertOrder', [
+                'productos' => $productos
+            ]);
+        }
+    }
+    */
+
+    /*
+    public function traerProductos(Request $request) {
+        $buscador = $request->input('params.buscador');
+
+        $productos = DB::table('productos')
+            ->select('plus', 'nombre', 'id_producto')
+            ->where('nombre', 'LIKE', '%'. $buscador .'%')
+            ->orWhere('plus', 'LIKE', '%'. $buscador .'%')
+            ->orderBy('nombre')
+            ->paginate(6);
+
+            return $productos;
+    }
+    */
+    
 }

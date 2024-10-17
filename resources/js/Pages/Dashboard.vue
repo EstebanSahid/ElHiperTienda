@@ -55,7 +55,7 @@ defineProps({
                                         <div v-if="tienda.procesado == 0">
                                             <PrimaryButton
                                                 class="ms-4">
-                                                <Link :href="route('order.create')">
+                                                <Link :href="`/order/${tienda.id_tienda}`">
                                                     Generar
                                                 </Link>
                                             </PrimaryButton>
@@ -66,7 +66,7 @@ defineProps({
                                         </div>
                                     </TableBodyTd>
                                 </TableBodyTr>
-                                
+
                                 <TableBodyTr v-if="tiendas.data.length === 0">
                                     <TableBodyTd colspan="4"> No hay tiendas registradas.</TableBodyTd>
                                 </TableBodyTr>
@@ -83,10 +83,3 @@ defineProps({
     
 </template>
 
-<script>
-export default {
-    methods: {
-        
-    }
-}
-</script>
