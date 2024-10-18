@@ -175,8 +175,13 @@ export default {
             buscador: {
                 search: this.filtro.search
             },
+
+            form: this.$inertia.form({
+                pedido: [],
+            }),
+
             productosOrden: [],
-            pedido: [],
+            fechaActual: new Date().toISOString().slice(0, 10)
         }
     },
     
@@ -221,17 +226,12 @@ export default {
 
         // Validar antes de guardar la Orden
         validarOrden(orden) {
-            this.validarExistenciaOrden(orden);
-            this.validarCantidadProductos(orden);
-            this.guardarOrden(orden)
-        },
-
-        // Validar existencia de una orden
-        validarExistenciaOrden(orden) {
             if (orden.length < 1) {
                 alert('Nada para Guardar');
                 return;
             }
+
+            this.validarCantidadProductos(orden);
         },
 
         // Verificar que tengan cantidad antes de guardar
@@ -252,13 +252,22 @@ export default {
                 alert('Los siguientes productos no tienen cantidad asignada:\n' + productosSinCantidad.join(', '));
                 return;
             }
+
+            this.guardarOrden(orden);
         },
 
         guardarOrden(orden) {
-            this.pedido = this.tienda;
-            this.pedido.cantidad = orden;
+            // Agregamos los datos al objeto inicial
+            let pedido = this.tienda;
+            pedido[0].fecha = this.fechaActual;
+            pedido[0].cantidad = orden;
+
+            // Agregamos el objeto al form y enviamos
+            this.form.pedido = pedido;
             console.log("data a guardar de la orden");
-            console.log(this.pedido);
+            console.log(pedido);
+
+            this.form.post('/orders');
         },
 
         /*

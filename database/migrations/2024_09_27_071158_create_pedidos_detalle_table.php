@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('pedidos_detalle', function (Blueprint $table) {
             $table->id('id_pdetalle');
             $table->string('nombre_producto');
+            $table->string('plus_producto');
             $table->bigInteger('cantidad');
             $table->string('estado');
             $table->foreignId('id_producto')->constrained('productos','id_producto')->onUpdate('cascade')->onDelete('restrict');

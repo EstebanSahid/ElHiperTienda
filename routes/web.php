@@ -32,7 +32,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Ordenes
     Route::controller(OrderController::class)->group(function () {
         Route::get('/dashboard', 'index')->name('dashboard');
-        Route::get('/order/{id}', 'create')->name('order.create');
+        Route::get('/order/{id}/create', 'create')->name('order.create');
+        Route::post('/orders', 'store')->name('order.store');
     });
 
     /* PARA ADMINISTRADORES */

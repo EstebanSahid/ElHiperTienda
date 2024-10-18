@@ -198,14 +198,12 @@ export default {
                 id_rol: 1,
                 tiendasAsignadas: [],
             }),
-            //tiendasAsignadas: [],
             validacionPermisos: false,
         }
     },
     
     methods: {
         store() {
-            console.log(this.form)
             this.form.post('/users');
         },
 

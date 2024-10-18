@@ -91,7 +91,6 @@ class OrderController extends Controller
 
     /* GENERAR ORDEN */
     public function create(Request $request, $id) {
-        //dd($id);
         $buscador = $request->input('search');
 
         // Construimos la consulta con el QueryBuilder
@@ -117,14 +116,16 @@ class OrderController extends Controller
             ->where('id_tienda', $id)
             ->get();
 
-        //dd($tienda);
-
         return Inertia::render('Orders/InsertOrder', [
             'productos' => $productos,
             'filtro' => $request->all('search'),
             'unidadMedida' => $unidadPedido,
             'tienda' => $tienda
         ]);
+    }
+
+    public function store(Request $request) {
+        dd($request->all());
     }
 
     /*

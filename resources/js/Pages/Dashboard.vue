@@ -55,7 +55,7 @@ defineProps({
                                         <div v-if="tienda.procesado == 0">
                                             <PrimaryButton
                                                 class="ms-4">
-                                                <Link :href="`/order/${tienda.id_tienda}`">
+                                                <Link :href="`/order/${tienda.id_tienda}/create`">
                                                     Generar
                                                 </Link>
                                             </PrimaryButton>
