@@ -19,6 +19,7 @@ Route::get('/', function () {
 
 /* CONTROL DE TRAFICO HTTP */
 Route::middleware(['auth', 'verified'])->group(function () {
+
     /* PARA TODOS LOS USUARIOS AUTENTICADOS */
     Route::get('/getProducts', [OrderController::class, 'getProducts'])->name('order.getProducts');
 
@@ -33,6 +34,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::controller(OrderController::class)->group(function () {
         Route::get('/dashboard', 'index')->name('dashboard');
         Route::get('/order/{id}/create', 'create')->name('order.create');
+        Route::get('/order/{id}/edit', 'renderEdit')->name('show.edit');
         Route::post('/orders', 'store')->name('order.store');
     });
 
@@ -46,22 +48,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/users', 'store')->name('users.store');
         });
     });
-    
-    /*
-    Route::controller(UserController::class)->group(function() {
-        Route::get('/users', 'index')->name('users')->middleware(CheckRol::class);
-        Route::get('/registerUser', 'create')->name('registro.user')->middleware(CheckRol::class);
-        Route::post('/users', 'store')->name('users.store')->middleware(CheckRol::class);
-    });
-    */
 
 
     // Reportes
     Route::get('/reports', function () {
         return Inertia::render('Reports/Reports');
     })->name('reportes');
-
-
     
 
     // Administracion Tiendas

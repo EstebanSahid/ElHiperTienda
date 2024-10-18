@@ -44,6 +44,7 @@ defineProps({
                                     <TableTh>Codigo</TableTh>
                                     <TableTh>Nombre</TableTh>
                                     <TableTh>Registrado</TableTh>
+                                    <!---->
                                     <TableTh>Acciones</TableTh>
                                 </tr>
                             </thead>
@@ -51,23 +52,35 @@ defineProps({
                                 <TableBodyTr  
                                     v-for="tienda in tiendas.data" :key="tienda.id_tienda"
                                 >
-                                    <TableBodyTd>{{ tienda.codigo }}</TableBodyTd>
-                                    <TableBodyTd>{{ tienda.nombre }}</TableBodyTd>
-                                    <TableBodyTd>{{ tienda.procesado ? 'Si' : 'No' }}</TableBodyTd>
                                     <TableBodyTd>
-                                        <div v-if="tienda.procesado == 0">
-                                            <PrimaryButton
-                                                class="ms-4">
-                                                <Link :href="`/order/${tienda.id_tienda}/create`">
-                                                    Generar
-                                                </Link>
-                                            </PrimaryButton>
-                                        </div>
-                                        <div v-else>
-                                            <PrimaryButton class="mr-3">Editar</PrimaryButton>
-                                            <PrimaryButton>Visualizar</PrimaryButton>
-                                        </div>
+                                        {{ tienda.codigo }}
                                     </TableBodyTd>
+                                    <TableBodyTd>
+                                        {{ tienda.nombre }}
+                                    </TableBodyTd>
+                                    <TableBodyTd>
+                                        {{ tienda.procesado ? 'Si' : 'No' }}
+                                    </TableBodyTd>
+                                    <!-- -->
+                                    <TableBodyTd>
+                                        <Link 
+                                            :href="tienda.procesado ? `/order/${tienda.id_tienda}/edit` : `/order/${tienda.id_tienda}/create`"
+                                            class="p-2 button-hiper inline-flex items-center 
+                                                    rounded-md border border-transparent 
+                                                    bg-[#97a907]
+                                                    px-4 py-2 text-xs font-semibold 
+                                                    uppercase tracking-widest text-white 
+                                                    hover:bg-[#59650f]
+                                                    focus:bg-gray-700 focus:outline-none focus:ring-2 
+                                                    focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900
+                                                    dark:text-gray-800
+                                                    dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300
+                                                    dark:bg-[#97a907] dark:hover:bg-[#eef85e]"
+                                        >
+                                            {{ tienda.procesado ? 'Editar' : 'Generar' }}
+                                        </Link>
+                                    </TableBodyTd>
+                                    
                                 </TableBodyTr>
 
                                 <TableBodyTr v-if="tiendas.data.length === 0">
@@ -82,7 +95,5 @@ defineProps({
             <Pagination :links="tiendas.links" />
         </div>
     </AuthenticatedLayout>
-
-    
 </template>
 

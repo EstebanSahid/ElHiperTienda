@@ -9,6 +9,7 @@ use App\Models\Access;
 use App\Models\Tienda;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -181,42 +182,9 @@ class OrderController extends Controller
 
     }
 
-    /*
-    public function create1(Request $request) {
-        $buscador = $request->input('params.buscador');
-        //dd($buscador);
-        if ($buscador == null){
-            return Inertia::render('Orders/InsertOrder', [
-                'productos' => []
-            ]);
-        } else {
-            $productos = DB::table('productos')
-                ->select('plus', 'nombre', 'id_producto')
-                ->where('nombre', 'LIKE', '%'. $buscador .'%')
-                ->orWhere('plus', 'LIKE', '%'. $buscador .'%')
-                ->orderBy('nombre')
-                ->paginate(6);
-            
-            return Inertia::render('Orders/InsertOrder', [
-                'productos' => $productos
-            ]);
-        }
+    /* EDITAR ORDEN */
+    public function renderEdit($id) {
+        $dateHoy = Date('Y-m-d');
+        dd($dateHoy);
     }
-    */
-
-    /*
-    public function traerProductos(Request $request) {
-        $buscador = $request->input('params.buscador');
-
-        $productos = DB::table('productos')
-            ->select('plus', 'nombre', 'id_producto')
-            ->where('nombre', 'LIKE', '%'. $buscador .'%')
-            ->orWhere('plus', 'LIKE', '%'. $buscador .'%')
-            ->orderBy('nombre')
-            ->paginate(6);
-
-            return $productos;
-    }
-    */
-    
 }
