@@ -16,7 +16,6 @@ class UserController extends Controller
 {
     /* INDEX */
     public function index() {
-
         $users = DB::table('users as u')
         ->join('roles as r', 'u.id_rol', '=', 'r.id_rol')
         ->select('u.id', 'u.name', 'r.descripcion', 'u.email', 'u.telefono', 'u.estado')

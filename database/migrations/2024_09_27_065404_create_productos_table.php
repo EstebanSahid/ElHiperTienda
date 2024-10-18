@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('nombre');
             $table->string('estado');
             $table->unsignedBigInteger('ucrea');
-            $table->unsignedBigInteger('umodifica');
+            $table->unsignedBigInteger('umodifica')->nullable();
             $table->timestamps();
         });
     }

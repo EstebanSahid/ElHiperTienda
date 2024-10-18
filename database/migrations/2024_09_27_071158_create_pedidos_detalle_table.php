@@ -21,7 +21,7 @@ return new class extends Migration
             $table->foreignId('id_pedido')->constrained('pedidos','id_pedido')->onUpdate('cascade')->onDelete('restrict');
             $table->foreignId('id_unidad_pedido')->constrained('unidad_pedido','id_unidad_pedido')->onUpdate('cascade')->onDelete('restrict');
             $table->unsignedBigInteger('ucrea');
-            $table->unsignedBigInteger('umodifica');
+            $table->unsignedBigInteger('umodifica')->nullable();
             $table->timestamps();
         });
     }

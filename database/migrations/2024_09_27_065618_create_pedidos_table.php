@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('estado');
             $table->foreignId('id_tienda')->constrained('tienda', 'id_tienda')->onUpdate('cascade')->onDelete('restrict');
             $table->unsignedBigInteger('ucrea');
-            $table->unsignedBigInteger('umodifica');
+            $table->unsignedBigInteger('umodifica')->nullable();
             $table->timestamps();
         });
     }

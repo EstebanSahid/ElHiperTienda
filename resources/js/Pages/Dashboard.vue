@@ -7,6 +7,7 @@ import Table from '@/Components/Table.vue';
 import TableTh from '@/Components/TableTh.vue';
 import TableBodyTr from '@/Components/TableBodyTr.vue';
 import TableBodyTd from '@/Components/TableBodyTd.vue';
+import Notification from '@/Components/Notification.vue';
 
 defineProps({
     tiendas: {
@@ -18,6 +19,8 @@ defineProps({
 
 <template>
     <Head title="Tiendas" />
+
+    <Notification />
 
     <AuthenticatedLayout>
         <template #header>

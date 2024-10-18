@@ -177,6 +177,8 @@ export default {
             },
 
             form: this.$inertia.form({
+                fecha: null,
+                idTienda: null,
                 pedido: [],
             }),
 
@@ -258,14 +260,19 @@ export default {
 
         guardarOrden(orden) {
             // Agregamos los datos al objeto inicial
+            /*
             let pedido = this.tienda;
             pedido[0].fecha = this.fechaActual;
             pedido[0].cantidad = orden;
+            */
 
-            // Agregamos el objeto al form y enviamos
-            this.form.pedido = pedido;
+            // Formateamos el objeto form y enviamos
+            this.form.idTienda = this.tienda[0].id_tienda;
+            this.form.fecha = this.fechaActual;
+            this.form.pedido = orden;
+
             console.log("data a guardar de la orden");
-            console.log(pedido);
+            console.log(this.form);
 
             this.form.post('/orders');
         },
