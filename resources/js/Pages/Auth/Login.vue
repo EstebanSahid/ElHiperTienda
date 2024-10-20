@@ -5,6 +5,7 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import Notification from '@/Components/Notification.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 defineProps({
@@ -32,6 +33,8 @@ const submit = () => {
 <template>
     <GuestLayout>
         <Head title="Inicio de Sesión" />
+
+        <Notification />
 
         <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
             {{ status }}
@@ -81,7 +84,7 @@ const submit = () => {
             <div class="mt-4 flex items-center justify-end">
                 <Link
                     v-if="canResetPassword"
-                    :href="route('password.request')"
+                    :href="route('password.reset')"
                     class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:text-gray-100 dark:focus:ring-offset-gray-800"
                 >
                     ¿Olvidaste la contraseña?

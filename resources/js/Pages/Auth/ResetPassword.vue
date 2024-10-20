@@ -4,9 +4,11 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import Notification from '@/Components/Notification.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
+    /*
     email: {
         type: String,
         required: true,
@@ -15,11 +17,12 @@ const props = defineProps({
         type: String,
         required: true,
     },
+    */
 });
 
 const form = useForm({
-    token: props.token,
-    email: props.email,
+    //token: props.token,
+    email: '',
     password: '',
     password_confirmation: '',
 });
@@ -33,8 +36,10 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Reset Password" />
+        <Head title="Recuperar contraseña" />
 
+        <Notification />
+        
         <form @submit.prevent="submit">
             <div>
                 <InputLabel for="email" value="Email" />
