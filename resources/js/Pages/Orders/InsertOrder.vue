@@ -22,16 +22,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
                 >
                     Generar orden para {{ tienda[0].nombre }}
                 </h2>
-                <!--
-                <Link
-                    :href="route('dashboard')"
-                    class="rounded-md bg- px-2 leading-tight text-black ring-1 ring-transparent transition 
-                    hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] 
-                    dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
-                >
-                    Regresar
-                </Link>
-                -->
+
                 <PrimaryButton @click="validarOrden(productosOrden)">Guardar</PrimaryButton>
 
             </div>
@@ -80,8 +71,8 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
                                                         <TableBodyTd @click="agregarProducto(producto)" >{{ producto.nombre }}</TableBodyTd>
                                                     </TableBodyTr>
     
-                                                    <TableBodyTr v-if="productos.links.length > 10">
-                                                        <TableBodyTd colspan="2" class="font-semibold" >Para mostrar mas productos, por favor utilice el buscador.</TableBodyTd>
+                                                    <TableBodyTr v-if="productos.links.length > 0">
+                                                        <TableBodyTd colspan="2" class="font-semibold" >Para mostrar mas productos, por favor utilice el buscador o digite el código.</TableBodyTd>
                                                     </TableBodyTr>
                                                     
                                                     <TableBodyTr v-if="productos.data.length === 0">
@@ -120,7 +111,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <TableBodyTr  @click="mostrarProductos(index)"
+                                                <TableBodyTr
                                                     v-for="(producto, index) in productosOrden" :key="producto.id_producto"
                                                 >
                                                     <TableBodyTd>{{ producto.plus }}</TableBodyTd>
@@ -259,32 +250,14 @@ export default {
         },
 
         guardarOrden(orden) {
-            // Agregamos los datos al objeto inicial
-            /*
-            let pedido = this.tienda;
-            pedido[0].fecha = this.fechaActual;
-            pedido[0].cantidad = orden;
-            */
-
             // Formateamos el objeto form y enviamos
             this.form.idTienda = this.tienda[0].id_tienda;
             this.form.fecha = this.fechaActual;
             this.form.pedido = orden;
-
-            console.log("data a guardar de la orden");
+            console.log("a guardar");
             console.log(this.form);
-
-            this.form.post('/orders');
+            //this.form.post('/orders');
         },
-
-        /*
-        mostrarProductos(index) {
-            console.log(this.productosOrden);
-            console.log("index producto");
-            console.log(index);
-            console.log(this.idTienda);
-        }
-        */
     },
     
 
@@ -293,7 +266,7 @@ export default {
             deep: true,
             handler: function () {
                 setTimeout(() => {
-                    router.get('/order', {search: this.buscador.search }, { preserveState: true });
+                    router.get(`/order/${this.tienda[0].id_tienda}/create`, {search: this.buscador.search }, { preserveState: true });
                 }, 150);
             },
         },
@@ -301,7 +274,7 @@ export default {
     
     mounted() {
         console.log("id tienda")
-        console.log(this.tienda[0].nombre);
+        console.log(this.tienda);
     }
 }
 </script>

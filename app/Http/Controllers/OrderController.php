@@ -96,28 +96,9 @@ class OrderController extends Controller
     public function create(Request $request, $id) {
         $buscador = $request->input('search');
 
-        // Construimos la consulta con el QueryBuilder
-        $productos = DB::table('productos')
-            ->select('plus', 'nombre', 'id_producto')
-            ->where('nombre', 'LIKE', '%' . $buscador . '%')
-            ->orWhere('plus', 'LIKE', '%' . $buscador . '%')
-            ->orderBy('nombre')
-            ->paginate(6)
-            ->withQueryString()
-            ->through(fn ($producto) => [
-                'plus' => $producto->plus,
-                'nombre' => $producto->nombre,
-                'id_producto' => $producto->id_producto,
-            ]);
-
-        $unidadPedido = DB::table('unidad_pedido')
-            ->select('id_unidad_pedido', 'codigo')
-            ->get();
-
-        $tienda = DB::table('tienda')
-            ->select('nombre', 'id_tienda')
-            ->where('id_tienda', $id)
-            ->get();
+        $productos = $this->getProducts($buscador);
+        $unidadPedido = $this->getUnidad();
+        $tienda = $this->getTiendas($id);
 
         return Inertia::render('Orders/InsertOrder', [
             'productos' => $productos,
@@ -128,8 +109,6 @@ class OrderController extends Controller
     }
 
     public function store(Request $request) {
-        // Validacion
-        //dd($request->all());
         $validatedData = $request->validate([
             'fecha' => ['required', 'date_format:Y-m-d'],
             'idTienda' => ['required', 'integer'],
@@ -158,33 +137,93 @@ class OrderController extends Controller
 
         // Obtenemos el ID para el detalle del pedido
         $ordenId = $orden->id_pedido;
-        //dd($ordenId);
-        foreach($validatedData['pedido'] as $producto) {
-            $ordenDetalle = new OrderDetails();
-            $ordenDetalle->nombre_producto = $producto['nombre'];
-            $ordenDetalle->cantidad = $producto['cantidad'];
-            $ordenDetalle->estado = 'Activo';
-            $ordenDetalle->id_producto = $producto['id_producto'];
-            $ordenDetalle->id_pedido = $ordenId;
-            $ordenDetalle->id_unidad_pedido = $producto['id_unidad'];
-            $ordenDetalle->ucrea = $userCreate;
-            if (!$ordenDetalle->save()) {
-                DB::rollBack();
-                return redirect()->back()->withErrors(['error' => 'Error al guardar los productos a la orden.']);
+        
+        // Enviamos en lotes mas pequeños
+        collect($validatedData['pedido'])->chunk(30)->each(function ($productosLote) use ($ordenId, $userCreate){
+            foreach($productosLote as $producto) {
+                $ordenDetalle = new OrderDetails();
+                $ordenDetalle->nombre_producto = $producto['nombre'];
+                $ordenDetalle->plus_producto = $producto['plus'];
+                $ordenDetalle->cantidad = $producto['cantidad'];
+                $ordenDetalle->estado = 'Activo';
+                $ordenDetalle->id_producto = $producto['id_producto'];
+                $ordenDetalle->id_pedido = $ordenId;
+                $ordenDetalle->id_unidad_pedido = $producto['id_unidad'];
+                $ordenDetalle->ucrea = $userCreate;
+                if (!$ordenDetalle->save()) {
+                    DB::rollBack();
+                    return redirect()->back()->withErrors(['error' => 'Error al guardar los productos a la orden.']);
+                }
             }
-        }
+        });
 
         DB::commit();
 
         return redirect()->route('dashboard')->with('success', 'Orden creada exitosamente');
-        
-        //dd($validatedData);
-
     }
 
     /* EDITAR ORDEN */
-    public function renderEdit($id) {
+    public function renderEdit(Request $request, $id) {
+        $buscador = $request->input('search');
+
+        // Construimos la consulta con el QueryBuilder
+        $productos = $this->getProducts($buscador);
+        $unidadPedido = $this->getUnidad();
+        $tienda = $this->getTiendas($id);
+        $productosRegistrados = $this->getProductsOrder($id);
+
+        return Inertia::render('Orders/EditOrder', [
+            'productos' => $productos,
+            'filtro' => $request->all('search'),
+            'unidadMedida' => $unidadPedido,
+            'tienda' => $tienda,
+            'productosOrden' => $productosRegistrados
+        ]);
+    }
+
+    public function update() {
+
+    }
+
+    public function getProductsOrder($id) {
         $dateHoy = Date('Y-m-d');
-        dd($dateHoy);
+        return DB::table('pedidos_detalle as pd')
+            ->join('unidad_pedido as up', 'pd.id_unidad_pedido', '=', 'up.id_unidad_pedido')
+            ->join('pedidos as p', 'p.id_pedido', '=', 'pd.id_pedido')
+            ->select('pd.id_pdetalle', 'pd.id_producto', 'pd.nombre_producto as nombre', 'pd.plus_producto as plus', 'pd.cantidad', 'up.codigo', 'up.id_unidad_pedido as id_unidad')
+            ->where('p.id_tienda', '=', $id)
+            ->where('p.fecha_pedido', '=', $dateHoy)
+            ->orderBy('pd.nombre_producto')
+            ->get();
+    }
+
+    /* FUNCIONES COMPARTIDAS */
+    private function getProducts($buscador) {
+        return DB::table('productos')
+            ->select('plus', 'nombre', 'id_producto')
+            ->where('nombre', 'LIKE', '%' . $buscador . '%')
+            ->orWhere('plus', 'LIKE', '%' . $buscador . '%')
+            ->orderBy('nombre')
+            ->paginate(6)
+            ->withQueryString()
+            ->through(fn ($producto) => [
+                'plus' => $producto->plus,
+                'nombre' => $producto->nombre,
+                'id_producto' => $producto->id_producto,
+            ]);
+    }
+
+    private function getUnidad() {
+        return DB::table('unidad_pedido')
+            ->select('id_unidad_pedido', 'codigo')
+            ->get();
+    }
+
+    private function getTiendas($id) {
+        return DB::table('tienda')
+            ->select('nombre', 'id_tienda')
+            ->where('id_tienda', $id)
+            ->get();
     }
 }
+
