@@ -9,6 +9,7 @@ import TableBodyTd from '@/Components/TableBodyTd.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import Tooltip from '@/Components/Tooltip.vue';
 </script>
 
 <template>
@@ -34,13 +35,15 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
                     class="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800"
                 >
                     <div class="p-6 text-gray-900 dark:text-gray-100 content-end">
-                        <div class="grid grid-cols-2">
+                        <div class="grid grid-cols-1 md:grid-cols-2">
                             <!-- CONTENEDOR DE PRODUCTOS -->
                             <div>
                                 <div class="px-10 py-1">
+                                    <!-- Cabecera -->
                                     <div class="p-3 font-semibold">
                                         Lista de Productos Disponibles
                                     </div>
+                                    <!-- Buscador -->
                                     <div class="p-3">
                                         <InputLabel for="search" value="Buscar Producto" />
 
@@ -52,6 +55,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
                                             required
                                         />
                                     </div>
+                                    <!-- Tabla -->
                                     <div class="py-3">
                                         <!-- Table Index -->
                                         <div class="bg-white rounded-md shadow overflow-x-auto dark:bg-gray-800">
@@ -64,14 +68,12 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
                                                 </thead>
                                                 
                                                 <tbody>
-                                                    <TableBodyTr  
-                                                        v-for="producto in productos.data" :key="producto.id_producto"
-                                                    >
+                                                    <TableBodyTr v-for="producto in productos.data" :key="producto.id_producto">
                                                         <TableBodyTd @click="agregarProducto(producto)" >{{ producto.plus }}</TableBodyTd>
                                                         <TableBodyTd @click="agregarProducto(producto)" >{{ producto.nombre }}</TableBodyTd>
                                                     </TableBodyTr>
-    
-                                                    <TableBodyTr v-if="productos.links.length > 0">
+                                                    
+                                                    <TableBodyTr v-if="productos.links.length > 3">
                                                         <TableBodyTd colspan="2" class="font-semibold" >Para mostrar mas productos, por favor utilice el buscador o digite el código.</TableBodyTd>
                                                     </TableBodyTr>
                                                     
@@ -87,8 +89,6 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
                                         <Pagination v-if="productos.links.length < 10" :links="productos.links" />
                                         -->
                                     </div>
-                                    
-
                                 </div>
                             </div>
                             <!-- CONTENEDOR DE PRODUCTOS PARA PEDIR -->
@@ -104,8 +104,10 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
                                                     <TableTh>PLUS</TableTh>
                                                     <TableTh>Nombre</TableTh>
                                                     <TableTh>Cantidad</TableTh>
-                                                    <TableTh>
+                                                    <TableTh collapsan="2">
                                                         Unidad
+                                                        <!--
+                                                            -->
                                                         <span class="font-normal text-sm">( Click para cambiar de unidad )</span>
                                                     </TableTh>
                                                 </tr>
@@ -130,10 +132,21 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
                                                         />
                                                     </TableBodyTd>
                                                     <TableBodyTd>
-                                                        <div class="mt-1 block w-full cursor-pointer" @click="cambiarUnidad(producto)">
-                                                            <span>{{ obtenerCodigoUnidad(producto.id_unidad) }}</span>
-                                                        </div>
+                                                        <!--
+                                                        <Tooltip text="Click para cambiar de Unidad">
+                                                        -->
+                                                            <div class="mt-1 block cursor-pointer w-full" @click="cambiarUnidad(producto)">
+                                                                <span>{{ obtenerCodigoUnidad(producto.id_unidad) }}</span>
+                                                            </div>
+                                                        <!--
+                                                        </Tooltip>
+                                                        -->
                                                     </TableBodyTd>
+                                                    <td class="px-2">
+                                                        <button type="button" class="flex group justify-center items-center" @click="deleteProductArray(index)">
+                                                            <svg class="block w-2 h-2 fill-[#ff1111] group-hover:fill-[#be0000] dark:fill-[#ff1111] dark:group-hover:fill-[#ff8b8b]" xmlns="http://www.w3.org/2000/svg" width="235.908" height="235.908" viewBox="278.046 126.846 235.908 235.908"><path d="M506.784 134.017c-9.56-9.56-25.06-9.56-34.62 0L396 210.18l-76.164-76.164c-9.56-9.56-25.06-9.56-34.62 0-9.56 9.56-9.56 25.06 0 34.62L361.38 244.8l-76.164 76.165c-9.56 9.56-9.56 25.06 0 34.62 9.56 9.56 25.06 9.56 34.62 0L396 279.42l76.164 76.165c9.56 9.56 25.06 9.56 34.62 0 9.56-9.56 9.56-25.06 0-34.62L430.62 244.8l76.164-76.163c9.56-9.56 9.56-25.06 0-34.62z" /></svg>
+                                                        </button>
+                                                    </td>
                                                 </TableBodyTr>
     
                                                 <TableBodyTr v-if="productosOrden.length === 0">
@@ -162,6 +175,7 @@ export default {
     },
     
     data() {
+        
         return {
             buscador: {
                 search: this.filtro.search
@@ -177,8 +191,12 @@ export default {
             fechaActual: new Date().toISOString().slice(0, 10)
         }
     },
-    
     methods: {
+        // Quitar un producto de la orden
+        deleteProductArray(index){
+            this.productosOrden.splice(index, 1);
+        },
+
         // Agregar el producto al arreglo para la orden
         agregarProducto(producto) {
             const productoExistente = this.productosOrden.find(
@@ -197,7 +215,7 @@ export default {
         // Validar que siempre se registre una cantidad al producto
         validarMayorCero(producto){
             if (producto.cantidad < 1) {
-                producto.cantidad = 1;
+                producto.cantidad = null;
             }
         },
 
@@ -254,9 +272,7 @@ export default {
             this.form.idTienda = this.tienda[0].id_tienda;
             this.form.fecha = this.fechaActual;
             this.form.pedido = orden;
-            console.log("a guardar");
-            console.log(this.form);
-            //this.form.post('/orders');
+            this.form.post('/orders');
         },
     },
     
@@ -273,8 +289,12 @@ export default {
     },
     
     mounted() {
+        /*
+        console.log(this.productos)
         console.log("id tienda")
         console.log(this.tienda);
+        */
     }
 }
 </script>
+

@@ -23,7 +23,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
                     Editar orden para {{ tienda[0].nombre }}
                 </h2>
 
-                <PrimaryButton @click="validarOrden(productosOrden)">Actualizar</PrimaryButton>
+                <PrimaryButton @click="validarOrden()">Actualizar</PrimaryButton>
 
             </div>
         </template>
@@ -163,6 +163,7 @@ export default {
         unidadMedida: Array,
         tienda: Object,
         productosOrden: Array,
+        productosOrdenEditar: Array,
     },
     
     data() {
@@ -177,7 +178,6 @@ export default {
                 pedido: [],
             }),
 
-            //productosOrden: [],
             fechaActual: new Date().toISOString().slice(0, 10)
         }
     },
@@ -192,6 +192,7 @@ export default {
             if (!productoExistente) {
                 producto.id_unidad = 1;
                 producto.cantidad = null;
+                //producto.existe = 0;
                 this.productosOrden.push(producto);
             } else {
                 alert('El producto ya esta registrado para una orden')
@@ -201,7 +202,7 @@ export default {
         // Validar que siempre se registre una cantidad al producto
         validarMayorCero(producto){
             if (producto.cantidad < 1) {
-                producto.cantidad = 1;
+                producto.cantidad = null;
             }
         },
 
@@ -222,14 +223,37 @@ export default {
         },
 
         // Validar antes de guardar la Orden
-        validarOrden(orden) {
+        validarOrden() {
+            const cambios = [];
+            this.productosOrdenEditar.forEach((productoEditado, index) => {
+                const producto = this.productosOrden[index];
+                console.log(producto);
+                // Si un producto a editar no esta en los registrados es uno nuevo
+                if (!producto) {
+                    cambios.push(productoEditado);
+                } else {
+                    // Comparar si fue editado para enviar
+                    if (
+                        producto.cantidad !== productoEditado.cantidad ||
+                        producto.id_unidad !== productoEditado.id_unidad 
+                    ){
+                        cambios.push(productoEditado);
+                    }
+                }
+            });
+
+            console.log("cambios");
+            console.log(cambios)
+            /*
             if (orden.length < 1) {
                 alert('Nada para Guardar');
                 return;
             }
 
             this.validarCantidadProductos(orden);
+            */
         },
+        
 
         // Verificar que tengan cantidad antes de guardar
         validarCantidadProductos(orden) {
@@ -258,8 +282,9 @@ export default {
             this.form.idTienda = this.tienda[0].id_tienda;
             this.form.fecha = this.fechaActual;
             this.form.pedido = orden;
-
-            this.form.post('/orders');
+            console.log("a enviar");
+            console.log(this.form)
+            this.form.put('/editOrders');
         },
     },
     

@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
-
+use Mockery\Undefined;
 
 class OrderController extends Controller
 {
@@ -177,11 +177,51 @@ class OrderController extends Controller
             'filtro' => $request->all('search'),
             'unidadMedida' => $unidadPedido,
             'tienda' => $tienda,
-            'productosOrden' => $productosRegistrados
+            'productosOrden' => $productosRegistrados,
+            'productosOrdenEditar' => $productosRegistrados
         ]);
     }
 
-    public function update() {
+    public function update(Request $request) {
+        $ordenId = null;
+        $userUpdate = $request->user()->id;
+        foreach ($request->pedido as $prod) {
+            $ordenId = $prod['id_pedido'];
+            break;
+        }
+        
+        // Enviamos en lotes mas pequeños
+        collect($request->pedido)->chunk(30)->each(function ($productosLote) use ($ordenId, $userUpdate){
+            foreach($productosLote as $producto) {
+                if (!isset($producto['id_pdetalle'])) {
+                    // Si no esta definido un pdetalle contará como nuevo registro
+                } else {
+                    // Si pdetalle está definido contrará como actualizacion
+                }
+                /*
+                $ordenDetalle = new OrderDetails();
+                $ordenDetalle->nombre_producto = $producto['nombre'];
+                $ordenDetalle->plus_producto = $producto['plus'];
+                $ordenDetalle->cantidad = $producto['cantidad'];
+                $ordenDetalle->estado = 'Activo';
+                $ordenDetalle->id_producto = $producto['id_producto'];
+                $ordenDetalle->id_pedido = $ordenId;
+                $ordenDetalle->id_unidad_pedido = $producto['id_unidad'];
+                $ordenDetalle->ucrea = $userUpdate;
+                if (!$ordenDetalle->save()) {
+                    DB::rollBack();
+                    return redirect()->back()->withErrors(['error' => 'Error al guardar los productos a la orden.']);
+                }
+                */
+            }
+        });
+    }
+
+    private function storeNewProucts($products, $idPedido) {
+
+    }
+
+    private function updateProducts($products) {
 
     }
 
@@ -190,7 +230,7 @@ class OrderController extends Controller
         return DB::table('pedidos_detalle as pd')
             ->join('unidad_pedido as up', 'pd.id_unidad_pedido', '=', 'up.id_unidad_pedido')
             ->join('pedidos as p', 'p.id_pedido', '=', 'pd.id_pedido')
-            ->select('pd.id_pdetalle', 'pd.id_producto', 'pd.nombre_producto as nombre', 'pd.plus_producto as plus', 'pd.cantidad', 'up.codigo', 'up.id_unidad_pedido as id_unidad')
+            ->select('p.id_pedido','pd.id_pdetalle', 'pd.id_producto', 'pd.nombre_producto as nombre', 'pd.plus_producto as plus', 'pd.cantidad', 'up.codigo', 'up.id_unidad_pedido as id_unidad'/*, DB::raw('1 as existe')*/)
             ->where('p.id_tienda', '=', $id)
             ->where('p.fecha_pedido', '=', $dateHoy)
             ->orderBy('pd.nombre_producto')

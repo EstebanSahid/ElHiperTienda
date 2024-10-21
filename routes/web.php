@@ -37,6 +37,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/order/{id}/create', 'create')->name('order.create');
         Route::get('/order/{id}/edit', 'renderEdit')->name('show.edit');
         Route::post('/orders', 'store')->name('order.store');
+        Route::put('/editOrders', 'update')->name('order.update');
     });
 
     /* PARA ADMINISTRADORES */

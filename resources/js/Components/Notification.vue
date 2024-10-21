@@ -46,19 +46,6 @@ export default {
             show: true,
         }
     },
-    /*
-    watch: {
-        '$page.props.flash': {
-            handler() {
-                this.show = true
-                setTimeout(() => {
-                    this.show = false;
-                }, 3000);
-            },
-            deep: true,
-        },
-    },
-    */
 
     mounted() {
         // Cuando el componente esté montado, verifica si hay un mensaje flash
@@ -81,7 +68,7 @@ export default {
             this.show = true;
             setTimeout(() => {
                 this.show = false;
-            }, 3000); // Oculta después de 3 segundos
+            }, 3000);
         },
     },
 }
