@@ -23,7 +23,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
                     Editar orden para {{ tienda[0].nombre }}
                 </h2>
 
-                <PrimaryButton @click="validarOrden()">Actualizar</PrimaryButton>
+                <PrimaryButton @click="validarOrden(productosOrden)">Actualizar</PrimaryButton>
 
             </div>
         </template>
@@ -34,7 +34,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
                     class="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800"
                 >
                     <div class="p-6 text-gray-900 dark:text-gray-100 content-end">
-                        <div class="grid grid-cols-2">
+                        <div class="grid grid-cols-1 md:grid-cols-2">
                             <!-- CONTENEDOR DE PRODUCTOS -->
                             <div>
                                 <div class="px-10 py-1">
@@ -112,7 +112,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
                                             </thead>
                                             <tbody>
                                                 <TableBodyTr
-                                                    v-for="producto in productosOrden" :key="producto.id_producto"
+                                                    v-for="(producto, index) in productosOrden" :key="producto.id_producto"
                                                 >
                                                     <TableBodyTd>{{ producto.plus }}</TableBodyTd>
                                                     <TableBodyTd>{{ producto.nombre }}</TableBodyTd>
@@ -136,7 +136,11 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
                                                             <span>{{ obtenerCodigoUnidad(producto.id_unidad) }}</span>
                                                         </div>
                                                     </TableBodyTd>
-                                                    
+                                                    <td class="px-2">
+                                                        <button type="button" class="flex group justify-center items-center" @click="deleteProductArray(producto)">
+                                                            <svg class="block w-2 h-2 fill-[#ff1111] group-hover:fill-[#be0000] dark:fill-[#ff1111] dark:group-hover:fill-[#ff8b8b]" xmlns="http://www.w3.org/2000/svg" width="235.908" height="235.908" viewBox="278.046 126.846 235.908 235.908"><path d="M506.784 134.017c-9.56-9.56-25.06-9.56-34.62 0L396 210.18l-76.164-76.164c-9.56-9.56-25.06-9.56-34.62 0-9.56 9.56-9.56 25.06 0 34.62L361.38 244.8l-76.164 76.165c-9.56 9.56-9.56 25.06 0 34.62 9.56 9.56 25.06 9.56 34.62 0L396 279.42l76.164 76.165c9.56 9.56 25.06 9.56 34.62 0 9.56-9.56 9.56-25.06 0-34.62L430.62 244.8l76.164-76.163c9.56-9.56 9.56-25.06 0-34.62z" /></svg>
+                                                        </button>
+                                                    </td>
                                                 </TableBodyTr>
     
                                                 <TableBodyTr v-if="productosOrden.length === 0">
@@ -163,7 +167,8 @@ export default {
         unidadMedida: Array,
         tienda: Object,
         productosOrden: Array,
-        productosOrdenEditar: Array,
+        productosOriginal: Array,
+        id_pedido: String,
     },
     
     data() {
@@ -175,20 +180,36 @@ export default {
             form: this.$inertia.form({
                 fecha: null,
                 idTienda: null,
+                idPedido: null,
                 pedido: [],
             }),
 
+            cambios: [],
             fechaActual: new Date().toISOString().slice(0, 10)
         }
     },
     
     methods: {
+        // Quitar un producto de la orden
+        deleteProductArray(producto){
+            /*
+            console.log("Productos Orden:", this.productosOrden);
+            console.log(producto);
+            */
+            const indexOrden = this.productosOrden.findIndex(po => po.id_producto == producto.id_producto);
+            const indexPedido = this.cambios.findIndex(pc => pc.id_producto == producto.id_producto);
+
+            this.productosOrden.splice(indexOrden, 1);
+            if (indexPedido) {
+                this.cambios.splice(indexPedido, 1);
+            }
+        },
+
         // Agregar el producto al arreglo para la orden
         agregarProducto(producto) {
             const productoExistente = this.productosOrden.find(
                 p => p.id_producto === producto.id_producto
             )
-
             if (!productoExistente) {
                 producto.id_unidad = 1;
                 producto.cantidad = null;
@@ -223,37 +244,60 @@ export default {
         },
 
         // Validar antes de guardar la Orden
-        validarOrden() {
-            const cambios = [];
-            this.productosOrdenEditar.forEach((productoEditado, index) => {
-                const producto = this.productosOrden[index];
-                console.log(producto);
-                // Si un producto a editar no esta en los registrados es uno nuevo
-                if (!producto) {
-                    cambios.push(productoEditado);
-                } else {
-                    // Comparar si fue editado para enviar
-                    if (
-                        producto.cantidad !== productoEditado.cantidad ||
-                        producto.id_unidad !== productoEditado.id_unidad 
-                    ){
-                        cambios.push(productoEditado);
-                    }
-                }
-            });
-
-            console.log("cambios");
-            console.log(cambios)
-            /*
+        validarOrden(orden) {
+            console.log(orden)
             if (orden.length < 1) {
-                alert('Nada para Guardar');
+                alert('Debe haber por lo menos un registro para Actualizar');
                 return;
             }
 
-            this.validarCantidadProductos(orden);
-            */
+            this.verificarData(orden);
         },
-        
+
+        verificarData(orden) {
+            /*
+            console.log("Productos Originales:", this.productosOriginal);
+            console.log("Productos Orden:", this.productosOrden);
+            console.log("Productos desde la funcion:", orden);
+            */
+
+            orden.forEach((productoNuevo) => {
+                const existe = this.productosOriginal.find(
+                    (productoExistente) => productoExistente.id_producto === productoNuevo.id_producto
+                );
+
+                if (!existe) {
+                    productoNuevo.accion = 'c';
+                    this.cambios.push(productoNuevo)
+                } else {
+                    if (
+                        existe.cantidad !== productoNuevo.cantidad ||
+                        existe.id_unidad !== productoNuevo.id_unidad
+                    ) {
+                        productoNuevo.accion = 'u'
+                        this.cambios.push(productoNuevo);
+                    }
+                }
+            })
+
+            this.productosOriginal.forEach((productoEliminado) => {
+                const eliminado = orden.find(
+                    (producto) => producto.id_producto === productoEliminado.id_producto
+                )
+
+                console.log("Eliminado");
+                console.log(eliminado);
+
+                if (!eliminado) {
+                    productoEliminado.accion = 'd';
+                    this.cambios.push(productoEliminado);
+                }
+            });
+
+            // Imprimir para verificar el estado de cambios
+            console.log("Productos nuevos (creados):", this.cambios);
+            this.validarCantidadProductos(this.cambios);
+        },
 
         // Verificar que tengan cantidad antes de guardar
         validarCantidadProductos(orden) {
@@ -279,7 +323,12 @@ export default {
 
         guardarOrden(orden) {
             // Formateamos el objeto form y enviamos
+            if (orden.length < 1) {
+                alert('Debe haber por lo menos un registro para Actualizar');
+                return;
+            }
             this.form.idTienda = this.tienda[0].id_tienda;
+            this.form.idPedido = this.id_pedido[0].id_pedido;
             this.form.fecha = this.fechaActual;
             this.form.pedido = orden;
             console.log("a enviar");
@@ -302,7 +351,7 @@ export default {
     
     mounted() {
         console.log("productos")
-        console.log(this.productosOrden)
+        // console.log(this.productosOrden)
     }
 }
 </script>

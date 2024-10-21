@@ -171,6 +171,7 @@ class OrderController extends Controller
         $unidadPedido = $this->getUnidad();
         $tienda = $this->getTiendas($id);
         $productosRegistrados = $this->getProductsOrder($id);
+        $idPedido = $this->getPedido($id);
 
         return Inertia::render('Orders/EditOrder', [
             'productos' => $productos,
@@ -178,51 +179,87 @@ class OrderController extends Controller
             'unidadMedida' => $unidadPedido,
             'tienda' => $tienda,
             'productosOrden' => $productosRegistrados,
-            'productosOrdenEditar' => $productosRegistrados
+            'productosOriginal' => $productosRegistrados,
+            'id_pedido' => $idPedido
         ]);
     }
 
     public function update(Request $request) {
-        $ordenId = null;
+        $ordenId = $request->idPedido;
         $userUpdate = $request->user()->id;
-        foreach ($request->pedido as $prod) {
-            $ordenId = $prod['id_pedido'];
-            break;
-        }
-        
-        // Enviamos en lotes mas pequeños
-        collect($request->pedido)->chunk(30)->each(function ($productosLote) use ($ordenId, $userUpdate){
-            foreach($productosLote as $producto) {
-                if (!isset($producto['id_pdetalle'])) {
-                    // Si no esta definido un pdetalle contará como nuevo registro
-                } else {
-                    // Si pdetalle está definido contrará como actualizacion
+
+        DB::beginTransaction();
+        try{
+            // Verificamos la accion del front c = Create, u = update, d = delete
+            foreach ($request->pedido as $prod) {
+                $accion = $prod['accion'];
+                switch ($accion) {
+                    case 'c':
+                        // Nuevo producto a la orden
+                        $this->editStore($prod, $userUpdate, $ordenId);
+                        break;
+                    case 'u':
+                        // Modificar producto a la orden
+                        $this->editUpdate($prod, $userUpdate);
+                        break;
+                    case 'd':
+                        // Eliminar un producto de la orden
+                        $this->editDelete($prod);
+                        break;
+                    default:
+                        
                 }
-                /*
-                $ordenDetalle = new OrderDetails();
-                $ordenDetalle->nombre_producto = $producto['nombre'];
-                $ordenDetalle->plus_producto = $producto['plus'];
-                $ordenDetalle->cantidad = $producto['cantidad'];
-                $ordenDetalle->estado = 'Activo';
-                $ordenDetalle->id_producto = $producto['id_producto'];
-                $ordenDetalle->id_pedido = $ordenId;
-                $ordenDetalle->id_unidad_pedido = $producto['id_unidad'];
-                $ordenDetalle->ucrea = $userUpdate;
-                if (!$ordenDetalle->save()) {
-                    DB::rollBack();
-                    return redirect()->back()->withErrors(['error' => 'Error al guardar los productos a la orden.']);
-                }
-                */
             }
-        });
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Error al procesar la orden: ' . $e->getMessage()]);
+        }
+        DB::commit();
+
+        return redirect()->route('dashboard')->with('success', 'Orden Actualizada exitosamente');
     }
 
-    private function storeNewProucts($products, $idPedido) {
-
+    private function editStore($product, $user, $idPedido) {
+        $ordenDetalle = new OrderDetails();
+        $ordenDetalle->nombre_producto = $product['nombre'];
+        $ordenDetalle->plus_producto = $product['plus'];
+        $ordenDetalle->cantidad = $product['cantidad'];
+        $ordenDetalle->estado = 'Activo';
+        $ordenDetalle->id_producto = $product['id_producto'];
+        $ordenDetalle->id_pedido = $idPedido;
+        $ordenDetalle->id_unidad_pedido = $product['id_unidad'];
+        $ordenDetalle->ucrea = $user;
+        $ordenDetalle->umodifica = $user;
+        if (!$ordenDetalle->save()) {
+            throw new \Exception('Error al guardar el producto');
+        }
     }
 
-    private function updateProducts($products) {
+    private function editUpdate($product, $user) {
+        $ordenDetalle = OrderDetails::find($product['id_pdetalle']);
 
+        if (!$ordenDetalle) {
+            throw new \Exception('El producto no existe en la orden');
+        }
+
+        $ordenDetalle->id_unidad_pedido = $product['id_unidad'];
+        $ordenDetalle->cantidad = $product['cantidad'];
+        $ordenDetalle->umodifica = $user;
+        if (!$ordenDetalle->save()) {
+            throw new \Exception('Error al actualizar el producto.');
+        }
+    }
+
+    private function editDelete($product) {
+        $ordenDetalle = OrderDetails::find($product['id_pdetalle']);
+
+        if (!$ordenDetalle) {
+            throw new \Exception('El producto no existe en la orden');
+        }
+
+        if (!$ordenDetalle->delete()) {
+            throw new \Exception('Error al eliminar el producto.');
+        }
     }
 
     public function getProductsOrder($id) {
@@ -263,6 +300,15 @@ class OrderController extends Controller
         return DB::table('tienda')
             ->select('nombre', 'id_tienda')
             ->where('id_tienda', $id)
+            ->get();
+    }
+
+    private function getPedido($id) {
+        $dateHoy = Date('Y-m-d');
+        return DB::table('pedidos')
+            ->select('id_pedido')
+            ->where('id_tienda', $id)
+            ->where('fecha_pedido', '=', $dateHoy)
             ->get();
     }
 }
