@@ -11,7 +11,7 @@ class ReportController extends Controller
 {
     public function create(Request $request) {
         $buscador = $request->input('dates');
-        //dd($buscador['id_tienda']);
+        //dd($buscador);
         $userId = $request->user()->id;
         $rol = $request->user()->id_rol;
         $showTiendasThead = [];
@@ -23,7 +23,7 @@ class ReportController extends Controller
         if (!empty($buscador)) {
             $showTiendasThead = $this->showTiendasThead($showTiendas, $buscador['id_tienda']);
             $showDataTBody = $this->showDataTbody($showTiendas, $buscador);
-            //dd($showTiendasThead);
+            dd($showDataTBody);
         }
         
         $showTiendas->prepend((object) [
@@ -71,6 +71,58 @@ class ReportController extends Controller
     }
 
     private function showDataTbody($tiendas, $filtro){
+        $existenPedidos = $this->verificarExistencia($tiendas, $filtro);
+        if (empty($existenPedidos)) {
+            return [];
+        }
 
+        $productos = $this->getProducts($existenPedidos);
+        //return $existeProducto;
+    }
+
+    private function verificarExistencia($tiendas, $filtro) {
+        $existeProducto = [];
+
+        if ($filtro['id_tienda'] == 0) {
+            foreach($tiendas as $tienda) {
+                $data = DB::table('pedidos')
+                    ->select('id_pedido', 'fecha_pedido', 'numero_pedido', 'id_tienda')
+                    ->where('fecha_pedido', $filtro['fecha'])
+                    ->where('id_tienda', $tienda->id_tienda)
+                    ->get();
+
+                if (!$data->isEmpty()) {
+                    $existeProducto = array_merge($existeProducto, $data->toArray());
+                }
+            }
+        } else {
+            $data = DB::table('pedidos')
+                ->select('id_pedido', 'fecha_pedido', 'numero_pedido', 'id_tienda')
+                ->where('fecha_pedido', $filtro['fecha'])
+                ->where('id_tienda', $filtro['id_tienda'])
+                ->get();
+            
+            if (!$data->isEmpty()) {
+                $existeProducto = array_merge($existeProducto, $data->toArray());
+            }
+        }
+
+        return $existeProducto;
+    }
+
+    private function getProducts($pedidos) {
+        $productos = [];
+        foreach ($pedidos as $pedido) {
+            $data = DB::table('pedidos_detalle as pd')
+                ->join('unidad_pedido as u', 'u.id_unidad_pedido', '=', 'pd.id_unidad_pedido')
+                ->select('pd.plus_producto', 'pd.nombre_producto', DB::raw("CONCAT(pd.cantidad,' ', u.codigo) as cantidad"), 'pd.id_producto', 'u.id_unidad_pedido')
+                ->where('pd.id_pedido', $pedido['id_pedido']);
+                
+            if (!$data->isEmpty()) {
+                $productos = array_merge($productos, $data->toArray());
+            }
+        }
+        
+        dd($productos);
     }
 }

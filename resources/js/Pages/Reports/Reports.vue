@@ -93,10 +93,11 @@ import { Head, router } from '@inertiajs/vue3';
                                         <TableTh v-for="(tienda, index) in dataThead" :key="index">
                                             {{ tienda.codigo }}
                                         </TableTh>
-                                        <TableTh>Total</TableTh>
+                                        <TableTh>Total (Cajas)</TableTh>
+                                        <TableTh>Total (KG)</TableTh>
                                     </thead>
                                     <TableBodyTr>
-    
+                                        
                                     </TableBodyTr>
                                     <TableBodyTr v-if="pedidos.length === 0">
                                         <TableBodyTd :colspan="cols" class="font-semibold" >Sin Registros</TableBodyTd>
@@ -126,13 +127,12 @@ export default {
                 fecha: this.formatDate(new Date()),
                 id_tienda: 0
             },
-            //cols: 3 + this.dataThead.length,
         }
     },
 
     computed: {
         cols() {
-        return this.dataThead.length + 3;
+        return this.dataThead.length + 4;
         },
     },
 
