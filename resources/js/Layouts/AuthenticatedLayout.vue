@@ -213,7 +213,8 @@ const showingNavigationDropdown = ref(false);
                             Inicio
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
-
+                            :href="route('reportes')"
+                            :active="route().current('reportes')"
                         >
                             Informes
                         </ResponsiveNavLink>

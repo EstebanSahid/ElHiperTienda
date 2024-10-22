@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
 use App\http\Middleware\CheckRol;
 use App\Models\User;
@@ -40,6 +41,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/editOrders', 'update')->name('order.update');
     });
 
+    // Reportes
+    Route::controller(ReportController::class)->group(function () {
+        Route::get('/reports', 'create')->name('reportes');
+    });
+
     /* PARA ADMINISTRADORES */
 
     // Administrar Usuarios
@@ -50,12 +56,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/users', 'store')->name('users.store');
         });
     });
-
-
-    // Reportes
-    Route::get('/reports', function () {
-        return Inertia::render('Reports/Reports');
-    })->name('reportes');
     
 
     // Administracion Tiendas

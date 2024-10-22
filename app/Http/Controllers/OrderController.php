@@ -21,7 +21,6 @@ class OrderController extends Controller
     public function index(Request $request) {
         $userId = $request->user()->id;
         $rol = $request->user()->id_rol;
-
         if ($rol == 1) {
             $showTiendas = $this->indexAdmin();
         } else {
