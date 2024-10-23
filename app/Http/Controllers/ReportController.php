@@ -159,7 +159,7 @@ class ReportController extends Controller
             $rowData[$idProducto]['pedidos'][$idPedido] = $cantidadConcat;
             $rowData[$idProducto]['nombresUnidad'][$idUnidad] = $nombreUnidad;
 
-            // Si ya existe una cantidad para esta unidad, la sumamos
+            // Verificamos, si existe un total se suma
             if (isset($rowData[$idProducto]['totales'][$idUnidad])) {
                 $rowData[$idProducto]['totales'][$idUnidad] += $cantidad;
             } else {
@@ -174,7 +174,7 @@ class ReportController extends Controller
         }
         //dd($rowData);
     
-        // Ahora podemos generar la tabla de salida con los productos organizados
+        // Generamos y organizamos la tabla con los productos clasificados por producto
         $output = [];
         
         foreach ($rowData as $idProducto => $productoData) {
@@ -190,22 +190,14 @@ class ReportController extends Controller
 
             $total = implode(', ', $totales);
             $totales = [];
-            /*
-            foreach ($productoData['nombresUnidad'] as $key => $data) {
-                foreach($productoData['totales'] as $key2 => $data2) {
-                    if ($key == $key2) {
-                        $total = $data2 . " " . $data;
-                    }
-                }
-            }
-            */
+
             $fila = [
                 'plus' => $productoData['plus_producto'],
                 'producto' => $productoData['nombre_producto'],
                 'total' => $total
             ];
     
-            // Para cada id_pedido dinámico, agregamos la cantidad o un guion si no existe
+            // Para cada id_pedido, agregamos la cantidad o un guion si no existe
             foreach ($pedidos as $idPedido) {
                 $fila['pedido_' . $idPedido] = $productoData['pedidos'][$idPedido] ?? '-';
             }

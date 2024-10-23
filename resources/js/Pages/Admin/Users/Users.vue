@@ -58,11 +58,31 @@ defineProps({
                             </thead>
                             <tbody>
                                 <TableBodyTr v-for="user in users.data" :key="user.id">
-                                    <TableBodyTd>{{ user.name }}</TableBodyTd>
-                                    <TableBodyTd>{{ user.descripcion }}</TableBodyTd>
-                                    <TableBodyTd>{{ user.email }}</TableBodyTd>
-                                    <TableBodyTd>{{ user.telefono }}</TableBodyTd>
-                                    <TableBodyTd>{{ user.estado }}</TableBodyTd>
+                                    <TableBodyTd>
+                                        <Link :href="`/users/${user.id}/edit`"> 
+                                            {{ user.name }}
+                                        </Link>
+                                    </TableBodyTd>
+                                    <TableBodyTd>
+                                        <Link :href="`/users/${user.id}/edit`"> 
+                                            {{ user.descripcion }}
+                                        </Link>
+                                    </TableBodyTd>
+                                    <TableBodyTd>
+                                        <Link :href="`/users/${user.id}/edit`"> 
+                                            {{ user.email }}
+                                        </Link>
+                                    </TableBodyTd>
+                                    <TableBodyTd>
+                                        <Link :href="`/users/${user.id}/edit`"> 
+                                            {{ user.telefono }}
+                                        </Link>
+                                    </TableBodyTd>
+                                    <TableBodyTd>
+                                        <Link :href="`/users/${user.id}/edit`"> 
+                                            {{ user.estado }}
+                                        </Link>
+                                    </TableBodyTd>
                                 </TableBodyTr>
                                 
                                 <TableBodyTr v-if="users.data.length === 0">

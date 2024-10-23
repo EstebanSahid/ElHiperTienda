@@ -17,7 +17,7 @@ import { Head, useForm } from '@inertiajs/vue3';
             <h2
                 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200"
             >
-                Registrar Usuario
+                Modificar Usuario
             </h2>
         </template>
 
@@ -69,6 +69,7 @@ import { Head, useForm } from '@inertiajs/vue3';
                                         class="mt-1 block w-full"
                                         v-model="form.email"
                                         required
+                                        disabled
                                         autocomplete="username"
                                     />
     
@@ -87,7 +88,7 @@ import { Head, useForm } from '@inertiajs/vue3';
                                         </OptionForm>
                                     </SelectForm>
                                 </div>
-    
+                                <!--
                                 <div class="mt-4">
                                     <InputLabel for="password" value="Contraseña" />
     
@@ -123,6 +124,7 @@ import { Head, useForm } from '@inertiajs/vue3';
                                         :message="form.errors.password_confirmation"
                                     />
                                 </div>
+                                -->
                             </div>
 
                             <div class="border-t-2 mt-6 dark:border-gray-900 border-gray-200" v-if="form.id_rol != 1">
@@ -141,8 +143,9 @@ import { Head, useForm } from '@inertiajs/vue3';
                                             class="w-full border-b border-gray-300 rounded-t-lg dark:border-gray-700">
                                             <div class="flex items-center ps-3">
                                                 <input 
-                                                    id="vue-checkbox-{{ tienda.id_tienda }}" type="checkbox" 
+                                                    type="checkbox" 
                                                     :value="tienda.id_tienda" v-model="form.tiendasAsignadas"
+                                                    :checked="tienda.asignada === 1"
                                                     class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
                                                 <label for="vue-checkbox-{{tienda.id_tienda}}" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">{{ tienda.nombre_tienda }}</label>
                                             </div>
@@ -170,7 +173,7 @@ import { Head, useForm } from '@inertiajs/vue3';
                                     :class="{ 'opacity-25': form.processing }"
                                     :disabled="form.processing"
                                 >
-                                    Registrar
+                                    Actualizar
                                 </PrimaryButton>
                             </div>
                         </form>
@@ -186,26 +189,28 @@ export default {
     props: {
         roles: Array,
         tiendas: Array,
+        user: Object,
+        accesos: Array
     },
     data() {
         return {
             form: this.$inertia.form({
-                name: '',
-                email: '',
-                telefono: '',
-                password: '',
-                password_confirmation: '',
-                id_rol: 1,
-                tiendasAsignadas: [],
+                id_user: this.user.id,
+                name: this.user.name,
+                email: this.user.email,
+                telefono: this.user.telefono,
+                id_rol: this.user.id_rol,
+                tiendasAsignadas: this.accesos,
+                tiendasOriginal: this.accesos
             }),
             validacionPermisos: false,
         }
     },
     
     methods: {
-        store() {
-            console.log(this.form.tiendasAsignadas);
-            //this.form.post('/users');
+        update() {
+            //console.log(this.form);
+            this.form.put('/usersEdit');
         },
 
         validacion() {
@@ -223,8 +228,12 @@ export default {
             }
 
             // llamado al guardar
-            this.store()
+            this.update()
         },
     },
+    mounted() {
+        console.log("user");
+        console.log(this.accesos);
+    }
 }
 </script>

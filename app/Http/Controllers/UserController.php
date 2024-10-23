@@ -32,14 +32,15 @@ class UserController extends Controller
     public function create() {
         $roles = Rol::all();
 
-        $tiendas = DB::select("
-            SELECT 
-                id_tienda, CONCAT('Tienda: ',codigo, ' - ',nombre) as nombre_tienda
-            FROM tienda
-            WHERE estado = :estado
-                ORDER  BY codigo
-            ", ['estado' => 'Activo']
-        );
+        /*
+        $tiendas = DB::table('tienda')
+            ->select('id_tienda', DB::raw('CONCAT("Tienda: ", codigo, " - ", nombre) as nombre_tienda'))
+            ->where('estado', 'Activo')
+            ->orderBy('codigo')
+            ->get();
+        */
+
+        $tiendas = $this->getTiendas();
 
         return Inertia::render('Admin/Users/RegisterUser', [
             'roles' => $roles,
@@ -88,5 +89,71 @@ class UserController extends Controller
         DB::commit();
 
         return redirect()->route('users')->with('success', 'Usuario creado exitosamente');
+    }
+
+    /* EDITAR USUARIO */
+    public function renderEdit(Request $request, $id) {
+        $roles = Rol::all();
+        $tiendas = $this->getTiendas();
+
+        $user = $this->getUser($id);
+        $accesos = $this->getAccesos($id);
+        //dd($accesos);
+        return Inertia::render('Admin/Users/EditUser', [
+            'roles' => $roles,
+            'tiendas' => $tiendas,
+            'accesos' => $accesos,
+            'user' => $user
+        ]);
+    }
+
+    public function update(Request $request) {
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|lowercase|email|max:255',
+            'telefono' => 'required|string|max:30',
+            'id_rol' => 'required',
+            'id_user' => 'required'
+        ]);
+
+        DB::beginTransaction();
+        $user = User::find($validatedData['id_user']);
+        $user->name = $validatedData['name'];
+        $user->telefono = $validatedData['telefono'];
+        $user->id_rol = $validatedData['id_rol'];
+
+        if (!$user->save()) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Error al Actualizar los datos del usuario.']);
+        }
+
+        if ($validatedData['id_rol'] == 1) {
+            
+        }
+
+
+        //dd($user);
+    }
+
+    private function getUser($id) {
+        return DB::table('users as u')
+            ->join('roles as r', 'r.id_rol', '=', 'u.id_rol')
+            ->select('u.id', 'u.name', 'u.telefono', 'u.email', 'u.id_rol', 'r.descripcion')
+            ->where('id', $id)
+            ->first();
+    }
+
+    private function getTiendas() {
+        return DB::table('tienda')
+        ->select('id_tienda', DB::raw('CONCAT("Tienda: ", codigo, " - ", nombre) as nombre_tienda'))
+        ->where('estado', 'Activo')
+        ->orderBy('codigo')
+        ->get();
+    }
+
+    private function getAccesos($id) {
+        return DB::table('accesos')
+            ->where('id_user', $id)
+            ->pluck('id_tienda');
     }
 }

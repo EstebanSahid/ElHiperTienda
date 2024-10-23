@@ -23,7 +23,7 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
 
     /* PARA TODOS LOS USUARIOS AUTENTICADOS */
-    Route::get('/getProducts', [OrderController::class, 'getProducts'])->name('order.getProducts');
+    // Route::get('/getProducts', [OrderController::class, 'getProducts'])->name('order.getProducts');
 
     // Perfil
     Route::controller(ProfileController::class)->group(function() {
@@ -39,6 +39,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/order/{id}/edit', 'renderEdit')->name('show.edit');
         Route::post('/orders', 'store')->name('order.store');
         Route::put('/editOrders', 'update')->name('order.update');
+        //Route::get('/getProducts', 'getProducts')->name('order.getProducts');
     });
 
     // Reportes
@@ -54,6 +55,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/users', 'index')->name('users');
             Route::get('/registerUser', 'create')->name('registro.user');
             Route::post('/users', 'store')->name('users.store');
+            Route::get('/users/{id}/edit', 'renderEdit')->name('users.edit');
+            Route::put('/usersEdit', 'update')->name('users.update');
         });
     });
     
