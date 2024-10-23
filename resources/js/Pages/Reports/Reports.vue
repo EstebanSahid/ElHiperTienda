@@ -93,12 +93,28 @@ import { Head, router } from '@inertiajs/vue3';
                                         <TableTh v-for="(tienda, index) in dataThead" :key="index">
                                             {{ tienda.codigo }}
                                         </TableTh>
-                                        <TableTh>Total (Cajas)</TableTh>
+                                        <TableTh>Total</TableTh>
+                                        <!--
                                         <TableTh>Total (KG)</TableTh>
+                                        -->
                                     </thead>
-                                    <TableBodyTr>
-                                        
+                                    <TableBodyTr
+                                        v-for="(producto, index) in pedidos" :key="producto.id_producto"
+                                    >
+                                        <TableBodyTd> {{ producto.plus }}</TableBodyTd>
+                                        <TableBodyTd> {{ producto.producto }}</TableBodyTd>
+
+                                        <!-- Iteramos sobre las tiendas y comparamos el id_tienda -->
+                                        <TableBodyTd v-for="tienda in dataThead" :key="tienda.id_tienda">
+                                            <!-- Accedemos dinámicamente a "pedido_[id_tienda]" en producto -->
+                                            <span v-if="tienda.id_tienda !== 0" >
+                                                {{ producto[`pedido_${tienda.id_tienda}`] || '-' }}
+                                            </span>
+                                        </TableBodyTd>
+
+                                        <TableBodyTd> {{ producto.total }}</TableBodyTd>
                                     </TableBodyTr>
+                                    
                                     <TableBodyTr v-if="pedidos.length === 0">
                                         <TableBodyTd :colspan="cols" class="font-semibold" >Sin Registros</TableBodyTd>
                                     </TableBodyTr>
@@ -118,7 +134,6 @@ export default {
         pedidos: Array,
         tiendas: Array,
         dataThead: Array,
-        dataTbody: Array,
     },
 
     data() {
@@ -132,7 +147,7 @@ export default {
 
     computed: {
         cols() {
-        return this.dataThead.length + 4;
+        return this.dataThead.length + 3;
         },
     },
 
@@ -174,13 +189,14 @@ export default {
         */
 
         getData() {
-            router.get('/reports', {dates: this.buscador}, {preserveState: true})
-            console.log("length", this.dataThead.length)
+            const data = router.get('/reports', {dates: this.buscador}, {preserveState: true})
+            console.log("pedidos")
+            console.log(data);
         }
     },
 
     mounted() {
-        console.log("length", this.dataThead.length)
+        console.log("pedidos")
         console.log(this.pedidos);
     }
 }

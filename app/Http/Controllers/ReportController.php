@@ -15,16 +15,16 @@ class ReportController extends Controller
         $userId = $request->user()->id;
         $rol = $request->user()->id_rol;
         $showTiendasThead = [];
+        $showDataTBody = [];
 
         $showTiendas = $rol == 1 ? $this->showTiendasAdmin() : $this->showTiendasEncargado($userId);
-        //$pedidos = empty($buscador) ? $this->showPedidosIndex($rol, $userId) : $this->showPedidosFilter($rol, $userId, $buscador);
-        //dd($pedidos);
 
         if (!empty($buscador)) {
             $showTiendasThead = $this->showTiendasThead($showTiendas, $buscador['id_tienda']);
             $showDataTBody = $this->showDataTbody($showTiendas, $buscador);
-            dd($showDataTBody);
         }
+
+        //dd($showDataTBody);
         
         $showTiendas->prepend((object) [
             'id_tienda' => 0,
@@ -32,9 +32,9 @@ class ReportController extends Controller
         ]);
 
         return Inertia::render('Reports/Reports', [
-            'pedidos' => [],
             'tiendas' => $showTiendas,
             'dataThead' => $showTiendasThead,
+            'pedidos' => $showDataTBody,
         ]);
     }
 
@@ -51,6 +51,7 @@ class ReportController extends Controller
             ->join('tienda as t', 't.id_tienda', '=', 'a.id_tienda')
             ->select('t.id_tienda', 't.nombre as nombre_tienda', 't.codigo')
             ->where('a.id_user', $id)
+            ->orderBy('t.nombre')
             ->get();
     }
 
@@ -77,7 +78,8 @@ class ReportController extends Controller
         }
 
         $productos = $this->getProducts($existenPedidos);
-        //return $existeProducto;
+        $organizarProductos = $this->organizarProductos($productos);
+        return $organizarProductos;
     }
 
     private function verificarExistencia($tiendas, $filtro) {
@@ -115,14 +117,89 @@ class ReportController extends Controller
         foreach ($pedidos as $pedido) {
             $data = DB::table('pedidos_detalle as pd')
                 ->join('unidad_pedido as u', 'u.id_unidad_pedido', '=', 'pd.id_unidad_pedido')
-                ->select('pd.plus_producto', 'pd.nombre_producto', DB::raw("CONCAT(pd.cantidad,' ', u.codigo) as cantidad"), 'pd.id_producto', 'u.id_unidad_pedido')
-                ->where('pd.id_pedido', $pedido['id_pedido']);
+                ->join('pedidos as p', 'p.id_pedido', '=', 'pd.id_pedido')
+                ->select('p.id_tienda','pd.id_pedido', 'pd.plus_producto', 'pd.nombre_producto', DB::raw("CONCAT(pd.cantidad,' ', u.codigo) as cantidad_concat"), 'pd.id_producto', 'u.id_unidad_pedido', 'pd.cantidad', 'u.descripcion')
+                ->where('pd.id_pedido', $pedido->id_pedido)
+                ->get();
+
                 
             if (!$data->isEmpty()) {
                 $productos = array_merge($productos, $data->toArray());
             }
         }
+
+        return $productos;
+    }
+
+    private function organizarProductos($productos) {
+        $rowData = [];
+        $pedidos = [];
+    
+        // Organizar los productos y pedidos
+        foreach ($productos as $producto) {
+            $idProducto = $producto->id_producto;
+            $idPedido = $producto->id_tienda;
+            $cantidad = $producto->cantidad;
+            $idUnidad = $producto->id_unidad_pedido;
+            $cantidadConcat = $producto->cantidad_concat;
+            $nombreUnidad = $producto->descripcion;
+    
+            // Si el id_producto no está en el array, lo inicializamos
+            if (!isset($rowData[$idProducto])) {
+                $rowData[$idProducto] = [
+                    'plus_producto' => $producto->plus_producto,
+                    'nombre_producto' => $producto->nombre_producto,
+                    'pedidos' => [],
+                    'nombresUnidad' => [],
+                    'totales' => [],
+                ];
+            }
+    
+            // Guardamos la cantidad en la columna correspondiente al id_pedido
+            $rowData[$idProducto]['pedidos'][$idPedido] = $cantidadConcat;
+            $rowData[$idProducto]['nombresUnidad'][$idUnidad] = $nombreUnidad;
+
+            // Si ya existe una cantidad para esta unidad, la sumamos
+            if (isset($rowData[$idProducto]['totales'][$idUnidad])) {
+                $rowData[$idProducto]['totales'][$idUnidad] += $cantidad;
+            } else {
+                // Si no existe, inicializamos con la cantidad actual
+                $rowData[$idProducto]['totales'][$idUnidad] = $cantidad;
+            }
+    
+            // Guardamos los id_pedido únicos para generar las columnas dinámicas
+            if (!in_array($idPedido, $pedidos)) {
+                $pedidos[] = $idPedido;
+            }
+        }
+        //dd($rowData);
+    
+        // Ahora podemos generar la tabla de salida con los productos organizados
+        $output = [];
+    
+        foreach ($rowData as $idProducto => $productoData) {
+            $total = '';
+            foreach ($productoData['nombresUnidad'] as $key => $data) {
+                foreach($productoData['totales'] as $key2 => $data2) {
+                    if ($key == $key2) {
+                        $total = $data2 . " " . $data;
+                    }
+                }
+            }
+            $fila = [
+                'plus' => $productoData['plus_producto'],
+                'producto' => $productoData['nombre_producto'],
+                'total' => $total
+            ];
+    
+            // Para cada id_pedido dinámico, agregamos la cantidad o un guion si no existe
+            foreach ($pedidos as $idPedido) {
+                $fila['pedido_' . $idPedido] = $productoData['pedidos'][$idPedido] ?? '-';
+            }
         
-        dd($productos);
+            $output[] = $fila;
+        }
+        //dd($output);
+        return $output;
     }
 }
