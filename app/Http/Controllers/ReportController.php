@@ -76,7 +76,7 @@ class ReportController extends Controller
         if (empty($existenPedidos)) {
             return [];
         }
-
+        
         $productos = $this->getProducts($existenPedidos);
         $organizarProductos = $this->organizarProductos($productos);
         return $organizarProductos;
@@ -84,7 +84,7 @@ class ReportController extends Controller
 
     private function verificarExistencia($tiendas, $filtro) {
         $existeProducto = [];
-
+        
         if ($filtro['id_tienda'] == 0) {
             foreach($tiendas as $tienda) {
                 $data = DB::table('pedidos')
@@ -127,7 +127,7 @@ class ReportController extends Controller
                 $productos = array_merge($productos, $data->toArray());
             }
         }
-
+        //dd($pedidos);
         return $productos;
     }
 
@@ -176,9 +176,21 @@ class ReportController extends Controller
     
         // Ahora podemos generar la tabla de salida con los productos organizados
         $output = [];
-    
+        
         foreach ($rowData as $idProducto => $productoData) {
-            $total = '';
+            $total = [];
+
+            foreach ($productoData['nombresUnidad'] as $key => $unidad) {
+                if (isset($productoData['totales'][$key])) {
+                    $cantidad = $productoData['totales'][$key];
+                    // Agregamos la cantidad y la unidad al arreglo de totales
+                    $totales[] = $cantidad . ' ' . $unidad;
+                }
+            }
+
+            $total = implode(', ', $totales);
+            $totales = [];
+            /*
             foreach ($productoData['nombresUnidad'] as $key => $data) {
                 foreach($productoData['totales'] as $key2 => $data2) {
                     if ($key == $key2) {
@@ -186,6 +198,7 @@ class ReportController extends Controller
                     }
                 }
             }
+            */
             $fila = [
                 'plus' => $productoData['plus_producto'],
                 'producto' => $productoData['nombre_producto'],
