@@ -104,7 +104,8 @@ class UserController extends Controller
             'email' => 'required|string|lowercase|email|max:255',
             'telefono' => 'required|string|max:30',
             'id_rol' => 'required',
-            'id_user' => 'required'
+            'id_user' => 'required',
+            'estado' => 'required|string'
         ]);
 
         DB::beginTransaction();
@@ -114,6 +115,9 @@ class UserController extends Controller
             $user->name = $validatedData['name'];
             $user->telefono = $validatedData['telefono'];
             $user->id_rol = $validatedData['id_rol'];
+            if($validatedData['estado'] == 'Inactivo') {
+                $user->estado = 'Activo';
+            }
 
             if (!$user->save()) {
                 DB::rollBack();
@@ -152,7 +156,7 @@ class UserController extends Controller
     private function getUser($id) {
         return DB::table('users as u')
             ->join('roles as r', 'r.id_rol', '=', 'u.id_rol')
-            ->select('u.id', 'u.name', 'u.telefono', 'u.email', 'u.id_rol', 'r.descripcion')
+            ->select('u.id', 'u.name', 'u.telefono', 'u.email', 'u.id_rol', 'u.estado', 'r.descripcion')
             ->where('id', $id)
             ->first();
     }
@@ -181,7 +185,6 @@ class UserController extends Controller
         $user = User::find($validatedData['id_user']);
         $user->estado = 'Inactivo';
 
-        // Encontrar y eliminar las sesiones activas del usuario
         DB::table('sessions')
             ->where('user_id', $validatedData['id_user'])
             ->delete();

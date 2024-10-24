@@ -4,6 +4,7 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import DangerButton from '@/Components/DangerButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import SelectForm from '@/Components/SelectForm.vue';
 import OptionForm from '@/Components/OptionForm.vue';
@@ -160,6 +161,7 @@ import { Head, useForm } from '@inertiajs/vue3';
                                     <DangerButton
                                         class="ms-4"
                                         @click="destroy()"
+                                        v-if="form.id_user !== $page.props.auth.user.id && form.estado == 'Activo'"
                                     >
                                         Dar de baja
                                     </DangerButton>
@@ -180,7 +182,7 @@ import { Head, useForm } from '@inertiajs/vue3';
                                         class="ms-4"
                                         @click="validacion()"
                                     >
-                                        Actualizar
+                                        {{ form.estado == 'Activo' ? 'Actualizar' : 'Actualizar y Dar de Alta' }}
                                     </PrimaryButton>
                                 </div>
                             </div>
@@ -233,7 +235,7 @@ export default {
                 telefono: this.user.telefono,
                 id_rol: this.user.id_rol,
                 tiendasAsignadas: this.accesos,
-                tiendasOriginal: this.accesos
+                estado: this.user.estado
             }),
             validacionPermisos: false,
         }
@@ -241,6 +243,7 @@ export default {
     
     methods: {
         update() {
+            //console.log(this.form);
             this.form.put('/usersEdit');
         },
 
@@ -270,7 +273,7 @@ export default {
     },
     mounted() {
         console.log("user");
-        console.log(this.accesos);
+        console.log(this.user);
     }
 }
 </script>
