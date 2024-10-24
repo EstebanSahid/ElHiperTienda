@@ -79,20 +79,17 @@ const showingNavigationDropdown = ref(false);
                                             </template>
 
                                             <template #content>
-                                                <DropdownLink
-                                                    :href="route('users')"
-                                                >
+                                                <DropdownLink :href="route('users')">
                                                     Usuarios
                                                 </DropdownLink>
-                                                <DropdownLink
-                                                    :href="route('products')"
-                                                >
+                                                <DropdownLink :href="route('products')">
                                                     Productos
                                                 </DropdownLink>
-                                                <DropdownLink
-                                                    :href="route('stores')"
-                                                >
+                                                <DropdownLink :href="route('stores')">
                                                     Tiendas
+                                                </DropdownLink>
+                                                <DropdownLink :href="route('unidad.medida')">
+                                                    Unidad de Medida
                                                 </DropdownLink>
                                             </template>
                                         </Dropdown>

@@ -51,6 +51,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     /* PARA ADMINISTRADORES */
     Route::middleware(CheckRol::class)->group(function () {
+
         // Administrar Usuarios
         Route::controller(UserController::class)->group(function() {
             Route::get('/users', 'index')->name('users');
@@ -71,25 +72,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::put('/storeDelete', 'deactivate')->name('store.deactivate');
         });
 
-
         // Administrar Productos
-
+        Route::controller(ProductsController::class)->group(function() {
+            Route::get('/products', 'index')->name('products');
+        });
         
         // Administrar Unidades de Medida
+        Route::controller(UnidadMedidaController::class)->group(function() {
+            Route::get('/unidadMedida', 'index')->name('unidad.medida');
+        });
     });
-    
-    /*
-    Route::get('/stores', function() {
-        return Inertia::render('Admin/Stores/Stores');
-    })->name('stores');
-    */
-    
 
     // Administracion de Produtos
+    /*
     Route::get('/products', function() {
-        return Inertia::render(('Products/Products'));
+        return Inertia::render('Admin/Products/Products');
     })->name('products');
 
+    Route::get('/unidadMedida', function() {
+        return Inertia::render('Admin/Unidad/Unidad');
+    })->name('unidad.medida');
+    */
 });
 
 require __DIR__.'/auth.php';
