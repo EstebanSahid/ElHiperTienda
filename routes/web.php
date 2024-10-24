@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\TiendaController;
+use App\Http\Controllers\UnidadMedidaController;
 use App\Http\Controllers\UserController;
 use App\http\Middleware\CheckRol;
 use App\Models\User;
@@ -23,7 +26,6 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
 
     /* PARA TODOS LOS USUARIOS AUTENTICADOS */
-    // Route::get('/getProducts', [OrderController::class, 'getProducts'])->name('order.getProducts');
 
     // Perfil
     Route::controller(ProfileController::class)->group(function() {
@@ -48,9 +50,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     /* PARA ADMINISTRADORES */
-
-    // Administrar Usuarios
     Route::middleware(CheckRol::class)->group(function () {
+        // Administrar Usuarios
         Route::controller(UserController::class)->group(function() {
             Route::get('/users', 'index')->name('users');
             Route::get('/registerUser', 'create')->name('registro.user');
@@ -59,13 +60,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::put('/usersEdit', 'update')->name('users.update');
             Route::put('/userDelete', 'deactivate')->name('user.deactivate');
         });
+
+        // Administrar Tiendas
+        Route::controller(TiendaController::class)->group(function() {
+            Route::get('/stores', 'index')->name('stores');
+            Route::get('/registerStore', 'create')->name('registro.store');
+            Route::post('/stores', 'store')->name('stores.store');
+        });
+
+
+        // Administrar Productos
+
+        
+        // Administrar Unidades de Medida
     });
     
-
-    // Administracion Tiendas
+    /*
     Route::get('/stores', function() {
         return Inertia::render('Admin/Stores/Stores');
     })->name('stores');
+    */
+    
 
     // Administracion de Produtos
     Route::get('/products', function() {

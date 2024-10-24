@@ -2,7 +2,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Notification from '@/Components/Notification.vue';
 import { Head, Link } from '@inertiajs/vue3';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import Pagination from '@/Components/Pagination.vue';
 import Table from '@/Components/Table.vue';
 import TableTh from '@/Components/TableTh.vue';

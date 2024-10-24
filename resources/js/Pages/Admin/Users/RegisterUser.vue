@@ -204,8 +204,7 @@ export default {
     
     methods: {
         store() {
-            console.log(this.form.tiendasAsignadas);
-            //this.form.post('/users');
+            this.form.post('/users');
         },
 
         validacion() {

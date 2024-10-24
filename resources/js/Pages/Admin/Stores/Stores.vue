@@ -1,18 +1,40 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import Notification from '@/Components/Notification.vue';
+import Pagination from '@/Components/Pagination.vue';
+import Table from '@/Components/Table.vue';
+import TableTh from '@/Components/TableTh.vue';
+import TableBodyTr from '@/Components/TableBodyTr.vue';
+import TableBodyTd from '@/Components/TableBodyTd.vue';
+import { Head, Link } from '@inertiajs/vue3';
+
+defineProps({
+    tiendas: {
+        type: Array
+    }
+});
 </script>
 
 <template>
     <Head title="Informes" />
 
+    <Notification />
+
     <AuthenticatedLayout>
         <template #header>
-            <h2
-                class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200"
-            >
-                Lista de Tiendas
-            </h2>
+            <div class="flex justify-between">
+                <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
+                    Lista de Tiendas
+                </h2>
+                <Link
+                    :href="route('registro.store')"
+                    class="rounded-md px-2 leading-tight text-black ring-1 ring-transparent transition 
+                    hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] 
+                    dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
+                >
+                    Nueva Tienda
+                </Link>
+            </div>
         </template>
 
         <div class="py-12">
@@ -28,3 +50,11 @@ import { Head } from '@inertiajs/vue3';
         </div>
     </AuthenticatedLayout>
 </template>
+
+<script>
+export default {
+    props: {
+        flash: Object
+    }
+}
+</script>
