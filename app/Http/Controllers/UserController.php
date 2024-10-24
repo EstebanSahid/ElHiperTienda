@@ -117,22 +117,45 @@ class UserController extends Controller
         ]);
 
         DB::beginTransaction();
-        $user = User::find($validatedData['id_user']);
-        $user->name = $validatedData['name'];
-        $user->telefono = $validatedData['telefono'];
-        $user->id_rol = $validatedData['id_rol'];
 
-        if (!$user->save()) {
-            DB::rollBack();
-            return redirect()->back()->withErrors(['error' => 'Error al Actualizar los datos del usuario.']);
-        }
+        try {
+            $user = User::find($validatedData['id_user']);
+            $user->name = $validatedData['name'];
+            $user->telefono = $validatedData['telefono'];
+            $user->id_rol = $validatedData['id_rol'];
 
-        if ($validatedData['id_rol'] == 1) {
+            if (!$user->save()) {
+                DB::rollBack();
+                return redirect()->back()->withErrors(['error' => 'Error al actualizar los datos del usuario.']);
+            }
+
+            if ($validatedData['id_rol'] == 1) {
+                DB::table('accesos')->where('id_user', $user->id)->delete();
+            } else {
+                DB::table('accesos')->where('id_user', $user->id)->delete();
+
+                foreach ($request->tiendasAsignadas as $permiso) {
+                    $acceso = new Access();
+                    $acceso->id_user = $user->id;
+                    $acceso->id_tienda = $permiso;
+                    $acceso->estado = 'Activo';
+                    $acceso->usuario_crea = $request->user()->id;
+                    if (!$acceso->save()) {
+                        DB::rollBack();
+                        return redirect()->back()->withErrors(['error' => 'Error al guardar los permisos.']);
+                    }
+                }
+            }
             
+            DB::commit();
+
+            return redirect()->route('users')->with('success', 'Usuario Actualizado exitosamente');
+        } catch (\Exception $e) {
+            // En caso de error, revertimos la transacción
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Hubo un error: ' . $e->getMessage()]);
         }
 
-
-        //dd($user);
     }
 
     private function getUser($id) {
