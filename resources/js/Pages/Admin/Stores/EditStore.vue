@@ -3,6 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import DangerButton from '@/Components/DangerButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 </script>
@@ -25,7 +26,6 @@ import { Head, useForm } from '@inertiajs/vue3';
                     class="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800"
                 >
                     <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <form @submit.prevent="store">
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <InputLabel for="nombre" value="Nombre" />
@@ -90,16 +90,25 @@ import { Head, useForm } from '@inertiajs/vue3';
                                 </div>
                             </div>
 
-                            <div class="mt-4 flex items-center justify-end">
-                                <PrimaryButton
-                                    class="ms-4"
-                                    :class="{ 'opacity-25': form.processing }"
-                                    :disabled="form.processing"
-                                >
-                                    Registrar
-                                </PrimaryButton>
+                            <div class="mt-4 flex justify-between">
+                                <div class="order-first">
+                                    <DangerButton
+                                        class="ms-4"
+                                        @click="destroy()"
+                                        v-if="form.estado == 'Activo'"
+                                    >
+                                        Eliminar
+                                    </DangerButton>
+                                </div>
+                                <div class="order-last">
+                                    <PrimaryButton
+                                        class="ms-4"
+                                        @click="update()"
+                                    >
+                                        {{ form.estado == 'Activo' ? 'Actualizar' : 'Actualizar y Reestablecer' }}
+                                    </PrimaryButton>
+                                </div>
                             </div>
-                        </form>
                     </div>
                 </div>
             </div>
@@ -120,15 +129,20 @@ export default {
                 direccion: this.tienda.direccion,
                 telefono: this.tienda.telefono,
                 estado: this.tienda.estado,
+                id_tienda: this.tienda.id_tienda
             }),
         }
     },
     
     
     methods: {
-        store() {
-            this.form.post('/stores');
+        update() {
+            this.form.put('/storeEdit');
         },
+
+        destroy() {
+            this.form.put('/storeDelete');
+        }
     },
 }
 </script>

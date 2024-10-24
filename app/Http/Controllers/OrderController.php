@@ -47,6 +47,7 @@ class OrderController extends Controller
             ->join('accesos as a', 'a.id_tienda', '=', 't.id_tienda')
             ->select('t.id_tienda', 't.nombre', 't.codigo')
             ->where('a.id_user', $userId)
+            ->where('t.estado', 'Activo')
             ->orderBy('t.nombre')
             ->paginate(5);
     }

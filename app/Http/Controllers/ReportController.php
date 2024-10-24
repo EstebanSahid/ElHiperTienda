@@ -41,7 +41,6 @@ class ReportController extends Controller
     private function showTiendasAdmin() {
         return DB::table('tienda')
             ->select('id_tienda', 'nombre as nombre_tienda', 'codigo')
-            ->where('estado', 'Activo')
             ->orderBy('nombre')
             ->get();
     }
@@ -120,6 +119,7 @@ class ReportController extends Controller
                 ->join('pedidos as p', 'p.id_pedido', '=', 'pd.id_pedido')
                 ->select('p.id_tienda','pd.id_pedido', 'pd.plus_producto', 'pd.nombre_producto', DB::raw("CONCAT(pd.cantidad,' ', u.codigo) as cantidad_concat"), 'pd.id_producto', 'u.id_unidad_pedido', 'pd.cantidad', 'u.descripcion')
                 ->where('pd.id_pedido', $pedido->id_pedido)
+                ->orderBy('pd.nombre_producto')
                 ->get();
 
                 
@@ -127,7 +127,12 @@ class ReportController extends Controller
                 $productos = array_merge($productos, $data->toArray());
             }
         }
-        //dd($pedidos);
+
+        usort($productos, function($a, $b) {
+            return strcmp($a->nombre_producto, $b->nombre_producto);
+        });
+
+        //dd($productos);
         return $productos;
     }
 

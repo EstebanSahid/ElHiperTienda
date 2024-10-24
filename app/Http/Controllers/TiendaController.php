@@ -60,4 +60,55 @@ class TiendaController extends Controller
             'tienda' => $tienda
         ]);
     }
+
+    public function update(Request $request) {
+        $validatedData = $request->validate([
+            'nombre' => 'required|string|max:100',
+            'codigo' => 'required|string|max:20',
+            'direccion' => 'required|string|max:255',
+            'telefono' => 'required|string|max:30',
+            'estado' => 'required',
+            'id_tienda' => 'required'
+        ]);
+
+        DB::beginTransaction();
+
+        $tienda = Tienda::find($validatedData['id_tienda']);
+        $tienda->nombre = $validatedData['nombre'];
+        $tienda->codigo = $validatedData['codigo'];
+        $tienda->direccion = $validatedData['direccion'];
+        $tienda->telefono = $validatedData['telefono'];
+        $tienda->usuario_modifica = $request->user()->id;
+        if ($validatedData['estado'] == 'Inactivo') {
+            $tienda->estado = 'Activo';
+        }
+        
+        if (!$tienda->save()) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Error al Actualizar los datos de la tienda']);
+        }
+
+        DB::commit();
+        return redirect()->route('stores')->with('success', 'Tienda Actualizada exitosamente');
+    }
+
+    /* DESACTIVAR TIENDA */
+    public function deactivate(Request $request) {
+        $validatedData = $request->validate([
+            'id_tienda' => 'required'
+        ]);
+
+        DB::beginTransaction();
+        $tienda = Tienda::find($validatedData['id_tienda']);
+        $tienda->estado = 'Inactivo';
+        $tienda->usuario_modifica = $request->user()->id;
+
+        if (!$tienda->save()) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Error al dar de baja a la tienda']);
+        }
+
+        DB::commit();
+        return redirect()->route('stores')->with('success', 'La tienda fue dada de baja');
+    }
 }
