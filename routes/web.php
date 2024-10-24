@@ -66,6 +66,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/stores', 'index')->name('stores');
             Route::get('/registerStore', 'create')->name('registro.store');
             Route::post('/stores', 'store')->name('stores.store');
+            Route::get('/tiendas/{id}/edit', 'renderEdit')->name('stores.edit');
         });
 
 

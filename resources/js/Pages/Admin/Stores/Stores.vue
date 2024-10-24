@@ -42,11 +42,58 @@ defineProps({
                 <div
                     class="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800"
                 >
-                    <div class="p-6 text-gray-900 dark:text-gray-100">
-                        Aqui lista de Tiendas para su CRUD
+                <div class="bg-white rounded-md shadow overflow-x-auto dark:bg-gray-800">
+                        <Table>
+                            <thead>
+                                <tr class="text-center font-bold">
+                                    <TableTh>Nombre</TableTh>
+                                    <TableTh>Codigo</TableTh>
+                                    <TableTh>Telefono</TableTh>
+                                    <TableTh>Direccion</TableTh>
+                                    <TableTh>Estado</TableTh>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <TableBodyTr v-for="tienda in tiendas.data" :key="tienda.id_tienda">
+                                    <TableBodyTd>
+                                        <Link :href="`/tiendas/${tienda.id_tienda}/edit`"> 
+                                            {{ tienda.nombre }}
+                                        </Link>
+                                    </TableBodyTd>
+                                    <TableBodyTd>
+                                        <Link :href="`/tiendas/${tienda.id_tienda}/edit`"> 
+                                            {{ tienda.codigo }}
+                                        </Link>
+                                    </TableBodyTd>
+                                    <TableBodyTd>
+                                        <Link :href="`/tiendas/${tienda.id_tienda}/edit`"> 
+                                            {{ tienda.telefono }}
+                                        </Link>
+                                    </TableBodyTd>
+                                    <TableBodyTd>
+                                        <Link :href="`/tiendas/${tienda.id_tienda}/edit`"> 
+                                            {{ tienda.direccion }}
+                                        </Link>
+                                    </TableBodyTd>
+                                    <TableBodyTd>
+                                        <Link :href="`/tiendas/${tienda.id_tienda}/edit`"> 
+                                            {{ tienda.estado }}
+                                        </Link>
+                                    </TableBodyTd>
+                                </TableBodyTr>
+                                
+                                <TableBodyTr v-if="tiendas.data.length === 0">
+                                    <TableBodyTd colspan="5"> No hay Tiendas registradas.</TableBodyTd>
+                                </TableBodyTr>
+                            </tbody>
+                        </Table>
+
                     </div>
                 </div>
             </div>
+
+            <!-- Paginación -->
+            <Pagination :links="tiendas.links" />
         </div>
     </AuthenticatedLayout>
 </template>

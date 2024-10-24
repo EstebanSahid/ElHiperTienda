@@ -14,7 +14,8 @@ class TiendaController extends Controller
     public function index() {
         $tiendas = DB::table('tienda')
             ->select('id_tienda', 'nombre', 'codigo', 'direccion', 'telefono', 'estado')
-            ->get();
+            ->orderBy('nombre')
+            ->paginate(5);
 
         return Inertia::render('Admin/Stores/Stores', [
             'tiendas' => $tiendas
@@ -49,5 +50,14 @@ class TiendaController extends Controller
 
         DB::commit();
         return redirect()->route('stores')->with('success', 'Tienda creada exitosamente');
+    }
+
+    /* EDITAR TIENDA */
+    public function renderEdit($id) {
+        $tienda = Tienda::find($id);
+
+        return Inertia::render('Admin/Stores/EditStore', [
+            'tienda' => $tienda
+        ]);
     }
 }
