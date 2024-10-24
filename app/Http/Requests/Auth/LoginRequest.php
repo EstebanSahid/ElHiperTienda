@@ -52,10 +52,16 @@ class LoginRequest extends FormRequest
                 ]);
             }
         } else {
-            // Usuario no encontrado o inactivo
-            throw ValidationException::withMessages([
-                'email' => trans('El usuario esta inactivo'), // Mensaje personalizado para usuario inactivo
-            ]);
+            if (!$user) {
+                throw ValidationException::withMessages([
+                    'email' => trans('auth.failed'),
+                ]);
+            } else {
+                // Usuario no encontrado o inactivo
+                throw ValidationException::withMessages([
+                    'email' => trans('Usuario Inactivo, por favor comuniquese con el Administrador.'), // Mensaje personalizado para usuario inactivo
+                ]);
+            }
         }
 
         /*

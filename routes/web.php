@@ -57,6 +57,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/users', 'store')->name('users.store');
             Route::get('/users/{id}/edit', 'renderEdit')->name('users.edit');
             Route::put('/usersEdit', 'update')->name('users.update');
+            Route::put('/userDelete', 'deactivate')->name('user.deactivate');
         });
     });
     

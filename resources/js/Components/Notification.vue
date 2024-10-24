@@ -12,9 +12,9 @@
             </button>
         </div>
         <!-- Notificacion de registro exitoso -->
-        <div v-if="$page.props.flash.success && show" class=" col-start-2 col-span-4 flex items-center justify-between my-4 max-w-3xl dark:bg-[#97a907] bg-[#c4d70f] rounded">
+        <div v-if="$page.props.flash.success && show" class=" col-start-2 col-span-4 flex items-center justify-between my-4 max-w-3xl dark:bg-[#71800b] bg-[#97a907] rounded">
             <div class="flex items-center">
-                <svg class="shrink-0 ml-4 mr-2 w-4 h-4 dark:fill-white fill-[#4b5611]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><polygon points="0 11 2 9 7 14 18 3 20 5 7 18" /></svg>
+                <svg class="shrink-0 ml-4 mr-2 w-4 h-4 dark:fill-white fill-[rgb(75,86,17)]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><polygon points="0 11 2 9 7 14 18 3 20 5 7 18" /></svg>
                 <div class="py-4 dark:text-white text-[#4b5611] text-sm font-medium">{{ $page.props.flash.success }}</div>
             </div>
             <button type="button" class="group mr-2 p-2" @click="show = false">

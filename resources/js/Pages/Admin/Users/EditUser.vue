@@ -3,6 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import DangerButton from '@/Components/DangerButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import SelectForm from '@/Components/SelectForm.vue';
 import OptionForm from '@/Components/OptionForm.vue';
@@ -27,7 +28,7 @@ import { Head, useForm } from '@inertiajs/vue3';
                     class="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800"
                 >
                     <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <form @submit.prevent="validacion">
+                        
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <InputLabel for="name" value="Nombre" />
@@ -154,6 +155,36 @@ import { Head, useForm } from '@inertiajs/vue3';
                                 </div>
                             </div>
 
+                            <div class="mt-4 flex justify-between">
+                                <div class="order-first">
+                                    <DangerButton
+                                        class="ms-4"
+                                        @click="destroy()"
+                                    >
+                                        Dar de baja
+                                    </DangerButton>
+                                </div>
+                                <div class="order-last">
+                                    <Transition
+                                        enter-active-class="transition ease-in-out"
+                                        enter-from-class="opacity-0"
+                                        leave-active-class="transition ease-in-out"
+                                        leave-to-class="opacity-0"
+                                    >
+                                        <p v-if="validacionPermisos" class="text-sm text-gray-600 dark:text-gray-400">
+                                            Se necesita Asignar Tiendas para Continuar
+                                        </p>
+                                    </Transition>
+
+                                    <PrimaryButton
+                                        class="ms-4"
+                                        @click="validacion()"
+                                    >
+                                        Actualizar
+                                    </PrimaryButton>
+                                </div>
+                            </div>
+                            <!--
                             <div class="mt-4 flex items-center justify-end">
                                 <Transition
                                     enter-active-class="transition ease-in-out"
@@ -176,7 +207,8 @@ import { Head, useForm } from '@inertiajs/vue3';
                                     Actualizar
                                 </PrimaryButton>
                             </div>
-                        </form>
+                            -->
+                        
                     </div>
                 </div>
             </div>
@@ -209,7 +241,6 @@ export default {
     
     methods: {
         update() {
-            //console.log(this.form);
             this.form.put('/usersEdit');
         },
 
@@ -229,6 +260,12 @@ export default {
 
             // llamado al guardar
             this.update()
+        },
+
+        destroy() {
+            if (confirm('Está seguro de que quiere dar de baja?')) {
+                this.form.put('/userDelete');
+            }
         },
     },
     mounted() {

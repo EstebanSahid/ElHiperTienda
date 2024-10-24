@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Access;
 use App\Models\Rol;
+use App\Models\Session;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -31,15 +32,6 @@ class UserController extends Controller
     /* NUEVO USUARIO */
     public function create() {
         $roles = Rol::all();
-
-        /*
-        $tiendas = DB::table('tienda')
-            ->select('id_tienda', DB::raw('CONCAT("Tienda: ", codigo, " - ", nombre) as nombre_tienda'))
-            ->where('estado', 'Activo')
-            ->orderBy('codigo')
-            ->get();
-        */
-
         $tiendas = $this->getTiendas();
 
         return Inertia::render('Admin/Users/RegisterUser', [
@@ -178,5 +170,30 @@ class UserController extends Controller
         return DB::table('accesos')
             ->where('id_user', $id)
             ->pluck('id_tienda');
+    }
+
+    /* DESACTIVAR USUARIO (BORRAR USUARIO) */
+    public function deactivate(Request $request) {
+        $validatedData = $request->validate([
+            'id_user' => 'required'
+        ]);
+
+        DB::beginTransaction();
+        $user = User::find($validatedData['id_user']);
+        $user->estado = 'Inactivo';
+
+        // Encontrar y eliminar las sesiones activas del usuario
+        DB::table('sessions')
+            ->where('user_id', $validatedData['id_user'])
+            ->delete();
+
+        if (!$user->save()) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Error al dar de baja al usuario']);
+        }
+
+        DB::commit();
+        
+        return redirect()->route('users')->with('success', 'El usuario fue dado de baja');
     }
 }
