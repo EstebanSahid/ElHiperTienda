@@ -77,6 +77,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/products', 'index')->name('products');
             Route::get('/registerProduct', 'create')->name('registro.product');
             Route::post('/products', 'store')->name('products.store');
+            Route::get('/productos/{id}/edit', 'renderEdit')->name('product.edit');
+            Route::put('/productEdit', 'update')->name('product.update');
+            Route::put('/productDelete', 'deactivate')->name('product.deactivate');
         });
         
         // Administrar Unidades de Medida
@@ -84,19 +87,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/unidadMedida', 'index')->name('unidad.medida');
             Route::get('/registerUnidad', 'create')->name('registro.unidad');
             Route::post('/unidadMedida', 'store')->name('unidad.store');
+            Route::get('/unidad/{id}/edit', 'renderEdit')->name('unidad.edit');
+            Route::put('/unidadEdit', 'update')->name('unidad.update');
+            Route::put('/unidadDelete', 'deactivate')->name('unidad.deactivate');
         });
     });
-
-    // Administracion de Produtos
-    /*
-    Route::get('/products', function() {
-        return Inertia::render('Admin/Products/Products');
-    })->name('products');
-
-    Route::get('/unidadMedida', function() {
-        return Inertia::render('Admin/Unidad/Unidad');
-    })->name('unidad.medida');
-    */
 });
 
 require __DIR__.'/auth.php';

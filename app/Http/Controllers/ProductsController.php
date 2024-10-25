@@ -49,4 +49,13 @@ class ProductsController extends Controller
 
     }
 
+    /* EDITAR UNIDAD */
+    public function renderEdit($id) {
+        $producto = Producto::find($id);
+
+        return Inertia::render('Admin/Products/EditProduct', [
+            'producto' => $producto
+        ]);
+    }
+
 }
