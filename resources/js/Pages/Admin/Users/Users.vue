@@ -16,7 +16,7 @@ defineProps({
 </script>
 
 <template>
-    <Head title="Informes" />
+    <Head title="Usuarios" />
 
     <Notification />
 

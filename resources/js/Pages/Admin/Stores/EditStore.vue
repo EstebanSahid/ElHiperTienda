@@ -9,7 +9,7 @@ import { Head, useForm } from '@inertiajs/vue3';
 </script>
 
 <template>
-    <Head title="Nueva Tienda" />
+    <Head title="Editar Tienda" />
 
     <AuthenticatedLayout>
         <template #header>

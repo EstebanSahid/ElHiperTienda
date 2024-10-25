@@ -12,7 +12,7 @@ import { Head, useForm } from '@inertiajs/vue3';
 </script>
 
 <template>
-    <Head title="Nuevo Usuario" />
+    <Head title="Editar Usuario" />
 
     <AuthenticatedLayout>
         <template #header>

@@ -16,7 +16,7 @@ defineProps({
 </script>
 
 <template>
-    <Head title="Informes" />
+    <Head title="Tiendas" />
 
     <Notification />
 
@@ -42,7 +42,7 @@ defineProps({
                 <div
                     class="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800"
                 >
-                <div class="bg-white rounded-md shadow overflow-x-auto dark:bg-gray-800">
+                    <div class="bg-white rounded-md shadow overflow-x-auto dark:bg-gray-800">
                         <Table>
                             <thead>
                                 <tr class="text-center font-bold">
@@ -87,7 +87,6 @@ defineProps({
                                 </TableBodyTr>
                             </tbody>
                         </Table>
-
                     </div>
                 </div>
             </div>

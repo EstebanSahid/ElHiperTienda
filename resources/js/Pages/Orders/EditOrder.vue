@@ -12,7 +12,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 </script>
 
 <template>
-    <Head title="Nueva Orden" />
+    <Head title="Editar Orden" />
 
     <AuthenticatedLayout>
         <template #header>

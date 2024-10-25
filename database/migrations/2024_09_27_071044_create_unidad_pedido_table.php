@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('id_unidad_pedido');
             $table->string('descripcion');
             $table->string('codigo');
+            $table->string('estado');
             $table->timestamps();
         });
     }

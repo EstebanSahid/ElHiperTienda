@@ -1,18 +1,40 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import Notification from '@/Components/Notification.vue';
+import Pagination from '@/Components/Pagination.vue';
+import Table from '@/Components/Table.vue';
+import TableTh from '@/Components/TableTh.vue';
+import TableBodyTr from '@/Components/TableBodyTr.vue';
+import TableBodyTd from '@/Components/TableBodyTd.vue';
+import { Head, Link } from '@inertiajs/vue3';
+
+defineProps({
+    unidades: {
+        type: Array
+    }
+});
 </script>
 
 <template>
-    <Head title="Productos" />
+    <Head title="Unidades de Medida" />
+
+    <Notification />
 
     <AuthenticatedLayout>
         <template #header>
-            <h2
-                class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200"
-            >
-                Productos
-            </h2>
+            <div class="flex justify-between">
+                <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
+                    Productos
+                </h2>
+                <Link
+                    :href="route('registro.store')"
+                    class="rounded-md px-2 leading-tight text-black ring-1 ring-transparent transition 
+                    hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] 
+                    dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
+                >
+                    Nueva Unidad
+                </Link>
+            </div>
         </template>
 
         <div class="py-12">
@@ -20,11 +42,44 @@ import { Head } from '@inertiajs/vue3';
                 <div
                     class="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800"
                 >
-                    <div class="p-6 text-gray-900 dark:text-gray-100">
-                        Aqui los Productos
+                <div class="bg-white rounded-md shadow overflow-x-auto dark:bg-gray-800">
+                        <Table>
+                            <thead>
+                                <tr class="text-center font-bold">
+                                    <TableTh>Descripcion</TableTh>
+                                    <TableTh>Codigo</TableTh>
+                                    <TableTh>Estado</TableTh>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <TableBodyTr v-for="unidad in unidades.data" :key="unidad.id_unidad_pedido">
+                                    <TableBodyTd>
+                                        <Link :href="`/unidad/${unidad.id_unidad_pedido}/edit`"> 
+                                            {{ unidad.descripcion }}
+                                        </Link>
+                                    </TableBodyTd>
+                                    <TableBodyTd>
+                                        <Link :href="`/unidad/${unidad.id_unidad_pedido}/edit`"> 
+                                            {{ unidad.codigo }}
+                                        </Link>
+                                    </TableBodyTd>
+                                    <TableBodyTd>
+                                        <Link :href="`/unidad/${unidad.id_unidad_pedido}/edit`"> 
+                                            {{ unidad.estado }}
+                                        </Link>
+                                    </TableBodyTd>
+                                </TableBodyTr>
+                                
+                                <TableBodyTr v-if="unidades.data.length === 0">
+                                    <TableBodyTd colspan="3"> No hay unidades registrados.</TableBodyTd>
+                                </TableBodyTr>
+                            </tbody>
+                        </Table>
                     </div>
                 </div>
             </div>
+            <!-- Paginación -->
+            <Pagination :links="unidades.links" />
         </div>
     </AuthenticatedLayout>
 </template>
