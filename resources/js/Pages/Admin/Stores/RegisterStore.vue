@@ -109,10 +109,6 @@ import { Head, useForm } from '@inertiajs/vue3';
 
 <script>
 export default {
-    props: {
-        //roles: Array,
-        //tiendas: Array,
-    },
     data() {
         return {
             form: this.$inertia.form({
