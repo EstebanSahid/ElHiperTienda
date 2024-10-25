@@ -104,11 +104,11 @@ export default {
 
     methods: {
         update() {
-            this.form.put('/productoEdit');
+            this.form.put('/productEdit');
         },
 
         destroy() {
-            this.form.put('/productoDelete');
+            this.form.put('/productDelete');
         }
     },
 }

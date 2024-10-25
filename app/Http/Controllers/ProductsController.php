@@ -58,4 +58,51 @@ class ProductsController extends Controller
         ]);
     }
 
+    public function update(Request $request) {
+        $validatedData = $request->validate([
+            'plus' => 'required|string',
+            'nombre' => 'required|string',
+            'estado' => 'required|string',
+            'id_producto' => 'required'
+        ]);
+
+        DB::beginTransaction();
+
+        $producto = producto::find($validatedData['id_producto']);
+        //dd($producto);        
+        $producto->plus = $validatedData['plus'];
+        $producto->nombre = $validatedData['nombre'];
+        $producto->umodifica = $request->user()->id;
+        if ($validatedData['estado'] == 'Inactivo') {
+            $producto->estado = 'Activo';
+        }
+
+        if (!$producto->save()) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['errors' => 'Error al Actualizar el Producto']);
+        }
+
+        DB::commit();
+        return redirect()->route('products')->with('success', 'Producto Actualizado exitosamente');
+    }
+
+    /* DESACTIVAR UNIDAD */
+    public function deactivate(Request $request) {
+        $validatedData = $request->validate([
+            'id_producto' => 'required'
+        ]);
+
+        DB::beginTransaction();
+        $producto = producto::find($validatedData['id_producto']);
+        $producto->estado = 'Inactivo';
+
+        if (!$producto->save()) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['errors' => 'Error al dar de baja el producto']);
+        }
+
+        DB::commit();
+        return redirect()->route('products')->with('success', 'Producto Dado de baja exitosamente');
+    }
+
 }
