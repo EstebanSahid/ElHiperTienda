@@ -293,6 +293,7 @@ class OrderController extends Controller
     private function getUnidad() {
         return DB::table('unidad_pedido')
             ->select('id_unidad_pedido', 'codigo')
+            ->where('estado', 'Activo')
             ->get();
     }
 
