@@ -75,11 +75,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Administrar Productos
         Route::controller(ProductsController::class)->group(function() {
             Route::get('/products', 'index')->name('products');
+            Route::get('/registerProduct', 'create')->name('registro.product');
+            Route::post('/products', 'store')->name('products.store');
         });
         
         // Administrar Unidades de Medida
         Route::controller(UnidadMedidaController::class)->group(function() {
             Route::get('/unidadMedida', 'index')->name('unidad.medida');
+            Route::get('/registerUnidad', 'create')->name('registro.unidad');
+            Route::post('/unidadMedida', 'store')->name('unidad.store');
         });
     });
 
