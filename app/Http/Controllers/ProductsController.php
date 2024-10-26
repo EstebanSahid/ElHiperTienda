@@ -15,8 +15,9 @@ class ProductsController extends Controller
         $productos = DB::table('productos')
             ->select('id_producto','plus', 'nombre', 'estado')
             ->orderBy('nombre')
-            ->paginate(7);
+            ->paginate(20);
 
+            //dd($productos);
         return Inertia::render('Admin/Products/Products', [
             'productos' => $productos
         ]);

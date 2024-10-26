@@ -28,5 +28,10 @@ export default {
     props: {
         links: Array,
     },
+
+    mounted(){
+        console.log("links");
+        console.log(this.links);
+    }
 }
 </script>
