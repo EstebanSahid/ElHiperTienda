@@ -50,6 +50,7 @@ const showingNavigationDropdown = ref(false);
                                 </NavLink>
 
                                 <!-- Administrador -->
+                                 <!--
                                 <div v-if="$page.props.auth.user.id_rol  == 1" 
                                     class="hidden md:flex md:items-center"
                                 >
@@ -95,13 +96,14 @@ const showingNavigationDropdown = ref(false);
                                         </Dropdown>
                                     </div>
                                 </div>
+                                -->
                             </div>
                         </div>
                         
                         <div class="flex items-center">
-                            <InputLabel
-                                :value="'Fecha: ' + fechaActual"
-                            />
+                            <label  class="text-sm font-medium text-gray-500 dark:text-gray-300">
+                                {{ 'Fecha: ' + fechaActual  }}
+                            </label>
                         </div>
 
                         <!-- Dropdown Configuration -->
@@ -138,6 +140,25 @@ const showingNavigationDropdown = ref(false);
                                         >
                                             Perfil
                                         </DropdownLink>
+                                        <div v-if="$page.props.auth.user.id_rol  == 1" class="border-t border-b py-3 dark:border-gray-600">
+                                            <div class="px-4 py-2 w-full" >
+                                                <label class="dark:font-bold font-medium text-gray-600 dark:text-gray-300 text-sm">
+                                                    Administración
+                                                </label>
+                                            </div>
+                                            <DropdownLink :href="route('users')">
+                                                Usuarios
+                                            </DropdownLink>
+                                            <DropdownLink :href="route('products')">
+                                                Productos
+                                            </DropdownLink>
+                                            <DropdownLink :href="route('stores')">
+                                                Tiendas
+                                            </DropdownLink>
+                                            <DropdownLink :href="route('unidad.medida')">
+                                                Unidad de Medida
+                                            </DropdownLink>
+                                        </div>
                                         <DropdownLink
                                             :href="route('logout')"
                                             method="post"
@@ -239,6 +260,9 @@ const showingNavigationDropdown = ref(false);
                             </ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('stores')">
                                 Tiendas
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('unidad.medida')">
+                                Unidad de Medida
                             </ResponsiveNavLink>
                             <!--
                             <ResponsiveNavLink :href="route('profile.edit')">

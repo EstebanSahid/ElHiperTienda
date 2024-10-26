@@ -19,7 +19,7 @@ import Tooltip from '@/Components/Tooltip.vue';
         <template #header>
             <div class="flex justify-between">
                 <h2
-                    class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200"
+                    class="text-md font-semibold leading-tight text-gray-800 dark:text-gray-200"
                 >
                     Generar orden para {{ tienda[0].nombre }}
                 </h2>

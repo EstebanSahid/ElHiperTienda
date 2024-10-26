@@ -14,9 +14,9 @@ import { Head } from '@inertiajs/vue3';
     <AuthenticatedLayout>
         <template #header>
             <h2
-                class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200"
+                class="text-md font-semibold leading-tight text-gray-800 dark:text-gray-200"
             >
-                Modificar Unidad de Medida
+                Actualizar Unidad de Medida
             </h2>
         </template>
 

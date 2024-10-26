@@ -18,7 +18,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
         <template #header>
             <div class="flex justify-between">
                 <h2
-                    class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200"
+                    class="text-md font-semibold leading-tight text-gray-800 dark:text-gray-200"
                 >
                     Editar orden para {{ tienda[0].nombre }}
                 </h2>

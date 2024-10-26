@@ -24,7 +24,7 @@ defineProps({
         <template #header>
             <div class="flex justify-between">
                 <h2
-                    class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200"
+                    class="text-md font-semibold leading-tight text-gray-800 dark:text-gray-200"
                 >
                     Lista de Usuarios
                 </h2>
