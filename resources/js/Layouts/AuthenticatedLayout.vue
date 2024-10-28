@@ -5,7 +5,6 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import InputLabel from '@/Components/InputLabel.vue';
 import { Link } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
@@ -30,7 +29,7 @@ const showingNavigationDropdown = ref(false);
                                 </Link>
                             </div>
 
-                            <!-- Menu Navegacion-->
+                            <!-- Menu Navegacion -->
                             <div
                                 class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
                             >
@@ -48,9 +47,6 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     Informes
                                 </NavLink>
-
-                                <!-- Administrador -->
-                                 <!--
                                 <div v-if="$page.props.auth.user.id_rol  == 1" 
                                     class="hidden md:flex md:items-center"
                                 >
@@ -96,7 +92,6 @@ const showingNavigationDropdown = ref(false);
                                         </Dropdown>
                                     </div>
                                 </div>
-                                -->
                             </div>
                         </div>
                         
@@ -105,9 +100,16 @@ const showingNavigationDropdown = ref(false);
                                 {{ 'Fecha: ' + fechaActual  }}
                             </label>
                         </div>
-
+                        
                         <!-- Dropdown Configuration -->
                         <div class="hidden sm:ms-6 sm:flex sm:items-center">
+                            <!-- Activar / Desactivar DarkMode -->
+                            <div class="flex items-center" :class="{ 'dark': isDarkMode }">
+                                <button @click="toggleDarkMode">
+                                    <svg v-if="!isDarkMode" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-color-muted fill-gray-400"><path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z" clip-rule="evenodd"></path></svg>
+                                    <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-color-muted fill-gray-400"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"></path></svg>
+                                </button>   
+                            </div>
                             <div class="relative ms-3">
                                 <Dropdown align="right" width="48">
                                     <template #trigger>
@@ -173,6 +175,14 @@ const showingNavigationDropdown = ref(false);
 
                         <!-- Hamburger -->
                         <div class="-me-2 flex items-center sm:hidden">
+                            <!-- Activar / Desactivar DarkMode -->
+                            <div class="flex items-center mx-2" :class="{ 'dark': isDarkMode }">
+                                <button @click="toggleDarkMode">
+                                    <svg v-if="!isDarkMode" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-color-muted fill-gray-400"><path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z" clip-rule="evenodd"></path></svg>
+                                    <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-color-muted fill-gray-400"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"></path></svg>
+                                </button>   
+                            </div>
+
                             <button
                                 @click="
                                     showingNavigationDropdown =
@@ -264,18 +274,6 @@ const showingNavigationDropdown = ref(false);
                             <ResponsiveNavLink :href="route('unidad.medida')">
                                 Unidad de Medida
                             </ResponsiveNavLink>
-                            <!--
-                            <ResponsiveNavLink :href="route('profile.edit')">
-                                Perfil
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink
-                                :href="route('logout')"
-                                method="post"
-                                as="button"
-                            >
-                                Cerrar Sesión
-                            </ResponsiveNavLink>
-                            -->
                         </div>
                     </div>
 
@@ -332,7 +330,30 @@ const showingNavigationDropdown = ref(false);
 export default {
     data() {
         return {
-            fechaActual: new Date().toLocaleDateString()
+            fechaActual: new Date().toLocaleDateString(),
+            isDarkMode: false,
+        }
+    },
+
+    methods: {
+        toggleDarkMode() {
+            this.isDarkMode = !this.isDarkMode;
+
+            // Guardamos en el Local Storage
+            if (this.isDarkMode) {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+    },
+
+    mounted() {
+        this.isDarkMode = localStorage.getItem('theme') === 'dark';
+        if (this.isDarkMode) {
+            document.documentElement.classList.add('dark');
         }
     }
 }
