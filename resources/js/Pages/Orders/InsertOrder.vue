@@ -175,7 +175,6 @@ export default {
     },
     
     data() {
-        
         return {
             buscador: {
                 search: this.filtro.search

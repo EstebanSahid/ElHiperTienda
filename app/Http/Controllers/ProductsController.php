@@ -11,15 +11,28 @@ use Inertia\Inertia;
 class ProductsController extends Controller
 {
     /* INDEX PRODUCTO */
-    public function index() {
+    public function index(Request $request) {
+        $buscador = $request->input('search');
+        //dd($request->all('search'));
+
         $productos = DB::table('productos')
-            ->select('id_producto','plus', 'nombre', 'estado')
+            ->select('plus', 'nombre', 'id_producto', 'estado')
+            ->where('nombre', 'LIKE', '%' . $buscador . '%')
+            ->orWhere('plus', 'LIKE', '%' . $buscador . '%')
             ->orderBy('nombre')
-            ->paginate(20);
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn ($producto) => [
+                'plus' => $producto->plus,
+                'nombre' => $producto->nombre,
+                'id_producto' => $producto->id_producto,
+                'estado' => $producto->estado
+            ]);
 
             //dd($productos);
         return Inertia::render('Admin/Products/Products', [
-            'productos' => $productos
+            'productos' => $productos,
+            'filtro' => $request->all('search'),
         ]);
     }
 

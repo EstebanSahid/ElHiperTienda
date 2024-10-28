@@ -6,10 +6,16 @@ import Table from '@/Components/Table.vue';
 import TableTh from '@/Components/TableTh.vue';
 import TableBodyTr from '@/Components/TableBodyTr.vue';
 import TableBodyTd from '@/Components/TableBodyTd.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import TextInput from '@/Components/TextInput.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import { Head, Link, router } from '@inertiajs/vue3';
 
 defineProps({
     productos: {
+        type: Object
+    },
+
+    filtro: {
         type: Object
     }
 });
@@ -43,6 +49,20 @@ defineProps({
                     class="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800"
                 >
                     <div class="bg-white rounded-md shadow overflow-x-auto dark:bg-gray-800">
+                        <!-- Buscador -->
+                        <div class="p-3 mx-2 grid grid-cols-4 md:grid-cols-6">
+                            <div class="col-span-2">
+                                <InputLabel for="search" value="Buscar Producto" />
+        
+                                <TextInput
+                                    id="search"
+                                    type="text"
+                                    class="mt-1 block w-full"
+                                    v-model="buscador.search"
+                                    required
+                                />
+                            </div>
+                        </div>
                         <Table>
                             <thead>
                                 <tr class="text-center font-bold">
@@ -86,15 +106,34 @@ defineProps({
 
 <script>
 export default {
+    /*
+    props: {
+        filtro: Object,
+    },
+    */
+
     data() {
         return {
+            buscador: {
+                search: this.filtro.search
+            },
+        }
+    },
 
+    watch: {
+        buscador: {
+            deep: true,
+            handler: function () {
+                setTimeout(() => {
+                    router.get(`/products`, {search: this.buscador.search }, { preserveState: true });
+                }, 150)
+            }
         }
     },
     
     mounted() {
         console.log("links");
-        console.log(this.productos)
+        console.log(this.filtro)
     }
 }
 </script>
