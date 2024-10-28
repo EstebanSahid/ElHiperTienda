@@ -9,7 +9,6 @@ import TableBodyTd from '@/Components/TableBodyTd.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import Tooltip from '@/Components/Tooltip.vue';
 </script>
 
 <template>
@@ -132,15 +131,9 @@ import Tooltip from '@/Components/Tooltip.vue';
                                                         />
                                                     </TableBodyTd>
                                                     <TableBodyTd>
-                                                        <!--
-                                                        <Tooltip text="Click para cambiar de Unidad">
-                                                        -->
-                                                            <div class="mt-1 block cursor-pointer w-full" @click="cambiarUnidad(producto)">
-                                                                <span>{{ obtenerCodigoUnidad(producto.id_unidad) }}</span>
-                                                            </div>
-                                                        <!--
-                                                        </Tooltip>
-                                                        -->
+                                                        <div class="mt-1 block cursor-pointer w-full" @click="cambiarUnidad(producto)">
+                                                            <span>{{ obtenerCodigoUnidad(producto.id_unidad) }}</span>
+                                                        </div>
                                                     </TableBodyTd>
                                                     <td class="px-2">
                                                         <button type="button" class="flex group justify-center items-center" @click="deleteProductArray(index)">
