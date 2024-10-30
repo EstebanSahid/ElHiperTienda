@@ -47,6 +47,7 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     Informes
                                 </NavLink>
+                                <!--
                                 <div v-if="$page.props.auth.user.id_rol  == 1" 
                                     class="hidden md:flex md:items-center"
                                 >
@@ -92,6 +93,7 @@ const showingNavigationDropdown = ref(false);
                                         </Dropdown>
                                     </div>
                                 </div>
+                                -->
                             </div>
                         </div>
                         
