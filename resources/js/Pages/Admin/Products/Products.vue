@@ -8,8 +8,6 @@ import TableBodyTr from '@/Components/TableBodyTr.vue';
 import TableBodyTd from '@/Components/TableBodyTd.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
-import SelectForm from '@/Components/SelectForm.vue';
-import OptionForm from '@/Components/OptionForm.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 
 defineProps({

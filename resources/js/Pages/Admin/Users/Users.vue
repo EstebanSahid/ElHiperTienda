@@ -58,34 +58,34 @@ defineProps({
                             <tbody>
                                 <TableBodyTr v-for="user in users.data" :key="user.id">
                                     <TableBodyTd>
-                                        <Link :href="`/users/${user.id}/edit`"> 
+                                        <Link class="w-full h-full block" :href="`/users/${user.id}/edit`"> 
                                             {{ user.name }}
                                         </Link>
                                     </TableBodyTd>
                                     <TableBodyTd>
-                                        <Link :href="`/users/${user.id}/edit`"> 
+                                        <Link class="w-full h-full block" :href="`/users/${user.id}/edit`"> 
                                             {{ user.descripcion }}
                                         </Link>
                                     </TableBodyTd>
                                     <TableBodyTd>
-                                        <Link :href="`/users/${user.id}/edit`"> 
+                                        <Link class="w-full h-full block" :href="`/users/${user.id}/edit`"> 
                                             {{ user.email }}
                                         </Link>
                                     </TableBodyTd>
                                     <TableBodyTd>
-                                        <Link :href="`/users/${user.id}/edit`"> 
+                                        <Link class="w-full h-full block" :href="`/users/${user.id}/edit`"> 
                                             {{ user.telefono }}
                                         </Link>
                                     </TableBodyTd>
                                     <TableBodyTd>
-                                        <Link :href="`/users/${user.id}/edit`"> 
+                                        <Link class="w-full h-full block" :href="`/users/${user.id}/edit`"> 
                                             {{ user.estado }}
                                         </Link>
                                     </TableBodyTd>
                                 </TableBodyTr>
                                 
                                 <TableBodyTr v-if="users.data.length === 0">
-                                    <TableBodyTd colspan="4"> No hay usuarios registrados.</TableBodyTd>
+                                    <TableBodyTd colspan="5"> No hay usuarios registrados.</TableBodyTd>
                                 </TableBodyTr>
                             </tbody>
                         </Table>

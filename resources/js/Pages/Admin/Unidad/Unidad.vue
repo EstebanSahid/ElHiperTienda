@@ -54,17 +54,17 @@ defineProps({
                             <tbody>
                                 <TableBodyTr v-for="unidad in unidades.data" :key="unidad.id_unidad_pedido">
                                     <TableBodyTd>
-                                        <Link :href="`/unidad/${unidad.id_unidad_pedido}/edit`"> 
+                                        <Link class="w-full h-full block" :href="`/unidad/${unidad.id_unidad_pedido}/edit`"> 
                                             {{ unidad.descripcion }}
                                         </Link>
                                     </TableBodyTd>
                                     <TableBodyTd>
-                                        <Link :href="`/unidad/${unidad.id_unidad_pedido}/edit`"> 
+                                        <Link class="w-full h-full block" :href="`/unidad/${unidad.id_unidad_pedido}/edit`"> 
                                             {{ unidad.codigo }}
                                         </Link>
                                     </TableBodyTd>
                                     <TableBodyTd>
-                                        <Link :href="`/unidad/${unidad.id_unidad_pedido}/edit`"> 
+                                        <Link class="w-full h-full block" :href="`/unidad/${unidad.id_unidad_pedido}/edit`"> 
                                             {{ unidad.estado }}
                                         </Link>
                                     </TableBodyTd>

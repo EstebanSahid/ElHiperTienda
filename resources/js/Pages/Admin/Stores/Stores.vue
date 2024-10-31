@@ -56,27 +56,27 @@ defineProps({
                             <tbody>
                                 <TableBodyTr v-for="tienda in tiendas.data" :key="tienda.id_tienda">
                                     <TableBodyTd>
-                                        <Link :href="`/tiendas/${tienda.id_tienda}/edit`"> 
+                                        <Link class="w-full h-full block" :href="`/tiendas/${tienda.id_tienda}/edit`"> 
                                             {{ tienda.nombre }}
                                         </Link>
                                     </TableBodyTd>
                                     <TableBodyTd>
-                                        <Link :href="`/tiendas/${tienda.id_tienda}/edit`"> 
+                                        <Link class="w-full h-full block" :href="`/tiendas/${tienda.id_tienda}/edit`"> 
                                             {{ tienda.codigo }}
                                         </Link>
                                     </TableBodyTd>
                                     <TableBodyTd>
-                                        <Link :href="`/tiendas/${tienda.id_tienda}/edit`"> 
+                                        <Link class="w-full h-full block" :href="`/tiendas/${tienda.id_tienda}/edit`"> 
                                             {{ tienda.telefono }}
                                         </Link>
                                     </TableBodyTd>
                                     <TableBodyTd>
-                                        <Link :href="`/tiendas/${tienda.id_tienda}/edit`"> 
+                                        <Link class="w-full h-full block" :href="`/tiendas/${tienda.id_tienda}/edit`"> 
                                             {{ tienda.direccion }}
                                         </Link>
                                     </TableBodyTd>
                                     <TableBodyTd>
-                                        <Link :href="`/tiendas/${tienda.id_tienda}/edit`"> 
+                                        <Link class="w-full h-full block" :href="`/tiendas/${tienda.id_tienda}/edit`"> 
                                             {{ tienda.estado }}
                                         </Link>
                                     </TableBodyTd>
