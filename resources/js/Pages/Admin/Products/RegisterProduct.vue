@@ -48,7 +48,9 @@ import { Head } from '@inertiajs/vue3';
     
                                     <TextInput
                                         id="plus"
-                                        type="text"
+                                        type="number"
+                                        @keyup="validarMayorCero()"
+                                        min="1"
                                         class="mt-1 block w-full"
                                         v-model="form.plus"
                                         required
@@ -90,7 +92,13 @@ export default {
     methods: {
         store() {
             this.form.post('/products');
-        }
+        },
+
+        validarMayorCero(){
+            if (this.form.plus < 1) {
+                this.form.plus = null;
+            }
+        },
     }
 }
 </script>

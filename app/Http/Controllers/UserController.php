@@ -47,6 +47,16 @@ class UserController extends Controller
             'password' => ['required', 'confirmed'],
             'telefono' => 'required|string|max:30',
             'id_rol' => 'required',
+        ], [
+            'name.required' => 'El nombre es requerido',
+            'email.required' => 'El email es requerido',
+            'email.lowercase' => 'El email debe estar en minusculas',
+            'email.email' => 'El email debe estar en el formato adecuado',
+            'email.unique' => 'Este correo ya existe, por favor utilice otro',
+            'password.required' => 'La contraseña es requerida',
+            'password.confirmed' => 'Las contraseñas no coinciden',
+            'telefono.required' => 'El telefono es requerido',
+            'id_rol.required' => 'El rol es requerido'
         ]);
 
         // Creamos el Usuario
@@ -106,6 +116,13 @@ class UserController extends Controller
             'id_rol' => 'required',
             'id_user' => 'required',
             'estado' => 'required|string'
+        ], [
+            'name.required' => 'El nombre es requerido',
+            'email.required' => 'El email es requerido',
+            'email.lowercase' => 'El email debe estar en minusculas',
+            'email.email' => 'El email debe estar en el formato adecuado',
+            'telefono.required' => 'El telefono es requerido',
+            'id_rol.required' => 'El rol es requerido'
         ]);
 
         DB::beginTransaction();

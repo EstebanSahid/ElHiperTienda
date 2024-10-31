@@ -30,6 +30,9 @@ class UnidadMedidaController extends Controller
         $validatedData = $request->validate([
             'descripcion' => 'required|string',
             'codigo' => 'required|string'
+        ], [
+            'descripcion.required' => 'La descripcion es requerida',
+            'codigo.required' => 'El codigo es requerido'
         ]);
 
         DB::beginTransaction();
@@ -62,6 +65,9 @@ class UnidadMedidaController extends Controller
             'codigo' => 'required|string',
             'estado' => 'required|string',
             'id_unidad_pedido' => 'required'
+        ], [
+            'descripcion.required' => 'La descripcion es requerida',
+            'codigo.required' => 'El codigo es requerido'
         ]);
 
         DB::beginTransaction();

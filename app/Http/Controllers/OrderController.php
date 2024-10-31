@@ -27,8 +27,6 @@ class OrderController extends Controller
             $showTiendas = $this->indexEncargado($userId);
         }
         $showTiendas = $this->verificarExistencia($showTiendas);
-        //$showTiendas = $this->validacionMostrar($showTiendas);
-        //dd($showTiendas);
         return Inertia::render('Dashboard', [
             'tiendas' => $showTiendas,
         ]);

@@ -46,8 +46,13 @@ class ProductsController extends Controller
 
     public function store(Request $request) {
         $validatedData = $request->validate([
-            'plus' => 'required|string',
+            'plus' => 'required|int|unique:productos,plus',
             'nombre' => 'required|string'
+        ], [
+            'plus.required' => 'El plus es obligatorio',
+            'plus.int' => 'El Plus debe ser un número',
+            'plus.unique' => 'Este plus ya está en uso, por favor utiliza otro',
+            'nombre.required' => 'El nombre es obligatorio'
         ]);
 
         DB::beginTransaction();
@@ -77,10 +82,14 @@ class ProductsController extends Controller
 
     public function update(Request $request) {
         $validatedData = $request->validate([
-            'plus' => 'required|string',
+            'plus' => 'required|int',
             'nombre' => 'required|string',
             'estado' => 'required|string',
             'id_producto' => 'required'
+        ], [
+            'plus.required' => 'El plus es obligatorio',
+            'plus.int' => 'El plus debe ser un numero',
+            'nombre.required' => 'El nombre es requerido'
         ]);
 
         DB::beginTransaction();

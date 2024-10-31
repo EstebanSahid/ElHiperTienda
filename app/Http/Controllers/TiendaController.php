@@ -33,6 +33,11 @@ class TiendaController extends Controller
             'codigo' => 'required|string|max:20',
             'direccion' => 'required|string|max:255',
             'telefono' => 'required|string|max:30'
+        ], [
+            'nombre.required' => 'El nombre de la tienda es requerido',
+            'codigo.required' => 'El codigo es requerido',
+            'direccion.required' => 'La direccion es requerida',
+            'telefono.required' => 'El telefono es requerido'
         ]);
 
         DB::beginTransaction();
@@ -69,6 +74,11 @@ class TiendaController extends Controller
             'telefono' => 'required|string|max:30',
             'estado' => 'required',
             'id_tienda' => 'required'
+        ], [
+            'nombre.required' => 'El nombre de la tienda es requerido',
+            'codigo.required' => 'El codigo es requerido',
+            'direccion.required' => 'La direccion es requerida',
+            'telefono.required' => 'El telefono es requerido'
         ]);
 
         DB::beginTransaction();
