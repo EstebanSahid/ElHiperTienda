@@ -8,6 +8,8 @@ import TableBodyTr from '@/Components/TableBodyTr.vue';
 import TableBodyTd from '@/Components/TableBodyTd.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
+import SelectForm from '@/Components/SelectForm.vue';
+import OptionForm from '@/Components/OptionForm.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 
 defineProps({
@@ -62,29 +64,34 @@ defineProps({
                                     required
                                 />
                             </div>
+                            <!--
+                            <div class="mx-2">
+                                <InputLabel for="ordenar" value="Ordenar Por" />
+                            </div>
+                            -->
                         </div>
                         <Table>
                             <thead>
                                 <tr class="text-center font-bold">
-                                    <TableTh>Plus</TableTh>
-                                    <TableTh>Nombre</TableTh>
+                                    <TableTh class="cursor-pointer" @click="ordenarPor('Plus')">Plus</TableTh>
+                                    <TableTh class="cursor-pointer" @click="ordenarPor('nombre')">Nombre</TableTh>
                                     <TableTh>Estado</TableTh>
                                 </tr>
                             </thead>
                             <tbody>
                                 <TableBodyTr v-for="producto in productos.data" :key="producto.id_producto">
                                     <TableBodyTd>
-                                        <Link :href="`/productos/${producto.id_producto}/edit`"> 
+                                        <Link class="w-full h-full block" :href="`/productos/${producto.id_producto}/edit`"> 
                                             {{ producto.plus }}
                                         </Link>
                                     </TableBodyTd>
                                     <TableBodyTd>
-                                        <Link :href="`/productos/${producto.id_producto}/edit`"> 
+                                        <Link class="w-full h-full block" :href="`/productos/${producto.id_producto}/edit`"> 
                                             {{ producto.nombre }}
                                         </Link>
                                     </TableBodyTd>
                                     <TableBodyTd>
-                                        <Link :href="`/productos/${producto.id_producto}/edit`"> 
+                                        <Link class="w-full h-full block" :href="`/productos/${producto.id_producto}/edit`"> 
                                             {{ producto.estado }}
                                         </Link>
                                     </TableBodyTd>
@@ -115,7 +122,8 @@ export default {
     data() {
         return {
             buscador: {
-                search: this.filtro.search
+                search: this.filtro.search,
+                orderBy: this.filtro.orderBy
             },
         }
     },
@@ -125,15 +133,22 @@ export default {
             deep: true,
             handler: function () {
                 setTimeout(() => {
-                    router.get(`/products`, {search: this.buscador.search }, { preserveState: true });
+                    this.getData();
+                    // router.get(`/products`, {search: this.buscador.search }, { preserveState: true });
                 }, 150)
             }
         }
     },
-    
-    mounted() {
-        console.log("links");
-        console.log(this.filtro)
-    }
+
+    methods: {
+        ordenarPor(value) {
+            this.buscador.orderBy = value
+            this.getData();
+        },
+
+        getData() {
+            router.get(`/products`, {search: this.buscador }, { preserveState: true });
+        }
+    },
 }
 </script>

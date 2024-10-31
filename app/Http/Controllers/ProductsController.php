@@ -12,14 +12,14 @@ class ProductsController extends Controller
 {
     /* INDEX PRODUCTO */
     public function index(Request $request) {
-        $buscador = $request->input('search');
-        //dd($request->all('search'));
+        $buscador = $request->input('search.search', '');
+        $orderBy = $request->input('search.orderBy', 'nombre');
 
         $productos = DB::table('productos')
             ->select('plus', 'nombre', 'id_producto', 'estado')
             ->where('nombre', 'LIKE', '%' . $buscador . '%')
             ->orWhere('plus', 'LIKE', '%' . $buscador . '%')
-            ->orderBy('nombre')
+            ->orderBy($orderBy)
             ->paginate(10)
             ->withQueryString()
             ->through(fn ($producto) => [
@@ -29,10 +29,13 @@ class ProductsController extends Controller
                 'estado' => $producto->estado
             ]);
 
-            //dd($productos);
         return Inertia::render('Admin/Products/Products', [
             'productos' => $productos,
-            'filtro' => $request->all('search'),
+            //'filtro' => $request->all('search'),
+            'filtro' => [
+                'search' => $request->input('search.search', ''),
+                'orderBy' => $request->input('search.orderBy', 'nombre')
+            ]
         ]);
     }
 
