@@ -71,8 +71,10 @@ class ProductsController extends Controller
 
     }
 
-    /* EDITAR UNIDAD */
-    public function renderEdit($id) {
+    /* EDITAR PRODUCTO */
+
+    /* Antiguo
+    public function renderEdit($id) {   
         $producto = Producto::find($id);
 
         return Inertia::render('Admin/Products/EditProduct', [
@@ -111,8 +113,13 @@ class ProductsController extends Controller
         DB::commit();
         return redirect()->route('products')->with('success', 'Producto Actualizado exitosamente');
     }
+    */
 
-    /* DESACTIVAR UNIDAD */
+    public function update(Request $request) {
+        dd($request->all());
+    }
+
+    /* DESACTIVAR PRODUCTO */
     public function deactivate(Request $request) {
         $validatedData = $request->validate([
             'id_producto' => 'required'
@@ -124,11 +131,34 @@ class ProductsController extends Controller
 
         if (!$producto->save()) {
             DB::rollBack();
-            return redirect()->back()->withErrors(['errors' => 'Error al dar de baja el producto']);
         }
 
         DB::commit();
-        return redirect()->route('products')->with('success', 'Producto Dado de baja exitosamente');
     }
 
+    /* ACTIVAR PRODUCTO */
+    public function activate(Request $request) {
+        $validatedData = $request->validate([
+            'id_producto' => 'required'
+        ]); 
+
+        DB::beginTransaction();
+        $producto = producto::find($validatedData['id_producto']);
+        $producto->estado = 'Activo';
+
+        if (!$producto->save()) {
+            DB::rollBack();
+        }
+
+        DB::commit();
+    }
+
+    /* EDITAR PRODUCTOS MASIVOS */
+    public function renderEditMassive() {
+        $producto = Producto::all();
+        //dd($producto);
+        return Inertia::render('Admin/Products/EditMassiveProducts', [
+            'productos' => $producto
+        ]);
+    }
 }

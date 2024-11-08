@@ -77,9 +77,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/products', 'index')->name('products');
             Route::get('/registerProduct', 'create')->name('registro.product');
             Route::post('/products', 'store')->name('products.store');
+            /*
             Route::get('/productos/{id}/edit', 'renderEdit')->name('product.edit');
             Route::put('/productEdit', 'update')->name('product.update');
+            */
+            Route::put('/productEdit', 'update')->name('product.update');
+            Route::put('/productActivate', 'activate')->name('product.activate');
             Route::put('/productDelete', 'deactivate')->name('product.deactivate');
+            Route::get('/editMassiveProducts', 'renderEditMassive')->name('edit.massive.product');
         });
         
         // Administrar Unidades de Medida

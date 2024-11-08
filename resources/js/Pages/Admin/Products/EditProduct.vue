@@ -93,11 +93,11 @@ export default {
 
     data() {
         return {
+            // Formulario
             form: this.$inertia.form({
-                plus: this.producto.plus,
-                nombre: this.producto.nombre,
-                estado: this.producto.estado,
-                id_producto: this.producto.id_producto
+                plus: this.plus,
+                nombre: this.producto,
+                id_producto: this.id_producto
             }),
         }
     },
