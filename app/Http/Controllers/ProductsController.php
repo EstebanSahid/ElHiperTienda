@@ -116,7 +116,28 @@ class ProductsController extends Controller
     */
 
     public function update(Request $request) {
-        dd($request->all());
+        $validatedData = $request->validate([
+            'id_producto' => 'required',
+            'campo' => 'string|required|in:plus,nombre',
+            'valor' => 'required'
+        ]);
+
+        try{
+            DB::beginTransaction();
+
+            $producto = producto::find($validatedData['id_producto']);
+            if ($validatedData['campo'] == 'plus') {
+                $producto->plus = $validatedData['valor'];
+            } else if ($validatedData['campo'] == 'nombre') {
+                $producto->nombre = $validatedData['valor'];
+            }
+            
+            $producto->save();
+            
+            DB::commit();
+        } catch(\Exception $e) {
+            DB::rollBack();
+        }
     }
 
     /* DESACTIVAR PRODUCTO */

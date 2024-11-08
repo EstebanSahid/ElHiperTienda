@@ -233,7 +233,7 @@ export default {
             if (plusEditar === null || plusEditar === '' || Number(plusEditar) <= 0) {
                 this.productos.data[index].plus = this.productSelected.plus;
                 this.cleanEditables();
-                this.resetForm();
+                this.cleanForm();
                 return;
             }
 
@@ -243,7 +243,7 @@ export default {
                 this.form.valor = plusEditar;
                 this.editData().then(() => {
                     this.cleanEditables();
-                    this.resetForm();
+                    this.cleanForm();
                 });
             } else {
                 this.cleanEditables();
@@ -258,7 +258,7 @@ export default {
                 this.form.valor = nombre;
                 this.editData().then(() => {
                     this.cleanEditables();
-                    this.resetForm();
+                    this.cleanForm();
                 });
             } else {
                 this.cleanEditables();
@@ -283,8 +283,8 @@ export default {
         },
 
         activate(producto) {
+            this.form.id_producto = producto.id_producto
             if (confirm('¿Esta seguro que quiere dar de alta a ' + producto.nombre + '?')) {
-                this.form.id_producto = producto.id_producto
                 this.form.put('/productActivate');
                 console.log("producto Activado");
             }
@@ -294,9 +294,8 @@ export default {
         },
 
         deactivate(producto) {
-            console.log(producto.nombre);
+            this.form.id_producto = producto.id_producto
             if (confirm('¿Está seguro que quiere dar de baja a ' + producto.nombre + '?' )) {
-                this.form.id_producto = producto.id_producto
                 this.form.put('/productDelete');
                 console.log("producto desactivado");
             }
