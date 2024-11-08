@@ -175,10 +175,10 @@ class ProductsController extends Controller
     }
 
     /* EDITAR PRODUCTOS MASIVOS */
-    public function renderEditMassive() {
+    public function renderEdit() {
         $producto = Producto::all();
         //dd($producto);
-        return Inertia::render('Admin/Products/EditMassiveProducts', [
+        return Inertia::render('Admin/Configuration/Configuration', [
             'productos' => $producto
         ]);
     }

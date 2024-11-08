@@ -81,6 +81,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/productos/{id}/edit', 'renderEdit')->name('product.edit');
             Route::put('/productEdit', 'update')->name('product.update');
             */
+            Route::get('/configuration', 'renderEdit')->name('configuration');
             Route::put('/productEdit', 'update')->name('product.update');
             Route::put('/productActivate', 'activate')->name('product.activate');
             Route::put('/productDelete', 'deactivate')->name('product.deactivate');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\OrdenEncabezado;
 use App\Models\Tienda;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -41,20 +42,43 @@ class TiendaController extends Controller
         ]);
 
         DB::beginTransaction();
-        $tienda = new Tienda();
-        $tienda->nombre = $validatedData['nombre'];
-        $tienda->codigo = $validatedData['codigo'];
-        $tienda->direccion = $validatedData['direccion'];
-        $tienda->telefono = $validatedData['telefono'];
-        $tienda->estado = 'Activo';
-        $tienda->usuario_crea = $request->user()->id;
-        if (!$tienda->save()) {
-            DB::rollBack();
-            return redirect()->back()->withErrors(['error' => 'Error al guardar la tienda.']);
-        }
 
-        DB::commit();
-        return redirect()->route('stores')->with('success', 'Tienda creada exitosamente');
+        try {
+            // Crear nueva tienda
+            $tienda = new Tienda();
+            $tienda->nombre = $validatedData['nombre'];
+            $tienda->codigo = $validatedData['codigo'];
+            $tienda->direccion = $validatedData['direccion'];
+            $tienda->telefono = $validatedData['telefono'];
+            $tienda->estado = 'Activo';
+            $tienda->usuario_crea = $request->user()->id;
+            
+            if (!$tienda->save()) {
+                DB::rollBack();
+                return redirect()->back()->withErrors(['error' => 'Error al guardar la tienda.']);
+            }
+        
+            // Obtener el id de la tienda recién creada y la posición
+            $idTienda = $tienda->id_tienda;
+            $maxPosicion = DB::table('orden_encabezado')->max('posicion');
+            $nuevaPosicion = $maxPosicion ? $maxPosicion + 1 : 1;
+        
+            // Crear nuevo registro en orden_encabezado
+            $encabezado = new OrdenEncabezado();
+            $encabezado->id_tienda = $idTienda;
+            $encabezado->posicion = $nuevaPosicion;
+            
+            if (!$encabezado->save()) {
+                DB::rollBack();
+                return redirect()->back()->withErrors(['error' => 'Error al guardar el encabezado de la orden.']);
+            }
+        
+            DB::commit();
+            return redirect()->route('stores')->with('success', 'Tienda creada exitosamente');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Error inesperado: ' . $e->getMessage()]);
+        }        
     }
 
     /* EDITAR TIENDA */
