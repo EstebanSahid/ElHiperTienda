@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PDFController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
@@ -43,6 +44,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/editOrders', 'update')->name('order.update');
         //Route::get('/getProducts', 'getProducts')->name('order.getProducts');
     });
+
+    Route::post('/generatePDF', [PDFController::class, 'generatePDF'])->name('generatePDF');
 
     // Reportes
     Route::controller(ReportController::class)->group(function () {

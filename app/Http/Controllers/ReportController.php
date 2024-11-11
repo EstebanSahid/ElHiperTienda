@@ -24,8 +24,6 @@ class ReportController extends Controller
             $showDataTBody = $this->showDataTbody($showTiendas, $buscador);
         }
 
-        //dd($showDataTBody);
-        
         $showTiendas->prepend((object) [
             'id_tienda' => 0,
             'nombre_tienda' => 'Todas las tiendas'

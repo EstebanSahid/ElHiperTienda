@@ -17,11 +17,22 @@ import { Head, router } from '@inertiajs/vue3';
 
     <AuthenticatedLayout>
         <template #header>
-            <h2
-                class="text-md font-semibold leading-tight text-gray-800 dark:text-gray-200"
-            >
-                Buscar Orden
-            </h2>
+            <div class="flex justify-between">
+                <h2
+                    class="text-md font-semibold leading-tight text-gray-800 dark:text-gray-200"
+                >
+                    Reportes
+                </h2>
+    
+                <h3
+                    class="rounded-md px-2 leading-tight text-black ring-1 ring-transparent transition 
+                    hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] 
+                    dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white text-sm"
+                    @click="generarPDF"
+                    >
+                    Generar PDF
+                </h3>
+            </div>
         </template>
 
         <div class="py-12">
@@ -140,14 +151,15 @@ export default {
         return {
             buscador: {
                 fecha: this.formatDate(new Date()),
-                id_tienda: 0
+                id_tienda: 0,
+                type: 'null'
             },
         }
     },
 
     computed: {
         cols() {
-        return this.dataThead.length + 3;
+            return this.dataThead.length + 3;
         },
     },
 
@@ -165,6 +177,30 @@ export default {
     */
 
     methods: {
+        generarPDF() {
+    const dataToSend = { 
+        pedidos: this.pedidos,
+        tiendas: this.tiendas,
+        dataThead: this.dataThead,
+        fecha: this.buscador.fecha
+    };
+
+    axios.post('/generatePDF', dataToSend, { responseType: 'blob' })
+    .then(response => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+
+        // Generar el nombre dinámicamente en el frontend usando this.buscador.fecha
+        link.setAttribute('download', `Reporte-${this.buscador.fecha}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+    })
+    .catch(error => {
+        console.error('Error generando el PDF:', error);
+    });
+},
+
         formatDate(date) {
             let anio = date.getFullYear();
             let mes = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -189,9 +225,8 @@ export default {
         */
 
         getData() {
+            this.buscador.type = 'ShowDataTable';
             const data = router.get('/reports', {dates: this.buscador}, {preserveState: true})
-            console.log("pedidos")
-            console.log(data);
         }
     },
 
