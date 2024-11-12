@@ -13,9 +13,20 @@ class PDFController extends Controller
     $dataThead = $request->input('dataThead');
     $fecha = $request->input('fecha');
 
-    foreach ($tiendas as &$tienda) {
-        $tienda['codigo'] = $tienda['id_tienda'] === 0 ? 'PVP' : $tienda['codigo'];
+    if (count($dataThead) > 2) {
+        foreach ($dataThead as &$tienda) {
+            $tienda['codigo'] = $tienda['id_tienda'] === 0 ? 'PVP' : $tienda['codigo'];
+        }
+    } else {
+        $addPVP = [
+            "id_tienda" => 0,
+            "nombre_tienda" => "PVP",
+            "codigo" => "PVP"
+        ];
+    
+        array_unshift($dataThead, $addPVP);
     }
+
 
     $html = view('pdf.OrdenPDF', compact('tiendas', 'pedidos', 'dataThead'))->render();
 
