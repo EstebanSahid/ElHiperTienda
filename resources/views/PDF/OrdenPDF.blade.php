@@ -1,39 +1,120 @@
+<?php 
+    $path = public_path('img/ElHiper.jpg');
+    $type = pathinfo($path, PATHINFO_EXTENSION);
+    $data = file_get_contents($path);
+    $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Reporte PDF</title>
+    <title>Reporte {{ $fecha }}</title>
     <style>
-        /* Estilos básicos inspirados en Bootstrap */
+        /* Generales */
+        .container {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .border {
+            margin-top: 10px;
+            margin-bottom: 10px; 
+            border-top: 1px solid;
+        }
+
+        /* Encabezado */
+        .divHeader {
+            width: 100%;
+        }
+
+        .divLogo {
+            width: 40%; 
+            text-align: left; 
+            padding-left: 20px;
+        }
+
+        .imgLogo {
+            height: 75px; 
+            width: auto;
+        }
+
+        .reporteTipo {
+            width: 60%; 
+            text-align: left; 
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        /* Información */
+        .divDataInfo {
+            width: 100%;
+        }
+
+        .divTitle {
+            width: 12%;
+            text-align: right;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .divData {
+            width: 88%;
+            text-align: left;
+            font-size: 12px;
+            padding-left: 10px;
+            padding-top: 3px;
+            padding-bottom: 3px;
+        }
+
+        /* Tabla de Productos */
         .table {
             width: 100%;
             border-collapse: collapse;
         }
+
         .table-bordered th, .table-bordered td {
-            border: 1px solid #dee2e6;
+            border: 1px solid #acf95e;
             padding: 0.75rem;
+            font-size: 12px;
         }
         .table thead th {
-            background-color: #f8f9fa;
-            text-align: left;
+            background-color: #acf95e;
+            text-align: center;
         }
         .py-3 {
             padding-top: 1rem;
             padding-bottom: 1rem;
         }
-        .overflow-x-auto {
-            overflow-x: auto;
-        }
-        .rounded-md {
-            border-radius: 0.375rem;
-        }
-        .shadow {
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
     </style>
 </head>
-<body>
+<body class="container">
+    <table class="divHeader">
+        <tr>
+            <td class="divLogo">
+                <img src="{{ $base64 }}" alt="Logo de la Empresa" class="imgLogo">
+            </td>
+            <td class="reporteTipo">
+                Listado de Productos
+            </td>
+        </tr>
+    </table>
+    
+    <div class="border"></div>
+    
+    <table class="divDataInfo">
+        <tr>
+            <td class="divTitle">Fecha:</td>
+            <td class="divData">{{ $fecha }}</td>
+        </tr>
+        <tr style="margin: 50px;">
+            <td class="divTitle">Tienda/s:</td>
+            <td class="divData">{{ $nombreTiendas }}</td>
+        </tr>
+    </table>
+
+    <div class="border"></div>
+
     <div class="py-3">
-        <div class="overflow-x-auto rounded-md shadow">
+        <div class="">
             <table class="table table-bordered">
                 <thead>
                     <tr>
