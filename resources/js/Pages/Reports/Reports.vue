@@ -28,8 +28,7 @@ import { Head, router } from '@inertiajs/vue3';
                     class="rounded-md px-2 leading-tight text-black ring-1 ring-transparent transition 
                     hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] 
                     dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white text-sm"
-                    @click="generarPDF"
-                    disabled
+                    @click="validatePDF"
                     >
                     Generar PDF
                 </button>
@@ -155,6 +154,8 @@ export default {
                 fecha: fechaParam ? fechaParam : this.formatDate(new Date()),
                 id_tienda: idTiendaParam
             },
+
+            disabledPDF: true,
         }
     },
 
@@ -182,6 +183,14 @@ export default {
             const urlParams = new URLSearchParams(window.location.search);
             const urlFecha = urlParams.get('dates[fecha]');
             const urlIdTienda = urlParams.get('dates[id_tienda]');
+        },
+
+        validatePDF() {
+            if (this.pedidos.length === 0) {
+                alert('No existen ordenes registradas para esta fecha');
+            } else {
+                this.generarPDF();
+            }
         },
 
         generarPDF() {
