@@ -24,14 +24,15 @@ import { Head, router } from '@inertiajs/vue3';
                     Reportes
                 </h2>
     
-                <h3
+                <button
                     class="rounded-md px-2 leading-tight text-black ring-1 ring-transparent transition 
                     hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] 
                     dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white text-sm"
                     @click="generarPDF"
+                    disabled
                     >
                     Generar PDF
-                </h3>
+                </button>
             </div>
         </template>
 
@@ -105,9 +106,6 @@ import { Head, router } from '@inertiajs/vue3';
                                             {{ tienda.codigo }}
                                         </TableTh>
                                         <TableTh>Total</TableTh>
-                                        <!--
-                                        <TableTh>Total (KG)</TableTh>
-                                        -->
                                     </thead>
                                     <TableBodyTr
                                         v-for="(producto, index) in pedidos" :key="producto.id_producto"
@@ -148,11 +146,14 @@ export default {
     },
 
     data() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const fechaParam = urlParams.get('dates[fecha]');
+        const idTiendaParam = urlParams.get('dates[id_tienda]') || 0;
+
         return {
             buscador: {
-                fecha: this.formatDate(new Date()),
-                id_tienda: 0,
-                type: 'null'
+                fecha: fechaParam ? fechaParam : this.formatDate(new Date()),
+                id_tienda: idTiendaParam
             },
         }
     },
@@ -177,29 +178,34 @@ export default {
     */
 
     methods: {
+        dataUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlFecha = urlParams.get('dates[fecha]');
+            const urlIdTienda = urlParams.get('dates[id_tienda]');
+        },
+
         generarPDF() {
-    const dataToSend = { 
-        pedidos: this.pedidos,
-        tiendas: this.tiendas,
-        dataThead: this.dataThead,
-        fecha: this.buscador.fecha
-    };
+            const dataToSend = { 
+                pedidos: this.pedidos,
+                tiendas: this.tiendas,
+                dataThead: this.dataThead,
+                fecha: this.buscador.fecha
+            };
 
-    axios.post('/generatePDF', dataToSend, { responseType: 'blob' })
-    .then(response => {
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
+            axios.post('/generatePDF', dataToSend, { responseType: 'blob' })
+            .then(response => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
 
-        // Generar el nombre dinámicamente en el frontend usando this.buscador.fecha
-        link.setAttribute('download', `Reporte-${this.buscador.fecha}.pdf`);
-        document.body.appendChild(link);
-        link.click();
-    })
-    .catch(error => {
-        console.error('Error generando el PDF:', error);
-    });
-},
+                link.setAttribute('download', `Reporte-${this.buscador.fecha}.pdf`);
+                document.body.appendChild(link);
+                link.click();
+            })
+            .catch(error => {
+                console.error('Error generando el PDF:', error);
+            });
+        },
 
         formatDate(date) {
             let anio = date.getFullYear();
@@ -225,7 +231,6 @@ export default {
         */
 
         getData() {
-            this.buscador.type = 'ShowDataTable';
             const data = router.get('/reports', {dates: this.buscador}, {preserveState: true})
         }
     },
