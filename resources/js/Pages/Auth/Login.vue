@@ -105,4 +105,28 @@ const submit = () => {
 
 <script>
 
+export default {
+    data() {
+        return {
+            isDarkMode: localStorage.getItem('theme') === 'dark' ? true : false,
+        }
+    },
+
+    methods: {
+        ActivateDarkMode() {
+            // Guardamos en el Local Storage
+            if (this.isDarkMode) {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+    },
+
+    mounted() {
+        this.ActivateDarkMode();
+    }
+}
 </script>

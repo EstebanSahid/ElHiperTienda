@@ -85,10 +85,15 @@ defineProps({
 
 <script>
 export default {
+    data() {
+        return {
+            isDarkMode: localStorage.getItem('theme') === 'dark' ? true : false,
+        }
+    },
+
     methods: {
         ActivateDarkMode() {
             this.isDarkMode = !this.isDarkMode;
-
             // Guardamos en el Local Storage
             if (this.isDarkMode) {
                 document.documentElement.classList.add('dark');
@@ -97,6 +102,12 @@ export default {
                 document.documentElement.classList.remove('dark');
                 localStorage.setItem('theme', 'light');
             }
+        }
+    },
+
+    mounted() {
+        if (this.isDarkMode) {
+            document.documentElement.classList.add('dark');
         }
     }
 }
