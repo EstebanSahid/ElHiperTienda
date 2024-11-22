@@ -2,7 +2,7 @@
     $path = public_path('img/ElHiper.jpg');
     $type = pathinfo($path, PATHINFO_EXTENSION);
     $data = file_get_contents($path);
-    $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+    $img = 'data:image/' . $type . ';base64,' . base64_encode($data);
 ?>
 
 <!DOCTYPE html>
@@ -21,11 +21,11 @@
             border-top: 1px solid;
         }
 
-        /* Encabezado */
-        .divHeader {
+        .gridTable {
             width: 100%;
         }
 
+        /* Encabezado */
         .divLogo {
             width: 40%; 
             text-align: left; 
@@ -45,10 +45,6 @@
         }
 
         /* Información */
-        .divDataInfo {
-            width: 100%;
-        }
-
         .divTitle {
             width: 12%;
             text-align: right;
@@ -76,10 +72,12 @@
             padding: 0.75rem;
             font-size: 12px;
         }
+
         .table thead th {
             background-color: #acf95e;
             text-align: center;
         }
+
         .py-3 {
             padding-top: 1rem;
             padding-bottom: 1rem;
@@ -87,10 +85,10 @@
     </style>
 </head>
 <body class="container">
-    <table class="divHeader">
+    <table class="gridTable">
         <tr>
             <td class="divLogo">
-                <img src="{{ $base64 }}" alt="Logo de la Empresa" class="imgLogo">
+                <img src="{{ $img }}" alt="Logo de la Empresa" class="imgLogo">
             </td>
             <td class="reporteTipo">
                 Listado de Productos
@@ -100,7 +98,7 @@
     
     <div class="border"></div>
     
-    <table class="divDataInfo">
+    <table class="gridTable">
         <tr>
             <td class="divTitle">Fecha:</td>
             <td class="divData">{{ $fecha }}</td>
@@ -114,36 +112,34 @@
     <div class="border"></div>
 
     <div class="py-3">
-        <div class="">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Plus</th>
-                        <th>Producto</th>
-                        @foreach ($dataThead as $tienda)
-                            <th>{{ $tienda['codigo'] }}</th>
-                        @endforeach
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($pedidos as $producto)
-                    <tr>
-                        <td>{{ $producto['plus'] }}</td>
-                        <td>{{ $producto['producto'] }}</td>
-                        @foreach ($dataThead as $tienda)
-                            @if ($tienda['id_tienda'] == 0) 
-                                <td></td>
-                            @else
-                                <td>{{ $producto["pedido_{$tienda['id_tienda']}"] ?? '-' }}</td>
-                            @endif
-                        @endforeach
-                        <td>{{ $producto['total'] }}</td>
-                    </tr>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Plus</th>
+                    <th>Producto</th>
+                    @foreach ($dataThead as $tienda)
+                        <th>{{ $tienda['codigo'] }}</th>
                     @endforeach
-                </tbody>
-            </table>
-        </div>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($pedidos as $producto)
+                <tr>
+                    <td>{{ $producto['plus'] }}</td>
+                    <td>{{ $producto['producto'] }}</td>
+                    @foreach ($dataThead as $tienda)
+                        @if ($tienda['id_tienda'] == 0) 
+                            <td></td>
+                        @else
+                            <td>{{ $producto["pedido_{$tienda['id_tienda']}"] ?? '-' }}</td>
+                        @endif
+                    @endforeach
+                    <td>{{ $producto['total'] }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 </body>
 </html>

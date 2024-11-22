@@ -5,15 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderDetails;
-use App\Models\Access;
-use App\Models\Tienda;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
-use Inertia\Response;
-use Mockery\Undefined;
 
 class OrderController extends Controller
 {
@@ -111,7 +105,7 @@ class OrderController extends Controller
             'fecha' => ['required', 'date_format:Y-m-d'],
             'idTienda' => ['required', 'integer'],
             'pedido' => ['required', 'array', 'min:1'],
-            'pedido.*.plus' => ['required', 'string'],
+            'pedido.*.plus' => ['required'],
             'pedido.*.nombre' => ['required', 'string'],
             'pedido.*.id_producto' => ['required', 'integer'],
             'pedido.*.id_unidad' => ['required', 'integer'],
