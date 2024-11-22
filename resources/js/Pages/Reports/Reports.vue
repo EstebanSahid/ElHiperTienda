@@ -142,6 +142,7 @@ export default {
         pedidos: Array,
         tiendas: Array,
         dataThead: Array,
+        numerosPedido: Array,
     },
 
     data() {
@@ -179,12 +180,7 @@ export default {
     */
 
     methods: {
-        dataUrl() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const urlFecha = urlParams.get('dates[fecha]');
-            const urlIdTienda = urlParams.get('dates[id_tienda]');
-        },
-
+        // Validar que hay datos para generar el PDF
         validatePDF() {
             if (this.pedidos.length === 0) {
                 alert('No existen ordenes registradas para esta fecha');
@@ -193,12 +189,14 @@ export default {
             }
         },
 
+        // Generar el PDF
         generarPDF() {
             const dataToSend = { 
                 pedidos: this.pedidos,
                 tiendas: this.tiendas,
                 dataThead: this.dataThead,
-                fecha: this.buscador.fecha
+                fecha: this.buscador.fecha,
+                numerosPedido: this.numerosPedido,
             };
 
             axios.post('/generatePDF', dataToSend, { responseType: 'blob' })
@@ -216,6 +214,7 @@ export default {
             });
         },
 
+        // Formatear la fecha para que sea valido en el input de la fecha
         formatDate(date) {
             let anio = date.getFullYear();
             let mes = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -239,14 +238,10 @@ export default {
         },
         */
 
+        // Obtener los datos para el reporte
         getData() {
             const data = router.get('/reports', {dates: this.buscador}, {preserveState: true})
         }
     },
-
-    mounted() {
-        console.log("pedidos")
-        console.log(this.pedidos);
-    }
 }
 </script>

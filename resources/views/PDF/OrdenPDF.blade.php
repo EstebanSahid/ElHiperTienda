@@ -107,6 +107,10 @@
             <td class="divTitle">Tienda/s:</td>
             <td class="divData">{{ $nombreTiendas }}</td>
         </tr>
+        <tr>
+            <td class="divTitle">Orden/es:</td>
+            <td class="divData">{{ $numerosOrden }}</td>
+        </tr>
     </table>
 
     <div class="border"></div>

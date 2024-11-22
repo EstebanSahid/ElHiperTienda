@@ -12,8 +12,13 @@ class PDFController extends Controller
     $pedidos = $request->input('pedidos');
     $dataThead = $request->input('dataThead');
     $fecha = $request->input('fecha');
+    //$numerosPedido = $request->input('numerosPedido');
+    $numerosPedido = array_map(function ($numero) {
+        return 'N°' . $numero;
+    }, $request->input('numerosPedido'));
 
     $nombreTiendas = '';
+    $numerosOrden = implode(', ', $numerosPedido);
 
     $filteredDataThead = array_filter($dataThead, function ($element) {
         return $element['id_tienda'] !== 0;
@@ -37,7 +42,7 @@ class PDFController extends Controller
     }
 
 
-    $html = view('pdf.OrdenPDF', compact('tiendas', 'pedidos', 'dataThead', 'fecha', 'nombreTiendas'))->render();
+    $html = view('pdf.OrdenPDF', compact('tiendas', 'pedidos', 'dataThead', 'fecha', 'nombreTiendas', 'numerosOrden'))->render();
 
     $dompdf = new Dompdf();
     $dompdf->loadHtml($html);

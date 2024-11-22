@@ -11,17 +11,22 @@ class ReportController extends Controller
 {
     public function create(Request $request) {
         $buscador = $request->input('dates');
-        //dd($buscador);
         $userId = $request->user()->id;
         $rol = $request->user()->id_rol;
         $showTiendasThead = [];
         $showDataTBody = [];
 
+        // Control para mostrar las Tiendas según sus accesos
         $showTiendas = $rol == 1 ? $this->showTiendasAdmin() : $this->showTiendasEncargado($userId);
 
+        // Obtener la data del encabezado y el cuerpo cuando se uso algún filtro
         if (!empty($buscador)) {
             $showTiendasThead = $this->showTiendasThead($showTiendas, $buscador['id_tienda']);
-            $showDataTBody = $this->showDataTbody($showTiendas, $buscador);
+            //$showDataTBody = $this->showDataTbody($showTiendas, $buscador);
+
+            $resultado = $this->showDataTbody($showTiendas, $buscador);
+            $showDataTBody = $resultado['productosOrganizados'];
+            $numerosPedido = $resultado['numerosPedido'];
         }
 
         $showTiendas->prepend((object) [
@@ -33,6 +38,7 @@ class ReportController extends Controller
             'tiendas' => $showTiendas,
             'dataThead' => $showTiendasThead,
             'pedidos' => $showDataTBody,
+            'numerosPedido' => $numerosPedido
         ]);
     }
 
@@ -61,7 +67,7 @@ class ReportController extends Controller
         // Retornar la tienda especifica
         foreach ($tiendas as $tienda) {
             if ($tienda->id_tienda == $id_tienda) {
-                return [$tienda]; // Retornar como array con un solo registro
+                return [$tienda];
             }
         }
 
@@ -69,14 +75,29 @@ class ReportController extends Controller
     }
 
     private function showDataTbody($tiendas, $filtro){
+        // Verificar si hay productos en la orden
         $existenPedidos = $this->verificarExistencia($tiendas, $filtro);
         if (empty($existenPedidos)) {
-            return [];
+            // return [];
+            return [
+                'productosOrganizados' => [],
+                'numerosPedido' => []
+            ];
         }
         
         $productos = $this->getProducts($existenPedidos);
         $organizarProductos = $this->organizarProductos($productos);
-        return $organizarProductos;
+        //return $organizarProductos;
+
+         // Extraer solo numero_pedido y formatear
+        $numerosPedido = array_map(function ($pedido) {
+            return str_pad($pedido->numero_pedido, 5, '0', STR_PAD_LEFT); // Agrega ceros a la izquierda
+        }, $existenPedidos);
+
+        return [
+            'productosOrganizados' => $organizarProductos,
+            'numerosPedido' => $numerosPedido
+        ];
     }
 
     private function verificarExistencia($tiendas, $filtro) {
@@ -110,6 +131,8 @@ class ReportController extends Controller
     }
 
     private function getProducts($pedidos) {
+        // Obtener los productos de la orden
+        //dd($pedidos);
         $productos = [];
         foreach ($pedidos as $pedido) {
             $data = DB::table('pedidos_detalle as pd')
@@ -126,11 +149,11 @@ class ReportController extends Controller
             }
         }
 
+        // Organizar Alfabéticamente los productos
         usort($productos, function($a, $b) {
             return strcmp($a->nombre_producto, $b->nombre_producto);
         });
 
-        //dd($productos);
         return $productos;
     }
 
@@ -175,7 +198,6 @@ class ReportController extends Controller
                 $pedidos[] = $idPedido;
             }
         }
-        //dd($rowData);
     
         // Generamos y organizamos la tabla con los productos clasificados por producto
         $output = [];
@@ -207,7 +229,7 @@ class ReportController extends Controller
         
             $output[] = $fila;
         }
-        //dd($output);
+
         return $output;
     }
 }
