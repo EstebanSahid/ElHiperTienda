@@ -46,14 +46,14 @@
 
         /* Información */
         .divTitle {
-            width: 12%;
+            width: 15%;
             text-align: right;
             font-weight: bold;
             font-size: 12px;
         }
 
         .divData {
-            width: 88%;
+            width: 85%;
             text-align: left;
             font-size: 12px;
             padding-left: 10px;
@@ -110,6 +110,10 @@
         <tr>
             <td class="divTitle">Orden/es:</td>
             <td class="divData">{{ $numerosOrden }}</td>
+        </tr>
+        <tr>
+            <td class="divTitle">Elaborado Por:</td>
+            <td class="divData">{{ $usuarioGenera }}</td>
         </tr>
     </table>
 

@@ -12,6 +12,7 @@ class PDFController extends Controller
     $pedidos = $request->input('pedidos');
     $dataThead = $request->input('dataThead');
     $fecha = $request->input('fecha');
+    $usuarioGenera = $request->user()->name;
     //$numerosPedido = $request->input('numerosPedido');
     $numerosPedido = array_map(function ($numero) {
         return 'N°' . $numero;
@@ -42,7 +43,7 @@ class PDFController extends Controller
     }
 
 
-    $html = view('pdf.OrdenPDF', compact('tiendas', 'pedidos', 'dataThead', 'fecha', 'nombreTiendas', 'numerosOrden'))->render();
+    $html = view('pdf.OrdenPDF', compact('tiendas', 'pedidos', 'dataThead', 'fecha', 'nombreTiendas', 'numerosOrden', 'usuarioGenera'))->render();
 
     $dompdf = new Dompdf();
     $dompdf->loadHtml($html);

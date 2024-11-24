@@ -15,6 +15,7 @@ class ReportController extends Controller
         $rol = $request->user()->id_rol;
         $showTiendasThead = [];
         $showDataTBody = [];
+        $numerosPedido = [];
 
         // Control para mostrar las Tiendas según sus accesos
         $showTiendas = $rol == 1 ? $this->showTiendasAdmin() : $this->showTiendasEncargado($userId);
