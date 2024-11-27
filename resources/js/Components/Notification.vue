@@ -1,5 +1,5 @@
 <template>
-    <div class="fixed right-0 bottom-0 p-4 items-center z-50 min-w-[400px] transition-transform duration-3000 ease-in-out translate-x-0">
+    <div class="fixed right-0 bottom-0 p-4 items-center z-50 min-w-max transition-transform duration-3000 ease-in-out translate-x-0">
         <!-- Notificacion de error de Login Reset -->
         <div v-if="$page.props.flash.notFound && show" 
             class="col-start-2 col-span-4 flex items-center justify-between my-4 max-w-3xl bg-[#ff0606] dark:bg-[#7C0000] rounded">
