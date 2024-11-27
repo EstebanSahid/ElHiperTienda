@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3'; 
 import Pagination from '@/Components/Pagination.vue';
+import ScrollToTop from '@/Components/ScrollToTop.vue';
 import Table from '@/Components/Table.vue';
 import TableTh from '@/Components/TableTh.vue';
 import TableBodyTr from '@/Components/TableBodyTr.vue';
@@ -27,6 +28,9 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 
             </div>
         </template>
+
+        <!-- Scroll -->
+        <ScrollToTop />
 
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
