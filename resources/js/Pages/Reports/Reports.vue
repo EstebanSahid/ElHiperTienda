@@ -10,6 +10,8 @@ import OptionForm from '@/Components/OptionForm.vue';
 import TableBodyTr from '@/Components/TableBodyTr.vue';
 import TableBodyTd from '@/Components/TableBodyTd.vue';
 import { Head, router } from '@inertiajs/vue3';
+import Dropdown from '@/Components/Dropdown.vue';
+import DropdownLinkButton from '@/Components/DropdownLinkButton.vue';
 </script>
 
 <template>
@@ -24,6 +26,42 @@ import { Head, router } from '@inertiajs/vue3';
                     Reportes
                 </h2>
     
+                <div v-if="pedidos.length > 0" >
+                    <Dropdown>
+                        <template #trigger>
+                            <span>
+                                <button
+                                    type="button"
+                                    class="inline-flex items-center rounded-md text-sm dark:text-gray-400 dark:hover:text-gray-100 text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out"
+                                >
+                                    Opciones
+                                    <svg
+                                        class="-me-0.5 ms-2 h-4 w-4"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                    >
+                                        <path
+                                            fill-rule="evenodd"
+                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                            clip-rule="evenodd"
+                                        />
+                                    </svg>
+                                </button>
+                            </span>
+                        </template>
+
+                        <template #content>
+                            <DropdownLinkButton @click="generarPDF">
+                                Generar PDF
+                            </DropdownLinkButton>
+                            <DropdownLinkButton v-if="buscador.id_tienda !== 0" @click="duplicarOrden" >
+                                Duplicar Orden
+                            </DropdownLinkButton>
+                        </template>
+                    </Dropdown>
+                </div>
+                <!--
                 <button
                     class="rounded-md px-2 leading-tight text-black ring-1 ring-transparent transition 
                     hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] 
@@ -32,6 +70,7 @@ import { Head, router } from '@inertiajs/vue3';
                     >
                     Generar PDF
                 </button>
+                -->
             </div>
         </template>
 
@@ -180,15 +219,6 @@ export default {
     */
 
     methods: {
-        // Validar que hay datos para generar el PDF
-        validatePDF() {
-            if (this.pedidos.length === 0) {
-                alert('No existen ordenes registradas para esta fecha');
-            } else {
-                this.generarPDF();
-            }
-        },
-
         // Generar el PDF
         generarPDF() {
             const dataToSend = { 
@@ -241,6 +271,11 @@ export default {
         // Obtener los datos para el reporte
         getData() {
             const data = router.get('/reports', {dates: this.buscador}, {preserveState: true})
+        },
+
+        // Duplicar la orden
+        duplicarOrden() {
+            console.log('Aqui se duplicara la orden para a tienda ' + this.buscador.id_tienda);
         }
     },
 }
