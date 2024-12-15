@@ -25,8 +25,10 @@ export default {
     methods: {
         // Monitorear scroll
         handleScroll() {
+            /*
             console.log("Scroll hecho")
             console.log(window.scrollY);
+            */ 
             this.enableScrollButton = window.scrollY > 400
         },
 
@@ -40,7 +42,7 @@ export default {
             this.enableScrollButton = false;
         },
     },
-    
+
     mounted() {
         window.addEventListener('scroll', this.handleScroll);
     },

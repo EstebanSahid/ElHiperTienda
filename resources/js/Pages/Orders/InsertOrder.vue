@@ -109,9 +109,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
                                                     <TableTh>Cantidad</TableTh>
                                                     <TableTh collapsan="2">
                                                         Unidad
-                                                        <!--
-                                                            -->
-                                                        <span class="font-normal text-sm">( Click para cambiar de unidad )</span>
+                                                        <span class="font-normal text-sm">(Click para cambiar de unidad)</span>
                                                     </TableTh>
                                                 </tr>
                                             </thead>
@@ -126,7 +124,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
                                                             ref='inputsCantidad'
                                                             @keyup="validarMayorCero(producto)"
                                                             min="1"
-                                                            class="rounded-md w-4/5 border-gray-300
+                                                            class="rounded-md w-28 border-gray-300
                                                             focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 
                                                             dark:bg-gray-900 dark:text-gray-300 dark:focus:border-indigo-600 
                                                             dark:focus:ring-indigo-600"
@@ -277,7 +275,8 @@ export default {
             this.form.idTienda = this.tienda[0].id_tienda;
             this.form.fecha = this.fechaActual;
             this.form.pedido = orden;
-            this.form.post('/orders');
+            
+            // this.form.post('/orders');
         },
     },
     
