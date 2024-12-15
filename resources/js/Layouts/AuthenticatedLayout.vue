@@ -5,6 +5,7 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
+import { obtenerFechaActual } from '@/Services/DateHelper';
 import { Link } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
@@ -52,7 +53,7 @@ const showingNavigationDropdown = ref(false);
                         
                         <div class="flex items-center">
                             <label  class="text-sm font-medium text-gray-500 dark:text-gray-300">
-                                {{ 'Fecha: ' + fechaActual  }}
+                                {{ 'Fecha: ' + obtenerFechaActual()  }}
                             </label>
                         </div>
                         

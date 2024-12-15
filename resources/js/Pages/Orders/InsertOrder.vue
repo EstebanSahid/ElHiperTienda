@@ -10,6 +10,7 @@ import TableBodyTd from '@/Components/TableBodyTd.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { obtenerFechaActualGuardarBD } from '@/Services/DateHelper';
 </script>
 
 <template>
@@ -183,7 +184,7 @@ export default {
             }),
 
             productosOrden: [],
-            fechaActual: new Date().toISOString().slice(0, 10)
+            fechaActual: obtenerFechaActualGuardarBD()
         }
     },
     methods: {
@@ -275,8 +276,7 @@ export default {
             this.form.idTienda = this.tienda[0].id_tienda;
             this.form.fecha = this.fechaActual;
             this.form.pedido = orden;
-            
-            // this.form.post('/orders');
+            this.form.post('/orders');
         },
     },
     
