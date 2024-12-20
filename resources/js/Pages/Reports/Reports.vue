@@ -20,9 +20,7 @@ import DropdownLinkButton from '@/Components/DropdownLinkButton.vue';
     <AuthenticatedLayout>
         <template #header>
             <div class="flex justify-between">
-                <h2
-                    class="text-md font-semibold leading-tight text-gray-800 dark:text-gray-200"
-                >
+                <h2 class="text-md font-semibold leading-tight text-gray-800 dark:text-gray-200">
                     Reportes
                 </h2>
     
@@ -61,30 +59,17 @@ import DropdownLinkButton from '@/Components/DropdownLinkButton.vue';
                         </template>
                     </Dropdown>
                 </div>
-                <!--
-                <button
-                    class="rounded-md px-2 leading-tight text-black ring-1 ring-transparent transition 
-                    hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] 
-                    dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white text-sm"
-                    @click="validatePDF"
-                    >
-                    Generar PDF
-                </button>
-                -->
             </div>
         </template>
 
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div
-                    class="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800"
-                >
+                <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
                         <!-- Aqui los Reportes por filtro -->
                         <div class="grid grid-cols-2 md:grid-cols-4">
                             <div class="p-2 md:p-4" >
                                 <InputLabel for="fecha" value="Fecha:"/>
-    
                                 <TextInput
                                     id="fecha"
                                     type="date"
@@ -94,23 +79,7 @@ import DropdownLinkButton from '@/Components/DropdownLinkButton.vue';
                                     autofocus
                                     autocomplete="fecha"
                                 />
-                            </div>
-                            <!--
-                            <div class="p-2 md:p-4" >
-                                <InputLabel for="hasta" value="Hasta:"/>
-
-                                <TextInput
-                                    id="hasta"
-                                    type="date"
-                                    class="mt-1 block w-full"
-                                    v-model="buscador.hasta"
-                                    required
-                                    autofocus
-                                    autocomplete="hasta"
-                                    @change="validarFecha()"
-                                />
-                            </div>
-                            -->
+                            </div>                            
                             <div class="p-2 md:p-4" >
                                 <InputLabel for="tienda" value="Tiendas:"/>
 
@@ -172,12 +141,48 @@ import DropdownLinkButton from '@/Components/DropdownLinkButton.vue';
                 </div>
             </div>
         </div>
+
+        <!-- Modal -->
+        <div v-if="showModal"
+            class="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50"
+        >
+            <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg border-2 dark:border-gray-900 border-gray-100 w-96 max-w-full">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    <div class="py-3">
+                        <div class="overflow-x-auto rounded-md shadow">
+                            <Table>
+                                <thead>
+                                    <TableTh>Seleccione la Tienda</TableTh>
+                                </thead>
+                                <TableBodyTr
+                                    v-for="(tiendaDuplicar) in tiendasDuplicar"
+                                    :key="tiendaDuplicar.id_tienda"
+                                >
+                                    <TableBodyTd>
+                                        {{ tiendaDuplicar.nombre_tienda }}
+                                    </TableBodyTd>
+                                </TableBodyTr>
+                                <TableBodyTr v-if="tiendasDuplicar.length === 0">
+                                    <TableBodyTd
+                                        colspan="1"
+                                        class="font-semibold"
+                                    >
+                                        Todas las tiendas ya tienen una orden registrada para hoy
+                                    </TableBodyTd>
+                                </TableBodyTr>
+                            </Table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </AuthenticatedLayout>
 </template>
 
 <script>
 export default {
     props: {
+        tiendasDuplicar: Array,
         pedidos: Array,
         tiendas: Array,
         dataThead: Array,
@@ -196,6 +201,7 @@ export default {
             },
 
             disabledPDF: true,
+            showModal: false,
         }
     },
 
@@ -205,18 +211,10 @@ export default {
         },
     },
 
-    /*
-    watch: {
-        form: {
-            deep: true,
-            handler: function () {
-                setTimeout(() => {
-                    console.log("Aqui se filtrará")
-                }, 150)
-            }
-        }
+    mounted() {
+        console.log("Tiendas Duplicar")
+        console.log(this.buscador.id_tienda);
     },
-    */
 
     methods: {
         // Generar el PDF
@@ -253,21 +251,6 @@ export default {
             return `${anio}-${mes}-${dia}`;
         },
 
-        /*
-        validarFecha(parametro = null) {
-            let desde = new Date(this.buscador.desde);
-            let hasta = new Date(this.buscador.hasta);
-
-            if (hasta < desde) {
-                if (parametro === 'desde') {
-                    this.buscador.hasta = this.buscador.desde;
-                } else {
-                    this.buscador.desde = this.buscador.hasta;
-                }
-            }
-        },
-        */
-
         // Obtener los datos para el reporte
         getData() {
             const data = router.get('/reports', {dates: this.buscador}, {preserveState: true})
@@ -275,6 +258,9 @@ export default {
 
         // Duplicar la orden
         duplicarOrden() {
+            this.showModal = true
+            console.log("this.showModal")
+            console.log(this.showModal)
             console.log('Aqui se duplicara la orden para a tienda ' + this.buscador.id_tienda);
         }
     },

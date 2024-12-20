@@ -8,6 +8,7 @@ use App\Models\OrderDetails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Carbon\Carbon;
 
 class OrderController extends Controller
 {
@@ -63,7 +64,8 @@ class OrderController extends Controller
     }
 
     private function verificarExistencia($tiendas) {
-        $hoy = date('Y-m-d');
+        $timezone = config('app.timezone'); 
+        $hoy = Carbon::now($timezone)->format('Y-m-d');
 
         // Recorremos los datos de una pagina
         foreach ($tiendas->items() as $tienda) {

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Carbon\Carbon;
 
 class ReportController extends Controller
 {
@@ -16,12 +17,14 @@ class ReportController extends Controller
         $showTiendasThead = [];
         $showDataTBody = [];
         $numerosPedido = [];
+        $showTiendasDuplicar = [];
 
         // Control para mostrar las Tiendas según sus accesos
         $showTiendas = $rol == 1 ? $this->showTiendasAdmin() : $this->showTiendasEncargado($userId);
-
+        
         // Obtener la data del encabezado y el cuerpo cuando se uso algún filtro
         if (!empty($buscador)) {
+            $showTiendasDuplicar = $this->tiendasDisponiblesParaDuplicar($showTiendas);
             $showTiendasThead = $this->showTiendasThead($showTiendas, $buscador['id_tienda']);
             //$showDataTBody = $this->showDataTbody($showTiendas, $buscador);
 
@@ -36,6 +39,7 @@ class ReportController extends Controller
         ]);
 
         return Inertia::render('Reports/Reports', [
+            'tiendasDuplicar' => $showTiendasDuplicar,
             'tiendas' => $showTiendas,
             'dataThead' => $showTiendasThead,
             'pedidos' => $showDataTBody,
@@ -232,5 +236,24 @@ class ReportController extends Controller
         }
 
         return $output;
+    }
+
+    private function tiendasDisponiblesParaDuplicar($tiendas) {
+        $timezone = config('app.timezone'); 
+        $hoy = Carbon::now($timezone)->format('Y-m-d');
+        
+        $tiendasConOrden = DB::table('pedidos') 
+            ->where('fecha_pedido', '=', $hoy) 
+            ->pluck('id_tienda') 
+            ->toArray();
+        
+        $tiendasDisponibles = []; 
+        foreach ($tiendas as $tienda) { 
+            if (!in_array($tienda->id_tienda, $tiendasConOrden)) { 
+                $tiendasDisponibles[] = $tienda; 
+            } 
+        } 
+        
+        return $tiendasDisponibles;
     }
 }
