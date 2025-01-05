@@ -123,6 +123,7 @@ import { obtenerFechaActualGuardarBD } from '@/Services/DateHelper';
                                                     <TableBodyTd>{{ producto.nombre }}</TableBodyTd>
                                                     <TableBodyTd>
                                                         <input 
+                                                            ref='inputsCantidad'
                                                             @keyup="validarMayorCero(producto)"
                                                             min="1"
                                                             class="rounded-md w-28 border-gray-300
@@ -216,6 +217,14 @@ export default {
                 producto.cantidad = null;
                 //producto.existe = 0;
                 this.productosOrden.push(producto);
+
+                // Focus al ultimo input
+                this.$nextTick(() => {
+                    const inputs = this.$refs.inputsCantidad;
+                    if (inputs && inputs.length > 0) {
+                        inputs[inputs.length - 1].focus();
+                    }
+                });
             } else {
                 alert('El producto ya esta registrado para una orden')
             }
