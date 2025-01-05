@@ -40,7 +40,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/dashboard', 'index')->name('dashboard');
         Route::get('/order/{id}/create', 'create')->name('order.create');
         Route::get('/order/{id}/edit', 'renderEdit')->name('show.edit');
-        Route::get('/order/{id}/duplicate', 'renderDuplicate')->name('show.duplicate');
+        Route::get('/order/{idPedido}/{idTienda}/duplicate', 'renderDuplicate')->name('show.duplicate');
         Route::post('/orders', 'store')->name('order.store');
         Route::put('/editOrders', 'update')->name('order.update');
         //Route::get('/getProducts', 'getProducts')->name('order.getProducts');

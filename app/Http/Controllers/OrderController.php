@@ -268,16 +268,27 @@ class OrderController extends Controller
             ->get();
     }
 
+    public function getProductsOrderDuplicated($idPedido) {
+        $dateHoy = Date('Y-m-d');
+        return DB::table('pedidos_detalle as pd')
+            ->join('unidad_pedido as up', 'pd.id_unidad_pedido', '=', 'up.id_unidad_pedido')
+            ->join('pedidos as p', 'p.id_pedido', '=', 'pd.id_pedido')
+            ->select('p.id_pedido','pd.id_pdetalle', 'pd.id_producto', 'pd.nombre_producto as nombre', 'pd.plus_producto as plus', 'pd.cantidad', 'up.codigo', 'up.id_unidad_pedido as id_unidad'/*, DB::raw('1 as existe')*/)
+            ->where('p.id_pedido', '=', $idPedido)
+            ->orderBy('pd.nombre_producto')
+            ->get();
+    }
+
     /*  DUPLICAR ORDEN */
-    public function renderDuplicate(Request $request, $id) {
+    public function renderDuplicate(Request $request, $idPedido, $idTienda) {
         $buscador = $request->input('search');
 
         // Construimos la consulta con el QueryBuilder
         $productos = $this->getProducts($buscador);
         $unidadPedido = $this->getUnidad();
-        $tienda = $this->getTiendas($id);
-        $productosRegistrados = $this->getProductsOrder($id);
-        $idPedido = $this->getPedido($id);
+        $tienda = $this->getTiendas($idTienda);
+        $productosRegistrados = $this->getProductsOrderDuplicated($idPedido);
+        $idPedido = $this->getPedido($idTienda);
 
         return Inertia::render('Orders/DuplicateOrder', [
             'productos' => $productos,

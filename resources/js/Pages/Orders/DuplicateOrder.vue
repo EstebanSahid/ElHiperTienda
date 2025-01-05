@@ -22,10 +22,10 @@ import { obtenerFechaActualGuardarBD } from '@/Services/DateHelper';
                 <h2
                     class="text-md font-semibold leading-tight text-gray-800 dark:text-gray-200"
                 >
-                    Editar orden para {{ tienda[0].nombre }}
+                    Duplicar orden para {{ tienda[0].nombre }}
                 </h2>
 
-                <PrimaryButton @click="validarOrden(productosOrden)">Actualizar</PrimaryButton>
+                <PrimaryButton @click="validarOrden(productosOrden)">Guardar</PrimaryButton>
 
             </div>
         </template>
@@ -197,10 +197,6 @@ export default {
     methods: {
         // Quitar un producto de la orden
         deleteProductArray(producto){
-            /*
-            console.log("Productos Orden:", this.productosOrden);
-            console.log(producto);
-            */
             const indexOrden = this.productosOrden.findIndex(po => po.id_producto == producto.id_producto);
             const indexPedido = this.cambios.findIndex(pc => pc.id_producto == producto.id_producto);
 
@@ -256,16 +252,10 @@ export default {
                 return;
             }
 
-            this.verificarData(orden);
+            this.validarCantidadProductos(orden);
         },
 
         verificarData(orden) {
-            /*
-            console.log("Productos Originales:", this.productosOriginal);
-            console.log("Productos Orden:", this.productosOrden);
-            console.log("Productos desde la funcion:", orden);
-            */
-
             orden.forEach((productoNuevo) => {
                 const existe = this.productosOriginal.find(
                     (productoExistente) => productoExistente.id_producto === productoNuevo.id_producto
@@ -328,15 +318,10 @@ export default {
 
         guardarOrden(orden) {
             // Formateamos el objeto form y enviamos
-            if (orden.length < 1) {
-                alert('Debe haber por lo menos un registro para Actualizar');
-                return;
-            }
             this.form.idTienda = this.tienda[0].id_tienda;
-            this.form.idPedido = this.id_pedido[0].id_pedido;
             this.form.fecha = this.fechaActual;
             this.form.pedido = orden;
-            this.form.put('/editOrders');
+            this.form.post('/orders');
         },
     },
     

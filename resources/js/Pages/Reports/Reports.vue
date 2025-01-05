@@ -161,7 +161,7 @@ import DangerButton from '@/Components/DangerButton.vue';
                                     :key="tiendaDuplicar.id_tienda"
                                 >
                                     <TableBodyTd>
-                                        <Link :href="`/order/${tiendaDuplicar.id_tienda}/duplicate`"
+                                        <Link :href="`/order/${idPedido}/${tiendaDuplicar.id_tienda}/duplicate`"
                                             class="block w-full h-full px-4 py-2 text-center"
                                         >
                                             {{ tiendaDuplicar.nombre_tienda }}
@@ -218,6 +218,8 @@ export default {
 
             disabledPDF: true,
             showModal: false,
+
+            idPedido: null,
         }
     },
 
@@ -275,8 +277,10 @@ export default {
         // Duplicar la orden
         duplicarOrden() {
             this.showModal = true
-            console.log("this.showModal")
-            console.log(this.showModal)
+            this.idPedido = this.pedidos[0].id_pedido
+            console.log("Pedido", this.pedidos[0].id_pedido)
+            console.log(this.pedidos)
+            console.log(this.pedidos[0].id_pedido)
             console.log('Aqui se duplicara la orden para a tienda ' + this.buscador.id_tienda);
         }
     },
