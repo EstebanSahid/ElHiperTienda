@@ -9,9 +9,10 @@ import SelectForm from '@/Components/SelectForm.vue';
 import OptionForm from '@/Components/OptionForm.vue';
 import TableBodyTr from '@/Components/TableBodyTr.vue';
 import TableBodyTd from '@/Components/TableBodyTd.vue';
-import { Head, router } from '@inertiajs/vue3';
+import { Head, router, Link } from '@inertiajs/vue3';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLinkButton from '@/Components/DropdownLinkButton.vue';
+import DangerButton from '@/Components/DangerButton.vue';
 </script>
 
 <template>
@@ -142,12 +143,13 @@ import DropdownLinkButton from '@/Components/DropdownLinkButton.vue';
             </div>
         </div>
 
-        <!-- Modal -->
-        <div v-if="showModal"
+        <div 
+            v-if="showModal"
             class="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50"
         >
             <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg border-2 dark:border-gray-900 border-gray-100 w-96 max-w-full">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
+                    <!-- Contenido del Modal -->
                     <div class="py-3">
                         <div class="overflow-x-auto rounded-md shadow">
                             <Table>
@@ -159,7 +161,11 @@ import DropdownLinkButton from '@/Components/DropdownLinkButton.vue';
                                     :key="tiendaDuplicar.id_tienda"
                                 >
                                     <TableBodyTd>
-                                        {{ tiendaDuplicar.nombre_tienda }}
+                                        <Link :href="`/order/${tiendaDuplicar.id_tienda}/duplicate`"
+                                            class="block w-full h-full px-4 py-2 text-center"
+                                        >
+                                            {{ tiendaDuplicar.nombre_tienda }}
+                                        </Link>
                                     </TableBodyTd>
                                 </TableBodyTr>
                                 <TableBodyTr v-if="tiendasDuplicar.length === 0">
@@ -172,6 +178,16 @@ import DropdownLinkButton from '@/Components/DropdownLinkButton.vue';
                                 </TableBodyTr>
                             </Table>
                         </div>
+                    </div>
+
+                    <!-- Botón para cerrar el modal -->
+                    <div class="pt-2 flex justify-end">
+                        <DangerButton
+                            class="ms-4"
+                            @click="showModal = false"
+                        >
+                            Cerrar
+                        </DangerButton>
                     </div>
                 </div>
             </div>

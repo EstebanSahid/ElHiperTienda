@@ -268,6 +268,28 @@ class OrderController extends Controller
             ->get();
     }
 
+    /*  DUPLICAR ORDEN */
+    public function renderDuplicate(Request $request, $id) {
+        $buscador = $request->input('search');
+
+        // Construimos la consulta con el QueryBuilder
+        $productos = $this->getProducts($buscador);
+        $unidadPedido = $this->getUnidad();
+        $tienda = $this->getTiendas($id);
+        $productosRegistrados = $this->getProductsOrder($id);
+        $idPedido = $this->getPedido($id);
+
+        return Inertia::render('Orders/DuplicateOrder', [
+            'productos' => $productos,
+            'filtro' => $request->all('search'),
+            'unidadMedida' => $unidadPedido,
+            'tienda' => $tienda,
+            'productosOrden' => $productosRegistrados,
+            'productosOriginal' => $productosRegistrados,
+            'id_pedido' => $idPedido
+        ]);
+    }
+
     /* FUNCIONES COMPARTIDAS */
     private function getProducts($buscador) {
         return DB::table('productos')

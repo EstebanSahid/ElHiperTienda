@@ -83,7 +83,6 @@ class ReportController extends Controller
         // Verificar si hay productos en la orden
         $existenPedidos = $this->verificarExistencia($tiendas, $filtro);
         if (empty($existenPedidos)) {
-            // return [];
             return [
                 'productosOrganizados' => [],
                 'numerosPedido' => []
@@ -92,11 +91,10 @@ class ReportController extends Controller
         
         $productos = $this->getProducts($existenPedidos);
         $organizarProductos = $this->organizarProductos($productos);
-        //return $organizarProductos;
 
          // Extraer solo numero_pedido y formatear
         $numerosPedido = array_map(function ($pedido) {
-            return str_pad($pedido->numero_pedido, 5, '0', STR_PAD_LEFT); // Agrega ceros a la izquierda
+            return str_pad($pedido->numero_pedido, 5, '0', STR_PAD_LEFT);
         }, $existenPedidos);
 
         return [
@@ -137,7 +135,6 @@ class ReportController extends Controller
 
     private function getProducts($pedidos) {
         // Obtener los productos de la orden
-        //dd($pedidos);
         $productos = [];
         foreach ($pedidos as $pedido) {
             $data = DB::table('pedidos_detalle as pd')
@@ -169,7 +166,7 @@ class ReportController extends Controller
         // Organizar los productos y pedidos
         foreach ($productos as $producto) {
             $idProducto = $producto->id_producto;
-            $idPedido = $producto->id_tienda;
+            $idTienda = $producto->id_tienda;
             $cantidad = $producto->cantidad;
             $idUnidad = $producto->id_unidad_pedido;
             $cantidadConcat = $producto->cantidad_concat;
@@ -180,6 +177,7 @@ class ReportController extends Controller
                 $rowData[$idProducto] = [
                     'plus_producto' => $producto->plus_producto,
                     'nombre_producto' => $producto->nombre_producto,
+                    'id_pedido' => $producto->id_pedido,
                     'pedidos' => [],
                     'nombresUnidad' => [],
                     'totales' => [],
@@ -187,7 +185,7 @@ class ReportController extends Controller
             }
     
             // Guardamos la cantidad en la columna correspondiente al id_pedido
-            $rowData[$idProducto]['pedidos'][$idPedido] = $cantidadConcat;
+            $rowData[$idProducto]['pedidos'][$idTienda] = $cantidadConcat;
             $rowData[$idProducto]['nombresUnidad'][$idUnidad] = $nombreUnidad;
 
             // Verificamos, si existe un total se suma
@@ -199,11 +197,15 @@ class ReportController extends Controller
             }
     
             // Guardamos los id_pedido únicos para generar las columnas dinámicas
-            if (!in_array($idPedido, $pedidos)) {
-                $pedidos[] = $idPedido;
+            if (!in_array($idTienda, $pedidos)) {
+                $pedidos[] = $idTienda;
             }
         }
     
+        return $this->generarDatosParaReporte($rowData, $pedidos);
+    }
+
+    private function generarDatosParaReporte($rowData, $pedidos) {
         // Generamos y organizamos la tabla con los productos clasificados por producto
         $output = [];
         
@@ -224,12 +226,13 @@ class ReportController extends Controller
             $fila = [
                 'plus' => $productoData['plus_producto'],
                 'producto' => $productoData['nombre_producto'],
-                'total' => $total
+                'total' => $total,
+                'id_pedido' => $productoData['id_pedido']
             ];
     
-            // Para cada id_pedido, agregamos la cantidad o un guion si no existe
-            foreach ($pedidos as $idPedido) {
-                $fila['pedido_' . $idPedido] = $productoData['pedidos'][$idPedido] ?? '-';
+            // Para cada Tienda, agregamos la cantidad o un guion si no existe
+            foreach ($pedidos as $idTienda) {
+                $fila['pedido_' . $idTienda] = $productoData['pedidos'][$idTienda] ?? '-';
             }
         
             $output[] = $fila;
