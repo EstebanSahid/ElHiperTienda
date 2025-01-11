@@ -13,6 +13,7 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import DropdownLinkButton from '@/Components/DropdownLinkButton.vue';
 import DangerButton from '@/Components/DangerButton.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import ModalImportExcel from '@/Components/ModalImportExcel.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import EditProduct from './EditProduct.vue';
 
@@ -76,7 +77,7 @@ defineProps({
                         <DropdownLink :href="route('registro.product')">
                             Nuevo producto
                         </DropdownLink>
-                        <DropdownLinkButton @click="abrirModImportar()">
+                        <DropdownLinkButton @click="showModal = true">
                             Importar desde Excel
                         </DropdownLinkButton>
                     </template>
@@ -172,41 +173,12 @@ defineProps({
             <Pagination :links="productos.links" />
         </div>
 
-        <div 
-            v-if="showModal"
-            class="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50"
-        >
-            <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg border-2 dark:border-gray-900 border-gray-100 w-auto max-w-full">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <!-- Contenido del Modal -->
-                    <div class="py-3">
-                        <h4 class="text-lg">Importar desde Excel</h4>
-                        <div class="overflow-x-auto rounded-md shadow pt-3">
-                            <input type="file" name="file" id="file" accept=".xlsx" @change="validarExcel()" />
-                        </div>
-                    </div>
-
-                    <!-- Botón para cerrar el modal -->
-                    <div class="pt-2 flex justify-end">
-                        <PrimaryButton
-                            class="ms-4"
-                            @click="ImportarExcel()"
-                            v-if="excel.file"
-                        >
-                            Importar
-                        </PrimaryButton>
-
-
-                        <DangerButton
-                            class="ms-4"
-                            @click="showModal = false"
-                        >
-                            Cerrar
-                        </DangerButton>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <ModalImportExcel v-if="showModal"
+            @CerrarModal="showModal = false"
+            :title="'Importar Productos'"
+            :message="'El archivo Excel debe tener en sus cabeceras Plus (Codigo) y Nombre'"
+            :route="'/products/import'"
+        />
     </AuthenticatedLayout>
 </template>
 
@@ -258,17 +230,13 @@ export default {
     },
 
     methods: {
-        ImportarExcel() {
-            this.excel.post('/import');
-        },
+        // ImportarExcel() {
+        //     this.excel.post('/import');
+        // },
 
-        validarExcel() {
-            this.excel.file = document.getElementById('file').files[0];
-        },
-
-        abrirModImportar() {
-            this.showModal = true;
-        },
+        // validarExcel() {
+        //     this.excel.file = document.getElementById('file').files[0];
+        // },
 
         cleanEditables() {
             this.editableId = null;
