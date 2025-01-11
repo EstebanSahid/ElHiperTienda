@@ -8,6 +8,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TiendaController;
 use App\Http\Controllers\UnidadMedidaController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ExcelController;
 use App\http\Middleware\CheckRol;
 use App\Models\User;
 use Illuminate\Foundation\Application;
@@ -28,6 +29,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     /* PARA TODOS LOS USUARIOS AUTENTICADOS */
 
+    Route::controller(ExcelController::class)->group(function() {
+        Route::get('/import', 'import')->name('import');
+        Route::post('/import', 'importExcel')->name('importExcel');
+    });
+    
     // Perfil
     Route::controller(ProfileController::class)->group(function() {
         Route::get('/profile', 'edit')->name('profile.edit');
