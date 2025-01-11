@@ -77,7 +77,7 @@ defineProps({
                             Nuevo producto
                         </DropdownLink>
                         <DropdownLinkButton @click="abrirModImportar()">
-                            Imporar desde Excel
+                            Importar desde Excel
                         </DropdownLinkButton>
                     </template>
                 </Dropdown>
