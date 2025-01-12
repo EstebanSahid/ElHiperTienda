@@ -6,35 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Imports\ProductsImport;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
-use Inertia\Inertia;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
 class ExcelController extends Controller
 {
-    public function importarProductosExcel(Request $request) {
-        $request->validate([
-            'file' => 'required|mimes:xlsx,xls'
-        ]);
-
-        $archivoExcel = $request->file('file');
-
-        $cabecerasEsperadas = ['plus', 'nombre'];
-        $cabecerasExcel = $this->ObtenerNombresEncabezados($archivoExcel);
-
-        $tieneCabeceras = $this->ValidarExstenciaEncabezados($cabecerasEsperadas, $cabecerasExcel);
-
-        if ($tieneCabeceras['coincideCabeceras'] === false) {
-            return redirect()->back()->withError($tieneCabeceras['mensaje']);
-        }
-
-        Excel::import(new ProductsImport, $archivoExcel);
-    }
-
+    /* FUNCIONES GLOBALES */
     private function ObtenerNombresEncabezados($archivo) {
-        $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+        $reader = new Xlsx();
         $spreadsheet = $reader->load($archivo);
         $sheetData = $spreadsheet->getActiveSheet()->toArray();
-        $headers = $sheetData[0];
-        return $headers;
+        return $sheetData[0];
     }
 
     private function ValidarExstenciaEncabezados($cabecerasEsperadas, $cabecerasExcel) {
@@ -54,6 +35,25 @@ class ExcelController extends Controller
         return array_map(function ($cabecera) {
             return strtolower(preg_replace('/[^A-Za-z0-9_]/', '', $cabecera));
         }, $cabeceras);
+    }
+
+    public function importarProductosExcel(Request $request) {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls'
+        ]);
+
+        $archivoExcel = $request->file('file');
+
+        $cabecerasEsperadas = ['plus', 'nombre'];
+        $cabecerasExcel = $this->ObtenerNombresEncabezados($archivoExcel);
+
+        $tieneCabeceras = $this->ValidarExstenciaEncabezados($cabecerasEsperadas, $cabecerasExcel);
+
+        if ($tieneCabeceras['coincideCabeceras'] === false) {
+            return redirect()->back()->withError($tieneCabeceras['mensaje']);
+        }
+
+        Excel::import(new ProductsImport, $archivoExcel);
     }
 }
 
