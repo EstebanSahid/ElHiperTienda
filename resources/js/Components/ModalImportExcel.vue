@@ -79,6 +79,7 @@ export default {
     methods: {
         ImportarExcel() {
             this.excel.post(this.rutaApi);
+            this.CerrarModal();
         },
 
         validarExcel() {
@@ -88,21 +89,6 @@ export default {
         CerrarModal() {
             this.$emit('CerrarModal');
         },
-
-        // ImportarExcel() {
-        //     const formData = new FormData();
-        //     formData.append('file', this.excel.file);
-        //     axios.post(this.route, formData, {
-        //         headers: {
-        //             'Content-Type': 'multipart/form-data',
-        //         },
-        //     }).then((response) => {
-        //         this.showModal = false;
-        //         this.$inertia.reload();
-        //     }).catch((error) => {
-        //         console.log(error);
-        //     });
-        // },
     },
 }
 </script>

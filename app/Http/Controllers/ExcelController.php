@@ -37,10 +37,27 @@ class ExcelController extends Controller
         }, $cabeceras);
     }
 
-    private function Importar($modelo, $archivoExcel) {
-        dd('hechio00');
-        Excel::import($modelo, $archivoExcel);
-        // Excel::import(new ProductsImport, $archivoExcel);
+    private function Importar($modelo, $archivoExcel, $interfaz, $mensaje) {
+        try
+        {
+            Excel::import($modelo, $archivoExcel);
+
+            $noRegistrados = $modelo->getNoRegistrados();
+            $errores = $modelo->getErrores();
+
+            if (!empty($noRegistrados)) {
+                return redirect()->route($interfaz)->with('success', $noRegistrados);
+            }
+
+            // if (!empty($errores)) {
+            //     return redirect()->route($interfaz)->with('success', $errores);
+            // }
+            return redirect()->route($interfaz)->with('success', $mensaje);
+        }
+        catch (\Exception $e)
+        {
+            return redirect()->back()->withError($e->getMessage());
+        }   
     }   
 
     public function importarProductosExcel(Request $request) {
@@ -52,14 +69,14 @@ class ExcelController extends Controller
 
         $cabecerasEsperadas = ['plus', 'nombre'];
         $cabecerasExcel = $this->ObtenerNombresEncabezados($archivoExcel);
-
         $tieneCabeceras = $this->ValidarExstenciaEncabezados($cabecerasEsperadas, $cabecerasExcel);
-
+        
         if ($tieneCabeceras['coincideCabeceras'] === false) {
             return redirect()->back()->withError($tieneCabeceras['mensaje']);
         }
+        // dd($cabecerasExcel);
 
-        $this->Importar(new ProductsImport, $archivoExcel);
+        $this->Importar(new ProductsImport($request->user()->id, $cabecerasEsperadas), $archivoExcel, 'products', 'Productos importados exitosamente');
     }
 }
 
