@@ -1,16 +1,9 @@
 <script setup>
 import DangerButton from '@/Components/DangerButton.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-
 </script>
 
 <template>
-    <!-- 
-        La ruta del Api, al modelo que se va a importar
-        El mensaje de cabeceras que debe tener el excel
-
-        v-if="showModal"
-    -->
     <div 
         
         class="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50"
@@ -19,7 +12,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
             <div class="p-6 text-gray-900 dark:text-gray-100">
                 <div class="py-3">
                     <h4 class="text-lg">{{ title }}</h4>
-                    <p class="text-sm">{{ message }}</p>
+                    <p class="text-sm py-2">{{ message }}</p>
                     <div class="overflow-x-auto rounded-md shadow pt-3">
                         <input type="file" name="file" id="file" accept=".xlsx" @change="validarExcel()" />
                     </div>
@@ -58,7 +51,7 @@ export default {
             type: String,
             required: true,
         },
-        route: {
+        rutaApi: {
             type: String,
             required: true,
         },
@@ -70,7 +63,7 @@ export default {
     data() {
         return {
             // excel: {
-            //     file: null,
+            //     file: '',
             //     headers: [],
             //     data: [],
             // },
@@ -78,13 +71,14 @@ export default {
             // Excel
             excel: this.$inertia.form({
                 file: '',
+                headers: [],
             }),
         }
     },
 
     methods: {
         ImportarExcel() {
-            this.excel.post('/import');
+            this.excel.post(this.rutaApi);
         },
 
         validarExcel() {
@@ -94,25 +88,6 @@ export default {
         CerrarModal() {
             this.$emit('CerrarModal');
         },
-
-        // validarExcel() {
-        //     const file = document.getElementById('file').files[0];
-        //     const reader = new FileReader();
-        //     reader.onload = (e) => {
-        //         const data = new Uint8Array(e.target.result);
-        //         const workbook = XLSX.read(data, { type: 'array' });
-        //         const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        //         const headers = [];
-        //         for (let key in sheet) {
-        //             if (key[0] === 'A') {
-        //                 headers.push(sheet[key].v);
-        //             }
-        //         }
-        //         this.excel.file = file;
-        //         this.excel.headers = headers;
-        //     }
-        //     reader.readAsArrayBuffer(file);
-        // },
 
         // ImportarExcel() {
         //     const formData = new FormData();

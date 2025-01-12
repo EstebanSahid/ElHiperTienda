@@ -177,8 +177,9 @@ defineProps({
             @CerrarModal="showModal = false"
             :title="'Importar Productos'"
             :message="'El archivo Excel debe tener en sus cabeceras Plus (Codigo) y Nombre'"
-            :route="'/products/import'"
+            :rutaApi="'/importarProductosExcel'"
         />
+        <!-- :route="'/products/import'" -->
     </AuthenticatedLayout>
 </template>
 
