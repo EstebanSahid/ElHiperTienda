@@ -44,31 +44,47 @@ export default {
     data() {
         return {
             show: true,
+            multiplicadorSegundos: 1000,
         }
     },
 
     mounted() {
         // Cuando el componente esté montado, verifica si hay un mensaje flash
-        if (this.$page.props.flash.success) {
-            this.showNotification();
+        if (this.$page.props.flash.success || this.$page.props.flash.error) {
+            // const duracion = this.$page.props.flash.duracionNotificacion || 3000; 
+            const duracion = this.obteneregundos(this.$page.props.flash.duracionNotificacion);
+            console.log("desde aqui")
+            this.showNotification(duracion);
         }
     },
     watch: {
         '$page.props.flash': {
             handler(newValue) {
                 // Solo muestra la notificación si hay un nuevo mensaje flash
-                if (newValue) {
-                    this.showNotification();
+                console.log(newValue);
+                if (newValue.success || newValue.error) {
+                    // const duracion = newValue.duracionNotificacion || 3000;
+                    const duracion = this.obteneregundos(this.$page.props.flash.duracionNotificacion);
+                    console.log("desde aca")
+                    this.showNotification(duracion);
+
                 }
             },
         },
     },
     methods: {
-        showNotification() {
+        showNotification(duracion) {
+            console.log("duracion")
+            console.log(duracion)
             this.show = true;
             setTimeout(() => {
                 this.show = false;
-            }, 9000);
+            }, duracion);
+        },
+
+        obteneregundos(segundos) {
+            const duracion = segundos || 3; // Valor predeterminado: 3 segundos
+            return duracion * this.multiplicadorSegundos;
         },
     },
 }

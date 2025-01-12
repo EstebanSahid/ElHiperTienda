@@ -44,7 +44,7 @@ class ProductsImport implements ToModel, WithHeadingRow
         
         // Verifica si el 'plus' ya existe en la base de datos
         if (Producto::where('plus', $plus)->exists()) {
-            $this->noRegistrados[] = "El producto ya existe en la base de datos: {$plus}, - {$row['nombre']}";
+            $this->noRegistrados[] = "El plus ya existe: {$plus}, - {$row['nombre']}";
             return null;
         }
         

@@ -46,17 +46,23 @@ class ExcelController extends Controller
             $errores = $modelo->getErrores();
 
             if (!empty($noRegistrados)) {
-                return redirect()->route($interfaz)->with('success', $noRegistrados);
+                return redirect()->route($interfaz)->with([
+                    'success' => $noRegistrados, 
+                    'duracionNotificacion' => 10]);
             }
 
-            // if (!empty($errores)) {
-            //     return redirect()->route($interfaz)->with('success', $errores);
-            // }
-            return redirect()->route($interfaz)->with('success', $mensaje);
+            return redirect()->route($interfaz)->with([
+                'success' => $mensaje
+            ]);
         }
         catch (\Exception $e)
         {
             return redirect()->back()->withError($e->getMessage());
+
+            return redirect()->back()->withErrors([
+                'error' => $e->getMessage(),
+                'duracionNotificacion' => 5,
+            ]);
         }   
     }   
 
