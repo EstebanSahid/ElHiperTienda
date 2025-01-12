@@ -37,6 +37,12 @@ class ExcelController extends Controller
         }, $cabeceras);
     }
 
+    private function Importar($modelo, $archivoExcel) {
+        dd('hechio00');
+        Excel::import($modelo, $archivoExcel);
+        // Excel::import(new ProductsImport, $archivoExcel);
+    }   
+
     public function importarProductosExcel(Request $request) {
         $request->validate([
             'file' => 'required|mimes:xlsx,xls'
@@ -53,7 +59,7 @@ class ExcelController extends Controller
             return redirect()->back()->withError($tieneCabeceras['mensaje']);
         }
 
-        Excel::import(new ProductsImport, $archivoExcel);
+        $this->Importar(new ProductsImport, $archivoExcel);
     }
 }
 
