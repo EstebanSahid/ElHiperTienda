@@ -7,6 +7,7 @@ use App\Imports\ProductsImport;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use inertia\Inertia;
 
 class ExcelController extends Controller
 {
@@ -65,6 +66,22 @@ class ExcelController extends Controller
             ]);
         }   
     }   
+
+    /* OBTENER HOJAS DEL EXCEL */
+    public function ObtenerHojasExcel(Request $request) {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls'
+        ]);
+    
+        $archivoExcel = $request->file('file');
+        $reader = new Xlsx();
+        $spreadsheet = $reader->load($archivoExcel);
+        $sheetNames = $spreadsheet->getSheetNames();
+    
+        return response()->json(['hojas' => $sheetNames], 200);
+    }
+
+    
 
     public function importarProductosExcel(Request $request) {
         $request->validate([

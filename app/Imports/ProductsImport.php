@@ -22,7 +22,6 @@ class ProductsImport implements ToModel, WithHeadingRow
 
     public function model(array $row)
     {   
-        // $this->verificarCabeceras($row);
         if (!array_key_exists('plus', $row)) {
             $this->errors[] = "Falta la columna 'plus' en una fila del archivo.";
             return null;
@@ -37,7 +36,6 @@ class ProductsImport implements ToModel, WithHeadingRow
         
         // Validación del campo 'plus'
         if (!is_numeric($plus)) {
-            // $this->noRegistrados[] = "El producto no es válido: {$plus}, - {$row['nombre']}.";
             $this->noRegistrados[] = "El producto {$row['nombre']} tiene un 'plus' no válido: {$plus}";
             return null;
         }
@@ -47,8 +45,6 @@ class ProductsImport implements ToModel, WithHeadingRow
             $this->noRegistrados[] = "El plus ya existe: {$plus}, - {$row['nombre']}";
             return null;
         }
-        
-        // dd($this->noRegistrados);
 
         return new Producto([
             'plus' => $row['plus'],
@@ -67,15 +63,4 @@ class ProductsImport implements ToModel, WithHeadingRow
     {
         return $this->errors;
     }
-
-    private function verificarCabeceras($row)
-    {
-        foreach ($this->cabecerasEsperadas as $columna) {
-            if (!array_key_exists($columna, $row)) {
-                $this->errors[] = "Falta la columna '{$columna}' en una fila del archivo.";
-                return null;
-            }
-        }
-    }
-
 }

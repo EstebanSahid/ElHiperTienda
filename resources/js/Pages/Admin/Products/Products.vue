@@ -179,7 +179,6 @@ defineProps({
             :message="'El archivo Excel debe tener en sus cabeceras Plus (Codigo) y Nombre'"
             :rutaApi="'/importarProductosExcel'"
         />
-        <!-- :route="'/products/import'" -->
     </AuthenticatedLayout>
 </template>
 

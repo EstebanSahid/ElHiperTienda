@@ -1,6 +1,7 @@
 <script setup>
 import DangerButton from '@/Components/DangerButton.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import {router} from '@inertiajs/vue3';
 </script>
 
 <template>
@@ -14,7 +15,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
                     <h4 class="text-lg">{{ title }}</h4>
                     <p class="text-sm py-2">{{ message }}</p>
                     <div class="overflow-x-auto rounded-md shadow pt-3">
-                        <input type="file" name="file" id="file" accept=".xlsx" @change="validarExcel()" />
+                        <input type="file" name="file" id="file" accept=".xlsx" @change="obtenerHojasExcel()" />
                     </div>
                 </div>
 
@@ -55,24 +56,21 @@ export default {
             type: String,
             required: true,
         },
-        headers: {
+        hojas: {
             type: Array,
             required: true,
         },
     },
     data() {
         return {
-            // excel: {
-            //     file: '',
-            //     headers: [],
-            //     data: [],
-            // },
-
             // Excel
             excel: this.$inertia.form({
                 file: '',
+                hoja: '',
                 headers: [],
             }),
+
+            hojasExcel: [],
         }
     },
 
@@ -82,8 +80,27 @@ export default {
             this.CerrarModal();
         },
 
-        validarExcel() {
+        obtenerHojasExcel() {
             this.excel.file = document.getElementById('file').files[0];
+
+            if (!this.excel.file) {
+                alert("Por favor, selecciona un archivo Excel.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', this.excel.file);
+
+            axios
+                .post('/ObtenerHojasExcel', formData)
+                .then((response) => {
+                    this.hojasExcel = response.data.hojas; // Asigna las hojas recibidas al array
+                    console.log('Hojas obtenidas:', this.hojasExcel);
+                })
+                .catch((error) => {
+                    console.error('Error al obtener las hojas:', error);
+                    alert('Hubo un problema al procesar el archivo.');
+                });
         },
 
         CerrarModal() {

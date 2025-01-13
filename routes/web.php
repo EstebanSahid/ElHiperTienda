@@ -30,6 +30,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     /* PARA TODOS LOS USUARIOS AUTENTICADOS */
 
     Route::controller(ExcelController::class)->group(function() {
+        Route::post('/ObtenerHojasExcel', 'ObtenerHojasExcel')->name('ObtenerHojasExcel');
         Route::post('/importarProductosExcel', 'importarProductosExcel')->name('importarProductosExcel');
     });
     
