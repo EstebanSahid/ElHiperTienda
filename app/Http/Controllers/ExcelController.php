@@ -12,7 +12,7 @@ use inertia\Inertia;
 class ExcelController extends Controller
 {
     /* FUNCIONES GLOBALES */
-    private function ObtenerNombresEncabezados($archivo) {
+    private function ObtenerNombresEncabezados($archivo, $hoja) {
         $reader = new Xlsx();
         $spreadsheet = $reader->load($archivo);
         $sheetData = $spreadsheet->getActiveSheet()->toArray();
@@ -75,29 +75,41 @@ class ExcelController extends Controller
     
         $archivoExcel = $request->file('file');
         $reader = new Xlsx();
-        $spreadsheet = $reader->load($archivoExcel);
-        $sheetNames = $spreadsheet->getSheetNames();
+
+        $NombreHojasArray = $reader->load($archivoExcel)->getSheetNames();
+        $NombreHojas = $this->GenerarClaveValorHojasExcel($NombreHojasArray);
     
-        return response()->json(['hojas' => $sheetNames], 200);
+        return response()->json(['hojas' => $NombreHojas], 200);
     }
 
-    
+    private function GenerarClaveValorHojasExcel($NombreHojasArray) {
+        $HojasExcel = array_map(function ($hoja, $index) {
+            return [
+                'id_hoja' => $index,
+                'nombre_hoja' => $hoja
+            ];
+        }, $NombreHojasArray, array_keys($NombreHojasArray));
 
+        return $HojasExcel;
+    }
+
+    /* IMPORTAR PRODUCTOS DESDE EXCEL */
     public function importarProductosExcel(Request $request) {
         $request->validate([
-            'file' => 'required|mimes:xlsx,xls'
+            'file' => 'required|mimes:xlsx,xls',
+            'hoja' => 'required'
         ]);
 
         $archivoExcel = $request->file('file');
+        $hoja = $request->hoja;
 
         $cabecerasEsperadas = ['plus', 'nombre'];
-        $cabecerasExcel = $this->ObtenerNombresEncabezados($archivoExcel);
+        $cabecerasExcel = $this->ObtenerNombresEncabezados($archivoExcel, $hoja);
         $tieneCabeceras = $this->ValidarExstenciaEncabezados($cabecerasEsperadas, $cabecerasExcel);
         
         if ($tieneCabeceras['coincideCabeceras'] === false) {
             return redirect()->back()->withError($tieneCabeceras['mensaje']);
         }
-        // dd($cabecerasExcel);
 
         $this->Importar(new ProductsImport($request->user()->id, $cabecerasEsperadas), $archivoExcel, 'products', 'Productos importados exitosamente');
     }

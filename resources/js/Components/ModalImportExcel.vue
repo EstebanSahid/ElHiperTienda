@@ -1,7 +1,9 @@
 <script setup>
 import DangerButton from '@/Components/DangerButton.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import {router} from '@inertiajs/vue3';
+import SelectForm from '@/Components/SelectForm.vue';
+import OptionForm from '@/Components/OptionForm.vue';
+import InputLabel from '@/Components/InputLabel.vue';
 </script>
 
 <template>
@@ -14,8 +16,27 @@ import {router} from '@inertiajs/vue3';
                 <div class="py-3">
                     <h4 class="text-lg">{{ title }}</h4>
                     <p class="text-sm py-2">{{ message }}</p>
-                    <div class="overflow-x-auto rounded-md shadow pt-3">
-                        <input type="file" name="file" id="file" accept=".xlsx" @change="obtenerHojasExcel()" />
+                    
+                    <div class="grid-cols-2">
+                        <!-- <div class="overflow-x-auto rounded-md shadow pt-3"> -->
+                        <div class="overflow-x-auto rounded-md mt-4">
+                            <input type="file" name="file" id="file" accept=".xlsx" @change="obtenerHojasExcel()" />
+                        </div>
+
+                        <div class="mt-4">
+                            <InputLabel for="HojaExcel" value="Hoja de Excel" />
+
+                            <SelectForm
+                                v-model="excel.hoja"
+                                class="mt-1 block w-full"
+                                :disabled="excel.file === ''"
+                            >
+                                <OptionForm v-for="hoja in hojasExcel" :key="hoja.id_hoja" :value="hoja.id_hoja">
+                                    {{ hoja.nombre_hoja }}
+                                </OptionForm>
+                            </SelectForm>
+
+                        </div>
                     </div>
                 </div>
 
@@ -23,7 +44,7 @@ import {router} from '@inertiajs/vue3';
                     <PrimaryButton
                         class="ms-4"
                         @click="ImportarExcel()"
-                        v-if="excel.file"
+                        v-if="excel.file !== '' && excel.hoja !== ''"
                     >
                         Importar
                     </PrimaryButton>
@@ -67,7 +88,6 @@ export default {
             excel: this.$inertia.form({
                 file: '',
                 hoja: '',
-                headers: [],
             }),
 
             hojasExcel: [],
@@ -94,7 +114,7 @@ export default {
             axios
                 .post('/ObtenerHojasExcel', formData)
                 .then((response) => {
-                    this.hojasExcel = response.data.hojas; // Asigna las hojas recibidas al array
+                    this.hojasExcel = response.data.hojas;
                     console.log('Hojas obtenidas:', this.hojasExcel);
                 })
                 .catch((error) => {
