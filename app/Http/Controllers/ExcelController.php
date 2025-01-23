@@ -12,10 +12,13 @@ use inertia\Inertia;
 class ExcelController extends Controller
 {
     /* FUNCIONES GLOBALES */
-    private function ObtenerNombresEncabezados($archivo, $hoja) {
+    private function ObtenerNombresEncabezados($archivoExcel, $nombreHoja) {
         $reader = new Xlsx();
-        $spreadsheet = $reader->load($archivo);
-        $sheetData = $spreadsheet->getActiveSheet()->toArray();
+        $spreadsheet = $reader->load($archivoExcel);
+        // dd($nombreHoja);
+        $hojaSeleccionada = $spreadsheet->getSheetByName($nombreHoja);
+        $sheetData = $hojaSeleccionada->toArray();
+
         return $sheetData[0];
     }
 
@@ -111,7 +114,7 @@ class ExcelController extends Controller
             return redirect()->back()->withError($tieneCabeceras['mensaje']);
         }
 
-        $this->Importar(new ProductsImport($request->user()->id, $cabecerasEsperadas), $archivoExcel, 'products', 'Productos importados exitosamente');
+        $this->Importar(new ProductsImport($request->user()->id, $hoja), $archivoExcel, 'products', 'Productos importados exitosamente');
     }
 }
 

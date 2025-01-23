@@ -14,14 +14,16 @@ class OrderController extends Controller
 {
     /* LISTAR TIENDAS PARA GENERAR ORDENES */
     public function index(Request $request) {
-        $userId = $request->user()->id;
         $rol = $request->user()->id_rol;
+
         if ($rol == 1) {
             $showTiendas = $this->indexAdmin();
         } else {
+            $userId = $request->user()->id;
             $showTiendas = $this->indexEncargado($userId);
         }
         $showTiendas = $this->verificarExistencia($showTiendas);
+
         return Inertia::render('Dashboard', [
             'tiendas' => $showTiendas,
         ]);

@@ -40,15 +40,6 @@ defineProps({
                     Lista de Productos
                 </h2>
 
-                <!-- <Link
-                    :href="route('registro.product')"
-                    class="rounded-md px-2 leading-tight text-black ring-1 ring-transparent transition 
-                    hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] 
-                    dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white text-sm"
-                >
-                    Nuevo Producto
-                </Link> -->
-
                 <Dropdown>
                     <template #trigger>
                         <span>
@@ -219,25 +210,12 @@ export default {
             handler: function () {
                 setTimeout(() => {
                     this.getData();
-                    // router.get(`/products`, {search: this.buscador.search }, { preserveState: true });
                 }, 150)
             }
         }
     },
 
-    mounted() {
-        console.log(this.archivoExcel);
-    },
-
     methods: {
-        // ImportarExcel() {
-        //     this.excel.post('/import');
-        // },
-
-        // validarExcel() {
-        //     this.excel.file = document.getElementById('file').files[0];
-        // },
-
         cleanEditables() {
             this.editableId = null;
             this.editableCelda = null;
@@ -306,7 +284,6 @@ export default {
             this.form.id_producto = producto.id_producto
             if (confirm('¿Esta seguro que quiere dar de alta a ' + producto.nombre + '?')) {
                 this.form.put('/productActivate');
-                console.log("producto Activado");
             }
         },
 
@@ -314,7 +291,6 @@ export default {
             this.form.id_producto = producto.id_producto
             if (confirm('¿Está seguro que quiere dar de baja a ' + producto.nombre + '?' )) {
                 this.form.put('/productDelete');
-                console.log("producto desactivado");
             }
         },
 

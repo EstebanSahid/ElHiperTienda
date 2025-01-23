@@ -29,9 +29,14 @@ import InputLabel from '@/Components/InputLabel.vue';
                             <SelectForm
                                 v-model="excel.hoja"
                                 class="mt-1 block w-full"
-                                :disabled="excel.file === ''"
+                                
                             >
-                                <OptionForm v-for="hoja in hojasExcel" :key="hoja.id_hoja" :value="hoja.id_hoja">
+
+                                <OptionForm :value="''">
+                                    {{ hojasExcel.length === 0 ? 'Carga un Excel para poder listar las Hojas' : 'Por favor Selecciona una Hoja' }}
+                                </OptionForm>
+                                
+                                <OptionForm v-for="hoja in hojasExcel" :key="hoja.id_hoja" :value="hoja.nombre_hoja">
                                     {{ hoja.nombre_hoja }}
                                 </OptionForm>
                             </SelectForm>
@@ -85,6 +90,7 @@ export default {
     data() {
         return {
             // Excel
+
             excel: this.$inertia.form({
                 file: '',
                 hoja: '',
@@ -115,7 +121,12 @@ export default {
                 .post('/ObtenerHojasExcel', formData)
                 .then((response) => {
                     this.hojasExcel = response.data.hojas;
-                    console.log('Hojas obtenidas:', this.hojasExcel);
+
+                    if (this.hojasExcel.length > 0) {
+                        this.excel.hoja = this.hojasExcel[0].nombre_hoja;
+                    } else {
+                        alert('No se encontraron hojas en el archivo.');
+                    }
                 })
                 .catch((error) => {
                     console.error('Error al obtener las hojas:', error);

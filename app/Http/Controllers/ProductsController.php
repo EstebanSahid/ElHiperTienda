@@ -31,7 +31,6 @@ class ProductsController extends Controller
 
         return Inertia::render('Admin/Products/Products', [
             'productos' => $productos,
-            //'filtro' => $request->all('search'),
             'filtro' => [
                 'search' => $request->input('search.search', ''),
                 'orderBy' => $request->input('search.orderBy', 'nombre')

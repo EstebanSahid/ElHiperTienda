@@ -9,15 +9,15 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 class ProductsImport implements ToModel, WithHeadingRow
 {
-    private $noRegistrados = [];
-    private $errors = [];
-    private $UserId;    
-    private $cabecerasEsperadas;
+    private array $noRegistrados = [];
+    private array $errors = [];
+    private int $UserId;
+    private string $nombreHoja;
 
-    public function __construct($UserId, $cabecerasEsperadas)
+    public function __construct($UserId, $nombreHoja)
     {
         $this->UserId = $UserId;
-        $this->cabecerasEsperadas = $cabecerasEsperadas;
+        $this->nombreHoja = $nombreHoja;
     }
 
     public function model(array $row)
@@ -54,8 +54,21 @@ class ProductsImport implements ToModel, WithHeadingRow
         ]);
     }
 
+    public function sheets(): array
+    {
+        return [
+            $this->nombreHoja => $this,
+        ];
+    }
+
     public function getNoRegistrados()
     {
+        $totalNoRegistrados = count($this->noRegistrados);
+
+        if ($totalNoRegistrados > 10) {
+            return "Hubo un total de $totalNoRegistrados productos no registrados.";
+        }
+
         return implode(', ', $this->noRegistrados);
     }
 
