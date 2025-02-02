@@ -38,6 +38,7 @@ class HandleInertiaRequests extends Middleware
                 'success' => $request->session()->get('success'),
                 'error' => $request->session()->get('error'),
                 'notFound' => $request->session()->get('notFound'),
+                'CredencialesIncorrectas' => $request->session()->get('CredencialesIncorrectas'),
                 'duracionNotificacion' => $request->session()->get('duracionNotificacion')
             ]
         ];

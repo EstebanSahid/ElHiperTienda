@@ -46,7 +46,7 @@ class NewPasswordController extends Controller
         $user = User::where('email', $validatedData['email'])->first();
 
         if (!$user) {
-            return redirect()->route('password.reset')->with('notFound', '404 - Usuario inexistente');
+            return redirect()->route('password.reset')->with('notFound', 'Usuario inexistente');
         }
         
         // Actualizar la contraseña del usuario
@@ -54,5 +54,10 @@ class NewPasswordController extends Controller
         $user->save();
 
         return redirect()->route('login')->with('success', 'Contraseña Actualizada, por favor inicie sesión');
+        // try {
+
+        // } catch (\Exception $e) {
+        //     return back()->with('error', $e->getMessage());
+        // }
     }
 }

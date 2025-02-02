@@ -52,7 +52,7 @@ defineProps({
                                     <TableTh>Direccion</TableTh>
                                     <TableTh>Estado</TableTh>
                                 </tr>
-                            </thead>
+                            </thead>clear
                             <tbody>
                                 <TableBodyTr v-for="tienda in tiendas.data" :key="tienda.id_tienda">
                                     <TableBodyTd>

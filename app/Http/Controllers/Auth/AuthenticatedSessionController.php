@@ -29,11 +29,17 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
-        
-        $request->session()->regenerate();
+        try {
+            $request->authenticate();
+            
+            $request->session()->regenerate();
+    
+            return redirect()->intended(route('dashboard', absolute: false));
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        } catch (\Exception $e) {
+            return back()->with('CredencialesIncorrectas', 'Verifique el correo y/o contraseña e intentelo nuevamente');
+        }
+
     }
 
     /**
