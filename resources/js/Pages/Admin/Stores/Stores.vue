@@ -10,7 +10,7 @@ import { Head, Link } from '@inertiajs/vue3';
 import ModalImportExcel from '@/Components/ModalImportExcel.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
-import DropdownLinkButton from '@/Components/DropdownLinkButton.vue';
+import DropdownLinkButton from '@/Components/DropdownLinkButton.vue'; 
 
 defineProps({
     tiendas: {
