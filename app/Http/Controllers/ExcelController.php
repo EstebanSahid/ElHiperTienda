@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Imports\ProductsImport;
+use App\Imports\StoresImport;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
-use inertia\Inertia;
 
 class ExcelController extends Controller
 {
@@ -15,7 +15,6 @@ class ExcelController extends Controller
     private function ObtenerNombresEncabezados($archivoExcel, $nombreHoja) {
         $reader = new Xlsx();
         $spreadsheet = $reader->load($archivoExcel);
-        // dd($nombreHoja);
         $hojaSeleccionada = $spreadsheet->getSheetByName($nombreHoja);
         $sheetData = $hojaSeleccionada->toArray();
 
@@ -72,16 +71,15 @@ class ExcelController extends Controller
 
     /* OBTENER HOJAS DEL EXCEL */
     public function ObtenerHojasExcel(Request $request) {
+        
         $request->validate([
             'file' => 'required|mimes:xlsx,xls'
         ]);
-    
         $archivoExcel = $request->file('file');
         $reader = new Xlsx();
-
         $NombreHojasArray = $reader->load($archivoExcel)->getSheetNames();
         $NombreHojas = $this->GenerarClaveValorHojasExcel($NombreHojasArray);
-    
+
         return response()->json(['hojas' => $NombreHojas], 200);
     }
 
@@ -115,6 +113,27 @@ class ExcelController extends Controller
         }
 
         $this->Importar(new ProductsImport($request->user()->id, $hoja), $archivoExcel, 'products', 'Productos importados exitosamente');
+    }
+
+     /* IMPORTAR TIENDAS DESDE EXCEL */
+    public function importarTiendasExcel(Request $request) {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls',
+            'hoja' => 'required'
+        ]);
+
+        $archivoExcel = $request->file('file');
+        $hoja = $request->hoja;
+
+        $cabecerasEsperadas = ['nombre', 'codigo'];
+        $cabecerasExcel = $this->ObtenerNombresEncabezados($archivoExcel, $hoja);
+        $tieneCabeceras = $this->ValidarExstenciaEncabezados($cabecerasEsperadas, $cabecerasExcel);
+        
+        if ($tieneCabeceras['coincideCabeceras'] === false) {
+            return redirect()->back()->withError($tieneCabeceras['mensaje']);
+        }
+
+        $this->Importar(new StoresImport($request->user()->id, $hoja), $archivoExcel, 'products', 'Productos importados exitosamente');
     }
 }
 

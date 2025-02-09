@@ -32,6 +32,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::controller(ExcelController::class)->group(function() {
         Route::post('/ObtenerHojasExcel', 'ObtenerHojasExcel')->name('ObtenerHojasExcel');
         Route::post('/importarProductosExcel', 'importarProductosExcel')->name('importarProductosExcel');
+        Route::post('/importarTiendasExcel', 'importarTiendasExcel')->name('importarTiendasExcel');
+
     });
     
     // Perfil

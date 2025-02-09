@@ -66,7 +66,7 @@ import { Head, useForm } from '@inertiajs/vue3';
                                         type="text"
                                         class="mt-1 block w-full"
                                         v-model="form.telefono"
-                                        required
+                                        
                                         autocomplete="telefono"
                                     />
     
@@ -81,7 +81,7 @@ import { Head, useForm } from '@inertiajs/vue3';
                                         type="text"
                                         class="mt-1 block w-full"
                                         v-model="form.direccion"
-                                        required
+                                        
                                         autofocus
                                         autocomplete="direccion"
                                     />

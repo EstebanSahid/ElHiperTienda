@@ -8,7 +8,6 @@ import InputLabel from '@/Components/InputLabel.vue';
 
 <template>
     <div 
-        
         class="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50"
     >
         <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg border-2 dark:border-gray-900 border-gray-100 w-auto max-w-full">
@@ -108,7 +107,8 @@ export default {
 
         obtenerHojasExcel() {
             this.excel.file = document.getElementById('file').files[0];
-
+            console.log("obtenerhojas")
+            console.log(this.excel.file)
             if (!this.excel.file) {
                 alert("Por favor, selecciona un archivo Excel.");
                 return;
@@ -116,7 +116,8 @@ export default {
 
             const formData = new FormData();
             formData.append('file', this.excel.file);
-
+            console.log("h")
+            console.log(this.excel)
             axios
                 .post('/ObtenerHojasExcel', formData)
                 .then((response) => {

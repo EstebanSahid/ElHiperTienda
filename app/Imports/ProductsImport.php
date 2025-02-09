@@ -3,7 +3,6 @@
 namespace App\Imports;
 
 use App\Models\Producto;
-use app\Models\User;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
