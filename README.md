@@ -63,6 +63,7 @@ Explicados en el paso anterior ☝🏼️☝🏼️
 
 ### 🚀 **2. Clonar el repositorio**  
 git clone https://github.com/EstebanSahid/ElHiperTienda.git
+
 cd proyecto
 
 ### 📦 3. Instalar dependencias
