@@ -119,7 +119,7 @@ php artisan serve
 ## 👨‍💻 Autor  
 Este proyecto fue inicializado utilizando **Inertia.js** como esqueleto base y adaptado para las necesidades del proyecto.  
 
-Aunque tengo algo de **experiencia profesional**, quice realizar un proyecto sencillo para validar mis conocimientos, este es **mi primer proyecto** desarrollado desde cero utilizando **frameworks modernos** como Vue.js y Laravel. Este proyecto me ha permitido adentrarme más en el ecosistema actual de desarrollo web y lo estoy añadiendo a mi **portafolio** para mostrar mi evolución y crecimiento. ¡Estoy muy emocionado de compartirlo! 😄🚀
+Quice realizar un proyecto sencillo para validar mis conocimientos, este es **mi primer proyecto** desarrollado desde cero utilizando **frameworks modernos** como Vue.js y Laravel. Este proyecto me ha permitido adentrarme más en el ecosistema actual de desarrollo web y lo estoy añadiendo a mi **portafolio** para mostrar mi evolución y crecimiento. ¡Estoy muy emocionado de compartirlo! 😄🚀
 
 ### 🔹 **Desarrollado por:**  
 Esteban Sahid
