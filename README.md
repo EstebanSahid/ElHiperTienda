@@ -125,5 +125,7 @@ Aunque tengo **experiencia profesional**, quice realizar un proyecto sencillo pa
 
 ### 🔹 **Desarrollado por:**  
 Esteban Sahid
+
 Github: https://github.com/estebanSahid
+
 LinkedIn: https://www.linkedin.com/in/esteban-sahid/
