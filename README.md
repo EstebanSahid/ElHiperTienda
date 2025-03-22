@@ -67,31 +67,31 @@ git clone https://github.com/EstebanSahid/ElHiperTienda.git
 cd proyecto
 
 ### 📦 3. Instalar dependencias
-# Instalar dependencias de Laravel
+#### Instalar dependencias de Laravel
 composer install  
 
-# Instalar dependencias de Vue y Vite
+#### Instalar dependencias de Vue y Vite
 npm install
 
 ### ⚙️ 4. Configurar variables de entorno
-# Configurar variables de entorno
+#### Configurar variables de entorno
 Puedes ver la estructura en .env.example
 
 ### 🏗 5. Crear la base de datos y ejecutar migraciones
 php artisan migrate
 
 ### 🔑 6. Generar clave de aplicación y enlazar almacenamiento
-# Generar clave unica para el proyecto
+#### Generar clave unica para el proyecto
 php artisan key:generate
 
-# Crear enlace simbolico para acceder a los archivos de imagen o reportes
+#### Crear enlace simbolico para acceder a los archivos de imagen o reportes
 php artisan storage:link
 
 ### ⚡ 7. Ejecutar el servidor de desarrollo
-# Para iniciar el frontend (Vite + Vue):
+#### Para iniciar el frontend (Vite + Vue):
 npm run build
 
-# Para iniciar el backend (Laravel):
+#### Para iniciar el backend (Laravel):
 php artisan serve
 
 
