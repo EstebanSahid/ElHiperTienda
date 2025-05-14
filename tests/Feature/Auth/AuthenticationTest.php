@@ -39,7 +39,9 @@ class AuthenticationTest extends TestCase
     {
         $rol = Rol::factory()->create();
 
-        $user = User::factory()->create();
+        $user = User::factory()->create([
+            'id_rol' => $rol->id_rol,
+        ]);
 
         $this->post('/login', [
             'email' => $user->email,
@@ -53,7 +55,9 @@ class AuthenticationTest extends TestCase
     {
         $rol = Rol::factory()->create();
         
-        $user = User::factory()->create();
+        $user = User::factory()->create([
+            'id_rol' => $rol->id_rol,
+        ]);
 
         $response = $this->actingAs($user)->post('/logout');
 
