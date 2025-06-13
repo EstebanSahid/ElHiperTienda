@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use app\http\Controllers\PermisosController;
 use App\Models\Access;
 use App\Models\Rol;
 use App\Models\User;
@@ -40,6 +41,13 @@ class UserController extends Controller
     }
 
     public function store(Request $request) {
+        // Validacion de rol de usuario
+        if(PermisosController->esAdministrador($request->user()) == false) {
+            return redirect()->back()->withErrors([
+                'error' => 'No tienes permisos para realizar esta acción'
+            ]);
+        }
+        
         // Validación
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
@@ -94,6 +102,13 @@ class UserController extends Controller
 
     /* EDITAR USUARIO */
     public function renderEdit(Request $request, $id) {
+        // Validacion de rol de usuario
+        if($this->esAdministrador($request->user()) == false) {
+            return redirect()->back()->withErrors([
+                'error' => 'No tienes permisos para realizar esta acción'
+            ]);
+        }
+
         $roles = Rol::all();
         $tiendas = $this->getTiendas();
 
@@ -109,6 +124,12 @@ class UserController extends Controller
     }
 
     public function update(Request $request) {
+        if($this->esAdministrador($request->user()) == false) {
+            return redirect()->back()->withErrors([
+                'error' => 'No tienes permisos para realizar esta acción'
+            ]);
+        }
+
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255',
@@ -194,6 +215,13 @@ class UserController extends Controller
 
     /* DESACTIVAR USUARIO (BORRAR USUARIO) */
     public function deactivate(Request $request) {
+        // Verificar rol del usuario
+        if($this->esAdministrador($request->user()) == false) {
+            return redirect()->back()->withErrors([
+                'error' => 'No tienes permisos para realizar esta acción'
+            ]);
+        }
+
         $validatedData = $request->validate([
             'id_user' => 'required'
         ]);
