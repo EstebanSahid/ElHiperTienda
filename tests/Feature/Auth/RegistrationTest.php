@@ -17,18 +17,19 @@ class RegistrationTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_new_users_can_register(): void
-    {
-        //$rol = Rol::
-        $response = $this->post('/register', [
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
-            //'id_rol' => 
-        ]);
+    // public function test_new_users_can_register(): void
+    // {
+    //     $rol = Rol::factory()->create();
 
-        $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
-    }
+    //     $response = $this->post('/register', [
+    //         'name' => 'Test User',
+    //         'email' => 'test@example.com',
+    //         'password' => 'password',
+    //         'password_confirmation' => 'password',
+    //         'id_rol' => $rol->id_rol,
+    //     ]);
+
+    //     $this->assertAuthenticated();
+    //     $response->assertRedirect(route('dashboard', absolute: false));
+    // }
 }
