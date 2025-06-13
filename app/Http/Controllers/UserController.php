@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use app\http\Controllers\PermisosController;
+use App\http\Controllers\PermisosController;
 use App\Models\Access;
 use App\Models\Rol;
 use App\Models\User;
@@ -42,12 +42,12 @@ class UserController extends Controller
 
     public function store(Request $request) {
         // Validacion de rol de usuario
-        if(PermisosController->esAdministrador($request->user()) == false) {
-            return redirect()->back()->withErrors([
+        if(!$this->validarPermisosUsuario($request->user())) {
+            return redirect()->back()->witherrors([
                 'error' => 'No tienes permisos para realizar esta acción'
             ]);
         }
-        
+
         // Validación
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
@@ -103,7 +103,7 @@ class UserController extends Controller
     /* EDITAR USUARIO */
     public function renderEdit(Request $request, $id) {
         // Validacion de rol de usuario
-        if($this->esAdministrador($request->user()) == false) {
+        if(!$this->validarPermisosUsuario($request->user())) {
             return redirect()->back()->withErrors([
                 'error' => 'No tienes permisos para realizar esta acción'
             ]);
@@ -124,7 +124,7 @@ class UserController extends Controller
     }
 
     public function update(Request $request) {
-        if($this->esAdministrador($request->user()) == false) {
+        if(!$this->validarPermisosUsuario($request->user())) {
             return redirect()->back()->withErrors([
                 'error' => 'No tienes permisos para realizar esta acción'
             ]);
@@ -216,7 +216,7 @@ class UserController extends Controller
     /* DESACTIVAR USUARIO (BORRAR USUARIO) */
     public function deactivate(Request $request) {
         // Verificar rol del usuario
-        if($this->esAdministrador($request->user()) == false) {
+        if(!$this->validarPermisosUsuario($request->user())) {
             return redirect()->back()->withErrors([
                 'error' => 'No tienes permisos para realizar esta acción'
             ]);
@@ -242,5 +242,10 @@ class UserController extends Controller
         DB::commit();
         
         return redirect()->route('users')->with('success', 'El usuario fue dado de baja');
+    }
+
+    private function validarPermisosUsuario(User $user): bool {
+        // Verificar si el usuario tiene permisos para realizar la acción
+        return PermisosController::esAdministrador($user);
     }
 }
