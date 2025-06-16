@@ -54,8 +54,4 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Tienda::class, 'accesos', 'id_user', 'id_tienda');
     }
-
-    public function isAdmin(): bool {
-        return $this->id_rol == RolEnum::ADMINISTRADOR->value;
-    }
 }

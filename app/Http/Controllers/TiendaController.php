@@ -55,7 +55,7 @@ class TiendaController extends Controller
             
             if (!$tienda->save()) {
                 DB::rollBack();
-                return redirect()->back()->withErrors(['error' => 'Error al guardar la tienda.']);
+                return redirect()->back()->withInput()->with('error', 'Error al guardar la tienda.');
             }
         
             // Obtener el id de la tienda recién creada y la posición
@@ -70,14 +70,14 @@ class TiendaController extends Controller
             
             if (!$encabezado->save()) {
                 DB::rollBack();
-                return redirect()->back()->withErrors(['error' => 'Error al guardar el encabezado de la orden.']);
+                return redirect()->back()->withInput()->with('error', 'Error al guardar el encabezado de la orden.');
             }
         
             DB::commit();
             return redirect()->route('stores')->with('success', 'Tienda creada exitosamente');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->withErrors(['error' => 'Error inesperado: ' . $e->getMessage()]);
+            return redirect()->back()->withInput()->with('error', 'Error al crear la tienda: ' . $e->getMessage());
         }        
     }
 
@@ -119,7 +119,7 @@ class TiendaController extends Controller
         
         if (!$tienda->save()) {
             DB::rollBack();
-            return redirect()->back()->withErrors(['error' => 'Error al Actualizar los datos de la tienda']);
+            return redirect()->back()->withInput()->with('error', 'Error al Actualizar los datos de la tienda ');
         }
 
         DB::commit();
@@ -139,7 +139,7 @@ class TiendaController extends Controller
 
         if (!$tienda->save()) {
             DB::rollBack();
-            return redirect()->back()->withErrors(['error' => 'Error al dar de baja a la tienda']);
+            return redirect()->back()->withInput()->with('error', 'Error al dar de baja la tienda');
         }
 
         DB::commit();

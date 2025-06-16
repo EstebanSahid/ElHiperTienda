@@ -42,7 +42,7 @@ class UnidadMedidaController extends Controller
         $unidadMedida->estado = 'Activo';
         if (!$unidadMedida->save()) {
             DB::rollBack();
-            return redirect()->back()->withErrors(['errors' => 'Error al guardar la Unidad de medida']);
+            return redirect()->back()->withInput()->with('error', 'Error al guardar la Unidad de medida');
         }
 
         DB::commit();
@@ -81,7 +81,7 @@ class UnidadMedidaController extends Controller
 
         if (!$unidadMedida->save()) {
             DB::rollBack();
-            return redirect()->back()->withErrors(['errors' => 'Error al Actualizar la Unidad de medida']);
+            return redirect()->back()->withInput()->with('error', 'Error al Actualizar la Unidad de medida');
         }
 
         DB::commit();
@@ -100,7 +100,7 @@ class UnidadMedidaController extends Controller
 
         if (!$unidadMedida->save()) {
             DB::rollBack();
-            return redirect()->back()->withErrors(['errors' => 'Error al Actualizar la Unidad de medida']);
+            return redirect()->back()->withInput()->with('error', 'Error al Actualizar la Unidad de medida');
         }
 
         DB::commit();

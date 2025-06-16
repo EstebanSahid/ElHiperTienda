@@ -148,7 +148,7 @@ class OrderController extends Controller
                 $ordenDetalle->ucrea = $userCreate;
                 if (!$ordenDetalle->save()) {
                     DB::rollBack();
-                    return redirect()->back()->withErrors(['error' => 'Error al guardar los productos a la orden.']);
+                    return redirect()->back()->withInput()->with('error', 'Error al guardar los productos a la orden');
                 }
             }
         });
@@ -208,7 +208,7 @@ class OrderController extends Controller
             }
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->withErrors(['error' => 'Error al procesar la orden: ' . $e->getMessage()]);
+            return redirect()->back()->withInput()->with('error', 'Error al actualizar la orden::' . $e->getMessage());
         }
         DB::commit();
 

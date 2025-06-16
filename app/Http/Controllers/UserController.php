@@ -41,11 +41,8 @@ class UserController extends Controller
     }
 
     public function store(Request $request) {
-        // Validacion de rol de usuario
         if(!$this->validarPermisosUsuario($request->user())) {
-            return redirect()->back()->witherrors([
-                'error' => 'No tienes permisos para realizar esta acción'
-            ]);
+            return redirect('dashboard')->with('error', 'No tienes permisos para realizar esta acción');
         }
 
         // Validación
@@ -90,7 +87,7 @@ class UserController extends Controller
                 $acceso->usuario_crea = $request->user()->id;
                 if (!$acceso->save()) {
                     DB::rollBack();
-                    return redirect()->back()->withErrors(['error' => 'Error al guardar los permisos.']);
+                    return redirect()->back()->withInput()->with('error', 'Error al guardar los permisos.');
                 }
             }
         } 
@@ -104,9 +101,7 @@ class UserController extends Controller
     public function renderEdit(Request $request, $id) {
         // Validacion de rol de usuario
         if(!$this->validarPermisosUsuario($request->user())) {
-            return redirect()->back()->withErrors([
-                'error' => 'No tienes permisos para realizar esta acción'
-            ]);
+            return redirect('dashboard')->with('error', 'No tienes permisos para realizar esta acción');
         }
 
         $roles = Rol::all();
@@ -125,9 +120,7 @@ class UserController extends Controller
 
     public function update(Request $request) {
         if(!$this->validarPermisosUsuario($request->user())) {
-            return redirect()->back()->withErrors([
-                'error' => 'No tienes permisos para realizar esta acción'
-            ]);
+            return redirect('dashboard')->with('error', 'No tienes permisos para realizar esta acción');
         }
 
         $validatedData = $request->validate([
@@ -159,7 +152,7 @@ class UserController extends Controller
 
             if (!$user->save()) {
                 DB::rollBack();
-                return redirect()->back()->withErrors(['error' => 'Error al actualizar los datos del usuario.']);
+                return redirect()->back()->withInput()->with('error', 'Error al actualizar los datos del usuario.');
             }
 
             if ($validatedData['id_rol'] == 1) {
@@ -175,7 +168,7 @@ class UserController extends Controller
                     $acceso->usuario_crea = $request->user()->id;
                     if (!$acceso->save()) {
                         DB::rollBack();
-                        return redirect()->back()->withErrors(['error' => 'Error al guardar los permisos.']);
+                        return redirect()->back()->withInput()->with('error', 'Error al guardar los permisos.');
                     }
                 }
             }
@@ -186,7 +179,7 @@ class UserController extends Controller
         } catch (\Exception $e) {
             // En caso de error, revertimos la transacción
             DB::rollBack();
-            return redirect()->back()->withErrors(['error' => 'Hubo un error: ' . $e->getMessage()]);
+            return redirect()->back()->withInput()->with('error', 'Hubo un error: ' . $e->getMessage());
         }
 
     }
@@ -217,9 +210,7 @@ class UserController extends Controller
     public function deactivate(Request $request) {
         // Verificar rol del usuario
         if(!$this->validarPermisosUsuario($request->user())) {
-            return redirect()->back()->withErrors([
-                'error' => 'No tienes permisos para realizar esta acción'
-            ]);
+            return redirect('dashboard')->with('error', 'No tienes permisos para realizar esta acción');
         }
 
         $validatedData = $request->validate([
@@ -236,7 +227,7 @@ class UserController extends Controller
 
         if (!$user->save()) {
             DB::rollBack();
-            return redirect()->back()->withErrors(['error' => 'Error al dar de baja al usuario']);
+            return redirect()->back()->withInput()->with('error', 'Error al dar de baja al usuario');
         }
 
         DB::commit();

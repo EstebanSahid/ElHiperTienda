@@ -60,9 +60,7 @@ class ExcelController extends Controller
         }
         catch (\Exception $e)
         {
-            return redirect()->back()->withError($e->getMessage());
-
-            return redirect()->back()->withErrors([
+            return redirect()->back()->with([
                 'error' => $e->getMessage(),
                 'duracionNotificacion' => 5,
             ]);

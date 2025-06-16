@@ -204,11 +204,12 @@ export default {
     
     methods: {
         store() {
+            console.log(this.form);
             this.form.post('/users');
         },
 
         validacion() {
-            // Minimo una tienda si el admin es encargado
+            // Minimo una tienda si el usuario es encargado
             if (this.form.id_rol != 1 && this.form.tiendasAsignadas.length == 0) {
                 this.validacionPermisos = true;
                 this.form.processing = false;

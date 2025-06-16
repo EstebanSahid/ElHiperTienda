@@ -11,7 +11,7 @@ use App\Enums\RolEnum;
 class PermisosController extends Controller
 {
     public static function esAdministrador(User $user): bool {
-        return $user->id_rol == RolEnum::ADMINISTRADOR;
+        return $user->id_rol === RolEnum::ADMINISTRADOR->value;
     }
 
     // public static function esVendedor(User $user): bool {
@@ -19,6 +19,6 @@ class PermisosController extends Controller
     // }
 
     public static function esUsuario(User $user): bool {
-        return $user->id_rol == RolEnum::USUARIO;
+        return $user->id_rol === RolEnum::USUARIO->value;
     }
 }

@@ -62,7 +62,7 @@ class ProductsController extends Controller
         $producto->ucrea = $request->user()->id;
         if (!$producto->save()) {
             DB::rollBack();
-            return redirect()->back()->withErrors(['errors' => 'Error al guardar el producto']);
+            return redirect()->back()->withInput()->with('error', 'Error al guardar el producto');
         }
 
         DB::commit();
@@ -106,7 +106,6 @@ class ProductsController extends Controller
 
         if (!$producto->save()) {
             DB::rollBack();
-            return redirect()->back()->withErrors(['errors' => 'Error al Actualizar el Producto']);
         }
 
         DB::commit();
