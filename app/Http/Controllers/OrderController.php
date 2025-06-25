@@ -72,7 +72,9 @@ class OrderController extends Controller
         // Recorremos los datos de una pagina
         foreach ($tiendas->items() as $tienda) {
             $pedido = DB::selectOne("
-                SELECT id_pedido 
+                SELECT 
+                    id_pedido,
+                    bloqueado 
                 FROM pedidos 
                 WHERE id_tienda = :id_tienda 
                 AND fecha_pedido = :fecha",
@@ -83,6 +85,7 @@ class OrderController extends Controller
             );
     
             $tienda->procesado = $pedido ? 1 : 0;
+            $tienda->bloqueado = $tienda->procesado = 1 ? $pedido->bloqueado : 0;
         }
     
         return $tiendas;
