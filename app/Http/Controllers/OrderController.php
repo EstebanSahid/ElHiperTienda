@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\OrderDetails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Carbon\Carbon;
 
@@ -14,24 +15,39 @@ class OrderController extends Controller
 {
     /* LISTAR TIENDAS PARA GENERAR ORDENES */
     public function index(Request $request) {
-        $rol = $request->user()->id_rol;
+        try{
+            $rol = $request->user()->id_rol;
+    
+            if ($rol == 1) {
+                $showTiendas = $this->indexAdmin();
+            } else {
+                $userId = $request->user()->id;
+                $showTiendas = $this->indexEncargado($userId);
+            }
+            $showTiendas = $this->verificarExistencia($showTiendas);
+    
+            return Inertia::render('Dashboard', [
+                'tiendas' => $showTiendas,
+            ]);
 
-        if ($rol == 1) {
-            $showTiendas = $this->indexAdmin();
-        } else {
-            $userId = $request->user()->id;
-            $showTiendas = $this->indexEncargado($userId);
+        } catch (\Exception $e) {
+            Log::error('Error al cargar el dashboard: '. $e->getMessage());
+
+            return Inertia::render('Dashboard', [
+                'tiendas' => [],
+                'error' => [
+                    'mensaje' => 'Error al cargar el dashboard: '. $e->getMessage(),
+                    'duracionNotificacion' => 10
+                ]
+            ], 500);
+
         }
-        $showTiendas = $this->verificarExistencia($showTiendas);
-
-        return Inertia::render('Dashboard', [
-            'tiendas' => $showTiendas,
-        ]);
+        
     }
 
     private function indexAdmin() {
         return DB::table('tienda')
-            ->select('id_tienda', 'nombre', 'codigo')
+            ->select('id_tienda', 'nombre', 'codigo', 'bloqueado')
             ->where('estado', 'Activo')
             ->orderBy('nombre')
             ->paginate(5);
@@ -73,8 +89,7 @@ class OrderController extends Controller
         foreach ($tiendas->items() as $tienda) {
             $pedido = DB::selectOne("
                 SELECT 
-                    id_pedido,
-                    bloqueado 
+                    id_pedido
                 FROM pedidos 
                 WHERE id_tienda = :id_tienda 
                 AND fecha_pedido = :fecha",
@@ -85,7 +100,6 @@ class OrderController extends Controller
             );
     
             $tienda->procesado = $pedido ? 1 : 0;
-            $tienda->bloqueado = $tienda->procesado = 1 ? $pedido->bloqueado : 0;
         }
     
         return $tiendas;

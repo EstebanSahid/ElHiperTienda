@@ -63,11 +63,7 @@ defineProps({
                                     </TableBodyTd>
                                     <!-- -->
                                     <TableBodyTd>
-                                        <div v-if="tienda.bloqueado">
-                                            <span class="text-red-500">Esta siendoingresada por otro usuario</span>
-                                        </div>
                                         <Link
-                                            v-else
                                             :href="tienda.procesado ? `/order/${tienda.id_tienda}/edit` : `/order/${tienda.id_tienda}/create`"
                                             class="p-2 button-hiper inline-flex items-center rounded-md border border-transparent bg-[#97a907]
                                                     px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:bg-[#59650f]
