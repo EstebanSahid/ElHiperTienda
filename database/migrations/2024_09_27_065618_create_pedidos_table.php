@@ -16,6 +16,7 @@ return new class extends Migration
             $table->bigInteger('numero_pedido');
             $table->date('fecha_pedido');
             $table->string('estado');
+            $table->boolean('bloqueado')->default(false);
             $table->foreignId('id_tienda')->constrained('tienda', 'id_tienda')->onUpdate('cascade')->onDelete('restrict');
             $table->unsignedBigInteger('ucrea');
             $table->unsignedBigInteger('umodifica')->nullable();
