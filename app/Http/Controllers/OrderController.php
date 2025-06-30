@@ -154,57 +154,62 @@ class OrderController extends Controller
     }
 
     public function store(Request $request) {
-        $validatedData = $request->validate([
-            'fecha' => ['required', 'date_format:Y-m-d'],
-            'idTienda' => ['required', 'integer'],
-            'pedido' => ['required', 'array', 'min:1'],
-            'pedido.*.plus' => ['required'],
-            'pedido.*.nombre' => ['required', 'string'],
-            'pedido.*.id_producto' => ['required', 'integer'],
-            'pedido.*.id_unidad' => ['required', 'integer'],
-            'pedido.*.cantidad' => ['required', 'numeric'],
-        ]);
+        try{
+            $validatedData = $request->validate([
+                'fecha' => ['required', 'date_format:Y-m-d'],
+                'idTienda' => ['required', 'integer'],
+                'pedido' => ['required', 'array', 'min:1'],
+                'pedido.*.plus' => ['required'],
+                'pedido.*.nombre' => ['required', 'string'],
+                'pedido.*.id_producto' => ['required', 'integer'],
+                'pedido.*.id_unidad' => ['required', 'integer'],
+                'pedido.*.cantidad' => ['required', 'numeric'],
+            ]);
 
-        $userCreate = $request->user()->id;
-        $ultimoNumeroPedido = Order::max('numero_pedido');
-        $nuevoNumeroPedido = $ultimoNumeroPedido ? $ultimoNumeroPedido + 1 : 1;
+            $userCreate = $request->user()->id;
+            $ultimoNumeroPedido = Order::max('numero_pedido');
+            $nuevoNumeroPedido = $ultimoNumeroPedido ? $ultimoNumeroPedido + 1 : 1;
 
-        // Creamos la orden
-        DB::beginTransaction();
+            // Creamos la orden
+            DB::beginTransaction();
 
-        $orden = new Order();
-        $orden->fecha_pedido = $validatedData['fecha'];
-        $orden->numero_pedido = $nuevoNumeroPedido; 
-        $orden->estado = 'Activo';
-        $orden->id_tienda = $validatedData['idTienda'];
-        $orden->ucrea = $userCreate;
-        $orden->save();
+            $orden = new Order();
+            $orden->fecha_pedido = $validatedData['fecha'];
+            $orden->numero_pedido = $nuevoNumeroPedido; 
+            $orden->estado = 'Activo';
+            $orden->id_tienda = $validatedData['idTienda'];
+            $orden->ucrea = $userCreate;
+            $orden->save();
 
-        // Obtenemos el ID para el detalle del pedido
-        $ordenId = $orden->id_pedido;
+            // Obtenemos el ID para el detalle del pedido
+            $ordenId = $orden->id_pedido;
         
-        // Enviamos en lotes mas pequeños
-        collect($validatedData['pedido'])->chunk(30)->each(function ($productosLote) use ($ordenId, $userCreate){
-            foreach($productosLote as $producto) {
-                $ordenDetalle = new OrderDetails();
-                $ordenDetalle->nombre_producto = $producto['nombre'];
-                $ordenDetalle->plus_producto = $producto['plus'];
-                $ordenDetalle->cantidad = $producto['cantidad'];
-                $ordenDetalle->estado = 'Activo';
-                $ordenDetalle->id_producto = $producto['id_producto'];
-                $ordenDetalle->id_pedido = $ordenId;
-                $ordenDetalle->id_unidad_pedido = $producto['id_unidad'];
-                $ordenDetalle->ucrea = $userCreate;
-                if (!$ordenDetalle->save()) {
-                    DB::rollBack();
-                    return redirect()->back()->withInput()->with('error', 'Error al guardar los productos a la orden');
+            // Enviamos en lotes mas pequeños
+            collect($validatedData['pedido'])->chunk(30)->each(function ($productosLote) use ($ordenId, $userCreate){
+                foreach($productosLote as $producto) {
+                    $ordenDetalle = new OrderDetails();
+                    $ordenDetalle->nombre_producto = $producto['nombre'];
+                    $ordenDetalle->plus_producto = $producto['plus'];
+                    $ordenDetalle->cantidad = $producto['cantidad'];
+                    $ordenDetalle->estado = 'Activo';
+                    $ordenDetalle->id_producto = $producto['id_producto'];
+                    $ordenDetalle->id_pedido = $ordenId;
+                    $ordenDetalle->id_unidad_pedido = $producto['id_unidad'];
+                    $ordenDetalle->ucrea = $userCreate;
+                    if (!$ordenDetalle->save()) {
+                        DB::rollBack();
+                        return redirect()->back()->withInput()->with('error', 'Error al guardar los productos a la orden');
+                    }
                 }
-            }
-        });
+            });
 
-        DB::commit();
+            DB::commit();
 
-        return redirect()->route('dashboard')->with('success', 'Orden creada exitosamente');
+            return redirect()->route('dashboard')->with('success', 'Orden creada exitosamente');
+        }catch(\Exception $e) {
+            log::error('Error al guardar la orden:' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Error al guardar la orden:' . $e->getMessage());
+        }
     }
 
     /* EDITAR ORDEN */
