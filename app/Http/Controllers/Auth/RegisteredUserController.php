@@ -31,7 +31,9 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request)
     {
-        $rol = Rol::firstOrCreate(['descripcion' => 'Administrador']);
+        // Creamos los roles predefinidos si no existen y obtenemos el rol administrador
+        $this->CrearRolesPredefinidos();
+        $rol = Rol::where('descripcion', 'Administrador')->first();
 
         $request->validate([
             'name' => 'required|string|max:255',
@@ -52,5 +54,10 @@ class RegisteredUserController extends Controller
         Auth::login($user);
 
         return redirect(route('dashboard', absolute: false));
+    }
+
+    private function CrearRolesPredefinidos() {
+        Rol::firstOrCreate(['descripcion' => 'Administrador']);
+        Rol::firstOrCreate(['descripcion' => 'Usuario']);
     }
 }
