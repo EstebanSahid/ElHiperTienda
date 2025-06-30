@@ -5,7 +5,6 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import Notification from '@/Components/Notification.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 defineProps({
@@ -33,9 +32,6 @@ const submit = () => {
 <template>
     <GuestLayout>
         <Head title="Inicio de Sesión" />
-
-        <!---->
-        <Notification />
 
         <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
             {{ status }}

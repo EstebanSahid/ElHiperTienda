@@ -1,6 +1,5 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import Notification from '@/Components/Notification.vue';
 import Pagination from '@/Components/Pagination.vue';
 import Table from '@/Components/Table.vue';
 import TableTh from '@/Components/TableTh.vue';
@@ -17,8 +16,6 @@ defineProps({
 
 <template>
     <Head title="Unidades de Medida" />
-
-    <Notification />
 
     <AuthenticatedLayout>
         <template #header>

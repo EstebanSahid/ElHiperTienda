@@ -4,7 +4,6 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import Notification from '@/Components/Notification.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -37,8 +36,6 @@ const submit = () => {
 <template>
     <GuestLayout>
         <Head title="Recuperar contraseña" />
-
-        <Notification />
         
         <form @submit.prevent="submit">
             <div>

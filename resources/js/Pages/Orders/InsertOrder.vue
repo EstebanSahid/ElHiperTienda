@@ -1,7 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3'; 
-import Notification from '@/Components/Notification.vue';
 import Pagination from '@/Components/Pagination.vue';
 import ScrollToTop from '@/Components/ScrollToTop.vue';
 import Table from '@/Components/Table.vue';
@@ -16,8 +15,6 @@ import { obtenerFechaActualGuardarBD } from '@/Services/DateHelper';
 
 <template>
     <Head title="Nueva Orden" />
-
-    <Notification />
 
     <AuthenticatedLayout>
         <template #header>

@@ -7,11 +7,15 @@ import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { obtenerFechaActual } from '@/Services/DateHelper';
 import { Link } from '@inertiajs/vue3';
+import Notification from '@/Components/Notification.vue';
 
 const showingNavigationDropdown = ref(false);
 </script>
 
 <template>
+
+    <Notification />
+
     <div>
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
             <nav

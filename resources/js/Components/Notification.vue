@@ -76,9 +76,10 @@ export default {
 
     mounted() {
         // Cuando el componente esté montado, verifica si hay un mensaje flash
-        const { success, error: flashError } = this.$page.props.flash || {};
-        const error = this.$page.props.error || flashError
-        const duracionNotificacion = error.duracionNotificacion
+        const flash = this.$page.props.flash || {};
+        const error = this.$page.props.error || flash.error || null;
+        const success = flash.success || null;
+        const duracionNotificacion = error && error.duracionNotificacion ? error.duracionNotificacion : null;
 
         if (success || error) {
             const duracion = this.obteneregundos(duracionNotificacion);
@@ -89,6 +90,17 @@ export default {
         '$page.props.flash': {
             handler(newValue) {
                 // Solo muestra la notificación si hay un nuevo mensaje flash
+                if (newValue?.success || newValue?.error || newValue?.notFound || newValue?.CredencialesIncorrectas) {
+                    const duracion = this.obteneregundos(newValue.duracionNotificacion);
+                    this.showNotification(duracion);
+                }
+            },
+            deep: true,
+        },
+
+        '$page.props.error': {
+            handler(newValue) {
+                // Solo muestra la notificación si hay un nuevo mensaje de error
                 if (newValue?.success || newValue?.error || newValue?.notFound || newValue?.CredencialesIncorrectas) {
                     const duracion = this.obteneregundos(newValue.duracionNotificacion);
                     this.showNotification(duracion);
