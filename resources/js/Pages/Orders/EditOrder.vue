@@ -172,11 +172,11 @@ import { obtenerFechaActualGuardarBD } from '@/Services/DateHelper';
 export default {
     props: {
         productos: Array,
-        filtro: Object,
         unidadMedida: Array,
-        tienda: Object,
         productosOrden: Array,
         productosOriginal: Array,
+        filtro: Object,
+        tienda: Object,
         id_pedido: String,
     },
 
@@ -375,7 +375,7 @@ export default {
     },
     
     mounted() {
-        console.log("productos")
+        // console.log("productos")
         // console.log(this.productosOrden)
     }
 }

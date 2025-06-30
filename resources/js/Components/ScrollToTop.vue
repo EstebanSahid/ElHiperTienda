@@ -35,7 +35,7 @@ export default {
         // Regresar scroll
         scrollTop() {
             window.scrollTo({
-                top: 0,
+                top: 180,
                 behavior: 'smooth'
             });
 
