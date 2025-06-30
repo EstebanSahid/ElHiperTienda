@@ -207,7 +207,7 @@ class OrderController extends Controller
 
             return redirect()->route('dashboard')->with('success', 'Orden creada exitosamente');
         }catch(\Exception $e) {
-            log::error('Error al guardar la orden:' . $e->getMessage());
+            Log::error('Error al guardar la orden:' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Error al guardar la orden:' . $e->getMessage());
         }
     }
@@ -234,7 +234,7 @@ class OrderController extends Controller
                 'id_pedido' => $idPedido
             ]);
         } catch (\Exception $e) {
-            log::error('Error al cargar la vista de editar orden: ' . $e->getMessage());
+            Log::error('Error al cargar la vista de editar orden: ' . $e->getMessage());
             return Inertia::render('Orders/EditOrder', [
                 'productos' => [],
                 'filtro' => $request->all('search'),
@@ -249,11 +249,11 @@ class OrderController extends Controller
     }
 
     public function update(Request $request) {
-        $ordenId = $request->idPedido;
-        $userUpdate = $request->user()->id;
-
-        DB::beginTransaction();
         try{
+            $ordenId = $request->idPedido;
+            $userUpdate = $request->user()->id;
+    
+            DB::beginTransaction();
             // Verificamos la accion del front c = Create, u = update, d = delete
             foreach ($request->pedido as $prod) {
                 $accion = $prod['accion'];
@@ -284,46 +284,66 @@ class OrderController extends Controller
     }
 
     private function editStore($product, $user, $idPedido) {
-        $ordenDetalle = new OrderDetails();
-        $ordenDetalle->nombre_producto = $product['nombre'];
-        $ordenDetalle->plus_producto = $product['plus'];
-        $ordenDetalle->cantidad = $product['cantidad'];
-        $ordenDetalle->estado = 'Activo';
-        $ordenDetalle->id_producto = $product['id_producto'];
-        $ordenDetalle->id_pedido = $idPedido;
-        $ordenDetalle->id_unidad_pedido = $product['id_unidad'];
-        $ordenDetalle->ucrea = $user;
-        $ordenDetalle->umodifica = $user;
-        if (!$ordenDetalle->save()) {
-            throw new \Exception('Error al guardar el producto');
+        try{
+            $ordenDetalle = new OrderDetails();
+            $ordenDetalle->nombre_producto = $product['nombre'];
+            $ordenDetalle->plus_producto = $product['plus'];
+            $ordenDetalle->cantidad = $product['cantidad'];
+            $ordenDetalle->estado = 'Activo';
+            $ordenDetalle->id_producto = $product['id_producto'];
+            $ordenDetalle->id_pedido = $idPedido;
+            $ordenDetalle->id_unidad_pedido = $product['id_unidad'];
+            $ordenDetalle->ucrea = $user;
+            $ordenDetalle->umodifica = $user;
+            if (!$ordenDetalle->save()) {
+                throw new \Exception('Error al guardar el producto');
+            }
+        } catch (\Exception $e) {
+            Log::error('Error al agregar un producto a la orden ' . $product['nombre'] . $e->getMessage());
+            throw $e; 
         }
     }
 
     private function editUpdate($product, $user) {
-        $ordenDetalle = OrderDetails::find($product['id_pdetalle']);
+        try{
+            $ordenDetalle = $this->verificarExistenciaProductoDetalle($product['id_pdetalle']);
+    
+            $ordenDetalle->id_unidad_pedido = $product['id_unidad'];
+            $ordenDetalle->cantidad = $product['cantidad'];
+            $ordenDetalle->umodifica = $user;
+            if (!$ordenDetalle->save()) {
+                throw new \Exception('Error al editar un producto de la orden ' . $product['nombre'] . ' ID: ' . $product['id_pdetalle']);
+            }
 
-        if (!$ordenDetalle) {
-            throw new \Exception('El producto no existe en la orden');
-        }
-
-        $ordenDetalle->id_unidad_pedido = $product['id_unidad'];
-        $ordenDetalle->cantidad = $product['cantidad'];
-        $ordenDetalle->umodifica = $user;
-        if (!$ordenDetalle->save()) {
-            throw new \Exception('Error al actualizar el producto.');
+        }catch (\Exception $e) {
+            Log::error('Error al editar un producto de la orden ' . $product['nombre'] . ' ID: ' . $product['id_pdetalle'] . ' ' . $e->getMessage());
+            throw $e;
         }
     }
 
     private function editDelete($product) {
-        $ordenDetalle = OrderDetails::find($product['id_pdetalle']);
+        try{
+            $ordenDetalle = $this->verificarExistenciaProductoDetalle($product['id_pdetalle']);
+
+            if (!$ordenDetalle->delete()) {
+                throw new \Exception('Error al eliminar el producto.');
+            }
+        } catch (\Exception $e) {
+            Log::error('Error al eliminar un producto de la orden ' . $product['nombre'] . ' ID: ' . $product['id_pdetalle'] . ' ' . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    private function verificarExistenciaProductoDetalle($id_pdetalle) {
+        $ordenDetalle = OrderDetails::find($id_pdetalle);
 
         if (!$ordenDetalle) {
-            throw new \Exception('El producto no existe en la orden');
+            $mensajeError = 'El producto no existe en la orden con ID detalle: ' . $id_pdetalle;
+            Log::error($mensajeError);
+            throw new \Exception($mensajeError);
         }
 
-        if (!$ordenDetalle->delete()) {
-            throw new \Exception('Error al eliminar el producto.');
-        }
+        return $ordenDetalle;
     }
 
     public function getProductsOrder($id) {
@@ -391,30 +411,29 @@ class OrderController extends Controller
     //     }
     // }
     private function getProducts($buscador) {
-    try {
-        return DB::table('productos')
-            ->select('plus', 'nombre', 'id_producto')
-            ->when($buscador, function ($query, $buscador) {
-                $query->where(function ($q) use ($buscador) {
-                    $q->where('nombre', 'LIKE', '%' . $buscador . '%')
-                    ->orWhere('plus', 'LIKE', '%' . $buscador . '%');
-                });
-            })
-            ->orderBy('nombre')
-            ->paginate(6)
-            ->withQueryString()
-            ->through(fn ($producto) => [
-                'plus' => $producto->plus,
-                'nombre' => $producto->nombre,
-                'id_producto' => $producto->id_producto,
-            ]);
-    } catch (\Exception $e) {
-        Log::error('Error al obtener productos: ' . $e->getMessage());
-        throw $e;
-        // return collect(); // o return []; dependiendo de cómo lo manejes en Vue/Inertia
+        try {
+            return DB::table('productos')
+                ->select('plus', 'nombre', 'id_producto')
+                ->when($buscador, function ($query, $buscador) {
+                    $query->where(function ($q) use ($buscador) {
+                        $q->where('nombre', 'LIKE', '%' . $buscador . '%')
+                        ->orWhere('plus', 'LIKE', '%' . $buscador . '%');
+                    });
+                })
+                ->orderBy('nombre')
+                ->paginate(6)
+                ->withQueryString()
+                ->through(fn ($producto) => [
+                    'plus' => $producto->plus,
+                    'nombre' => $producto->nombre,
+                    'id_producto' => $producto->id_producto,
+                ]);
+        } catch (\Exception $e) {
+            Log::error('Error al obtener productos: ' . $e->getMessage());
+            throw $e;
+            // return collect(); // o return []; dependiendo de cómo lo manejes en Vue/Inertia
+        }
     }
-}
-
 
     private function getUnidad() {
         return DB::table('unidad_pedido')
