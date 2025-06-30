@@ -124,18 +124,33 @@ class OrderController extends Controller
 
     /* GENERAR ORDEN */
     public function create(Request $request, $id) {
-        $buscador = $request->input('search');
+        try {
+            $buscador = $request->input('search');
+    
+            $productos = $this->getProducts($buscador);
+            $unidadPedido = $this->getUnidad();
+            $tienda = $this->getTiendas($id);
+    
+            return Inertia::render('Orders/InsertOrder', [
+                'productos' => $productos,
+                'filtro' => $request->all('search'),
+                'unidadMedida' => $unidadPedido,
+                'tienda' => $tienda
+            ]);
+        }catch (\Exception $e) {
+            Log::error('Error al cargar la vista de crear orden: ' . $e->getMessage());
 
-        $productos = $this->getProducts($buscador);
-        $unidadPedido = $this->getUnidad();
-        $tienda = $this->getTiendas($id);
-
-        return Inertia::render('Orders/InsertOrder', [
-            'productos' => $productos,
-            'filtro' => $request->all('search'),
-            'unidadMedida' => $unidadPedido,
-            'tienda' => $tienda
-        ]);
+            return Inertia::render('Orders/InsertOrder', [
+                'productos' => [],
+                'filtro' => $request->all('search'),
+                'unidadMedida' => $this->getUnidad(),
+                'tienda' => $this->getTiendas($id),
+                'error' => [
+                    'mensaje' => 'Error al cargar la vista de crear orden: ' . $e->getMessage(),
+                    'duracionNotificacion' => 10
+                ]
+            ]);
+        }
     }
 
     public function store(Request $request) {
@@ -338,11 +353,34 @@ class OrderController extends Controller
     }
 
     /* FUNCIONES COMPARTIDAS */
+    // private function getProducts($buscador) {
+    //     try{
+    //         return DB::table('productos')
+    //             ->select('plus', 'nombre', 'id_producto', 'id')
+    //             ->where('nombre', 'LIKE', '%' . $buscador . '%')
+    //             ->orWhere('plus', 'LIKE', '%' . $buscador . '%')
+    //             ->orderBy('nombre')
+    //             ->paginate(6)
+    //             ->withQueryString()
+    //             ->through(fn ($producto) => [
+    //                 'plus' => $producto->plus,
+    //                 'nombre' => $producto->nombre,
+    //                 'id_producto' => $producto->id_producto,
+    //             ]);
+    //     }catch(\Exception $e) {
+    //         throw new \Exception('Hola');
+    //     }
+    // }
     private function getProducts($buscador) {
+    try {
         return DB::table('productos')
             ->select('plus', 'nombre', 'id_producto')
-            ->where('nombre', 'LIKE', '%' . $buscador . '%')
-            ->orWhere('plus', 'LIKE', '%' . $buscador . '%')
+            ->when($buscador, function ($query, $buscador) {
+                $query->where(function ($q) use ($buscador) {
+                    $q->where('nombre', 'LIKE', '%' . $buscador . '%')
+                    ->orWhere('plus', 'LIKE', '%' . $buscador . '%');
+                });
+            })
             ->orderBy('nombre')
             ->paginate(6)
             ->withQueryString()
@@ -351,7 +389,13 @@ class OrderController extends Controller
                 'nombre' => $producto->nombre,
                 'id_producto' => $producto->id_producto,
             ]);
+    } catch (\Exception $e) {
+        Log::error('Error al obtener productos: ' . $e->getMessage());
+        throw $e;
+        // return collect(); // o return []; dependiendo de cómo lo manejes en Vue/Inertia
     }
+}
+
 
     private function getUnidad() {
         return DB::table('unidad_pedido')
