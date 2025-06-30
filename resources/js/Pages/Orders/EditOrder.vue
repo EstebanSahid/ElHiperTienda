@@ -1,7 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link, router } from '@inertiajs/vue3'; 
-import Pagination from '@/Components/Pagination.vue';
+import { Head, Link, router } from '@inertiajs/vue3';
 import ScrollToTop from '@/Components/ScrollToTop.vue';
 import Table from '@/Components/Table.vue';
 import TableTh from '@/Components/TableTh.vue';
@@ -11,6 +10,7 @@ import TextInput from '@/Components/TextInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { obtenerFechaActualGuardarBD } from '@/Services/DateHelper';
+import { FocoUltimoInputConTransicion } from '@/Services/utils'
 </script>
 
 <template>
@@ -67,32 +67,32 @@ import { obtenerFechaActualGuardarBD } from '@/Services/DateHelper';
                                                         <TableTh>Nombre</TableTh>
                                                     </tr>
                                                 </thead>
-                                                
+
                                                 <tbody>
-                                                    <TableBodyTr  
+                                                    <TableBodyTr
                                                         v-for="producto in productos.data" :key="producto.id_producto"
                                                     >
                                                         <TableBodyTd @click="agregarProducto(producto)" >{{ producto.plus }}</TableBodyTd>
                                                         <TableBodyTd @click="agregarProducto(producto)" >{{ producto.nombre }}</TableBodyTd>
                                                     </TableBodyTr>
-    
+
                                                     <TableBodyTr v-if="productos.links.length > 0">
                                                         <TableBodyTd colspan="2" class="font-semibold" >Para mostrar mas productos, por favor utilice el buscador o digite el código.</TableBodyTd>
                                                     </TableBodyTr>
-                                                    
+
                                                     <TableBodyTr v-if="productos.data.length === 0">
                                                         <TableBodyTd colspan="2" class="font-semibold" >No se encontro el producto.</TableBodyTd>
                                                     </TableBodyTr>
-                                                    
+
                                                 </tbody>
-                                            
+
                                             </Table>
                                         </div>
-                                        <!-- Paginación 
+                                        <!-- Paginación
                                         <Pagination v-if="productos.links.length < 10" :links="productos.links" />
                                         -->
                                     </div>
-                                    
+
 
                                 </div>
                             </div>
@@ -125,15 +125,15 @@ import { obtenerFechaActualGuardarBD } from '@/Services/DateHelper';
                                                     <TableBodyTd>{{ producto.plus }}</TableBodyTd>
                                                     <TableBodyTd>{{ producto.nombre }}</TableBodyTd>
                                                     <TableBodyTd>
-                                                        <input 
+                                                        <input
                                                             ref='inputsCantidad'
                                                             @keyup="validarMayorCero(producto)"
                                                             min="1"
                                                             class="rounded-md w-28 border-gray-300
-                                                            focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 
-                                                            dark:bg-gray-900 dark:text-gray-300 dark:focus:border-indigo-600 
+                                                            focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700
+                                                            dark:bg-gray-900 dark:text-gray-300 dark:focus:border-indigo-600
                                                             dark:focus:ring-indigo-600"
-                                                            type="number" 
+                                                            type="number"
                                                             v-model="producto.cantidad"
                                                             placeholder="Cantidad"
                                                         />
@@ -151,7 +151,7 @@ import { obtenerFechaActualGuardarBD } from '@/Services/DateHelper';
                                                         </button>
                                                     </td>
                                                 </TableBodyTr>
-    
+
                                                 <TableBodyTr v-if="productosOrden.length === 0">
                                                     <TableBodyTd colspan="4" class="font-semibold" >No hay productos registrados a esta orden.</TableBodyTd>
                                                 </TableBodyTr>
@@ -189,7 +189,7 @@ export default {
             return `${cantidad} ${sProducto} ${sRegistrado}`;
         }
     },
-    
+
     data() {
         return {
             buscador: {
@@ -207,7 +207,7 @@ export default {
             fechaActual: obtenerFechaActualGuardarBD()
         }
     },
-    
+
     methods: {
         // Quitar un producto de la orden
         deleteProductArray(producto){
@@ -236,12 +236,27 @@ export default {
                 this.productosOrden.push(producto);
 
                 // Focus al ultimo input
+                // this.$nextTick(() => {
+                //     const inputs = this.$refs.inputsCantidad;
+                //     if (inputs && inputs.length > 0) {
+                //         inputs[inputs.length - 1].focus();
+                //     }
+                // });
                 this.$nextTick(() => {
-                    const inputs = this.$refs.inputsCantidad;
-                    if (inputs && inputs.length > 0) {
-                        inputs[inputs.length - 1].focus();
-                    }
-                });
+                    FocoUltimoInputConTransicion(this.$refs.inputsCantidad)
+                    // const inputs = this.$refs.inputsCantidad;
+                    // if (inputs && inputs.length > 0) {
+                    //     const ultimoInput = inputs[inputs.length - 1];
+
+                    //     ultimoInput.scrollIntoView({
+                    //         behavior: 'smooth'
+                    //     })
+
+                    //     setTimeout(() => {
+                    //         ultimoInput.focus();
+                    //     }, 300);
+                    // }
+                })
             } else {
                 alert('El producto ya esta registrado para una orden')
             }
@@ -259,7 +274,7 @@ export default {
             const indexActual = this.unidadMedida.findIndex(
                 unidad => unidad.id_unidad_pedido === producto.id_unidad
             );
-            
+
             const nuevoIndex = (indexActual + 1) % this.unidadMedida.length;
             producto.id_unidad = this.unidadMedida[nuevoIndex].id_unidad_pedido;
         },
@@ -354,29 +369,28 @@ export default {
                 alert('Debe haber por lo menos un registro para Actualizar');
                 return;
             }
-            this.form.idTienda = this.tienda[0].id_tienda;
-            this.form.idPedido = this.id_pedido[0].id_pedido;
+            this.form.idTienda = this.tienda.id_tienda;
+            this.form.idPedido = this.id_pedido.id_pedido;
             this.form.fecha = this.fechaActual;
             this.form.pedido = orden;
             this.form.put('/editOrders');
         },
     },
-    
+
 
     watch: {
         buscador: {
             deep: true,
             handler: function () {
                 setTimeout(() => {
-                    router.get(`/order/${this.tienda[0].id_tienda}/edit`, {search: this.buscador.search }, { preserveState: true });
+                    router.get(`/order/${this.tienda.id_tienda}/edit`, {search: this.buscador.search }, { preserveState: true });
                 }, 150);
             },
         },
     },
-    
+
     mounted() {
-        // console.log("productos")
-        // console.log(this.productosOrden)
+        
     }
 }
 </script>

@@ -1,7 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3'; 
-import Pagination from '@/Components/Pagination.vue';
 import ScrollToTop from '@/Components/ScrollToTop.vue';
 import Table from '@/Components/Table.vue';
 import TableTh from '@/Components/TableTh.vue';
@@ -11,6 +10,7 @@ import TextInput from '@/Components/TextInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { obtenerFechaActualGuardarBD } from '@/Services/DateHelper';
+import { FocoUltimoInputConTransicion } from '@/Services/utils';
 </script>
 
 <template>
@@ -219,10 +219,11 @@ export default {
 
                 // Focus al ultimo input
                 this.$nextTick(() => {
-                    const inputs = this.$refs.inputsCantidad;
-                    if (inputs && inputs.length > 0) {
-                        inputs[inputs.length - 1].focus();
-                    }
+                    FocoUltimoInputConTransicion(this.$refs.inputsCantidad)
+                    // const inputs = this.$refs.inputsCantidad;
+                    // if (inputs && inputs.length > 0) {
+                    //     inputs[inputs.length - 1].focus();
+                    // }
                 });
             } else {
                 alert('El producto ya esta registrado para una orden')
@@ -286,7 +287,7 @@ export default {
 
         guardarOrden(orden) {
             // Formateamos el objeto form y enviamos
-            this.form.idTienda = this.tienda[0].id_tienda;
+            this.form.idTienda = this.tienda.id_tienda;
             this.form.fecha = this.fechaActual;
             this.form.pedido = orden;
             this.form.post('/orders');
@@ -299,7 +300,7 @@ export default {
             deep: true,
             handler: function () {
                 setTimeout(() => {
-                    router.get(`/order/${this.tienda[0].id_tienda}/create`, {search: this.buscador.search }, { preserveState: true });
+                    router.get(`/order/${this.tienda.id_tienda}/create`, {search: this.buscador.search }, { preserveState: true });
                 }, 150);
             },
         },

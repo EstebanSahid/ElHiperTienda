@@ -436,7 +436,7 @@ class OrderController extends Controller
             ->select('id_pedido')
             ->where('id_tienda', $id)
             ->where('fecha_pedido', '=', $dateHoy)
-            ->get();
+            ->first();
     }
 }
 
