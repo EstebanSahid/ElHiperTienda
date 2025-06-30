@@ -22,7 +22,7 @@ import { obtenerFechaActualGuardarBD } from '@/Services/DateHelper';
                 <h2
                     class="text-md font-semibold leading-tight text-gray-800 dark:text-gray-200"
                 >
-                    Editar orden para {{ tienda[0].nombre }}
+                    Editar orden para {{ tienda?.nombre ?? 'esta tienda' }}
                 </h2>
 
                 <PrimaryButton @click="validarOrden(productosOrden)">Actualizar</PrimaryButton>
@@ -98,8 +98,11 @@ import { obtenerFechaActualGuardarBD } from '@/Services/DateHelper';
                             </div>
                             <!-- CONTENEDOR DE PRODUCTOS PARA PEDIR -->
                             <div>
-                                <div class="p-3 font-semibold">
+                                <div class="p-3 font-semibold flex justify-between items-center">
                                     Lista de Productos Registrados
+                                    <span v-if="productosOrden.length > 0" class="text-sm font-normal px-5">
+                                        {{ cantidadProductosTexto }}
+                                    </span>
                                 </div>
                                 <div class="p-3">
                                     <div class="bg-white rounded-md shadow overflow-x-auto dark:bg-gray-800">
@@ -175,6 +178,16 @@ export default {
         productosOrden: Array,
         productosOriginal: Array,
         id_pedido: String,
+    },
+
+    computed: {
+        cantidadProductosTexto() {
+            const cantidad = this.productosOrden.length;
+            const sProducto = 'Producto' + (cantidad === 1 ? '' : 's');
+            const sRegistrado = 'Registrado' + (cantidad === 1 ? '' : 's');
+
+            return `${cantidad} ${sProducto} ${sRegistrado}`;
+        }
     },
     
     data() {

@@ -129,7 +129,7 @@ class OrderController extends Controller
     
             $productos = $this->getProducts($buscador);
             $unidadPedido = $this->getUnidad();
-            $tienda = $this->getTiendas($id);
+            $tienda = $this->obtenerTiendaPorId($id);
     
             return Inertia::render('Orders/InsertOrder', [
                 'productos' => $productos,
@@ -144,7 +144,7 @@ class OrderController extends Controller
                 'productos' => [],
                 'filtro' => $request->all('search'),
                 'unidadMedida' => $this->getUnidad(),
-                'tienda' => $this->getTiendas($id),
+                'tienda' => $this->obtenerTiendaPorId($id),
                 'error' => [
                     'mensaje' => 'Error al cargar la vista de crear orden: ' . $e->getMessage(),
                     'duracionNotificacion' => 10
@@ -220,7 +220,7 @@ class OrderController extends Controller
             // Construimos la consulta con el QueryBuilder
             $productos = $this->getProducts($buscador);
             $unidadPedido = $this->getUnidad();
-            $tienda = $this->getTiendas($id);
+            $tienda = $this->obtenerTiendaPorId($id);
             $productosRegistrados = $this->getProductsOrder($id);
             $idPedido = $this->getPedido($id);
 
@@ -239,7 +239,7 @@ class OrderController extends Controller
                 'productos' => [],
                 'filtro' => $request->all('search'),
                 'unidadMedida' => $this->getUnidad(),
-                'tienda' => $this->getTiendas($id),
+                'tienda' => $this->obtenerTiendaPorId($id),
                 'error' => [
                     'mensaje' => 'Error al cargar la vista de crear orden: ' . $e->getMessage(),
                     'duracionNotificacion' => 10
@@ -356,7 +356,7 @@ class OrderController extends Controller
         // Construimos la consulta con el QueryBuilder
         $productos = $this->getProducts($buscador);
         $unidadPedido = $this->getUnidad();
-        $tienda = $this->getTiendas($idTienda);
+        $tienda = $this->obtenerTiendaPorId($idTienda);
         $productosRegistrados = $this->getProductsOrderDuplicated($idPedido);
         $idPedido = $this->getPedido($idTienda);
 
@@ -423,11 +423,11 @@ class OrderController extends Controller
             ->get();
     }
 
-    private function getTiendas($id) {
+    private function obtenerTiendaPorId($id) {
         return DB::table('tienda')
             ->select('nombre', 'id_tienda')
             ->where('id_tienda', $id)
-            ->get();
+            ->first();
     }
 
     private function getPedido($id) {
