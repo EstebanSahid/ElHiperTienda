@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Enums\RolEnum;
 use App\Models\Order;
 use App\Models\OrderDetails;
 use Illuminate\Http\Request;
@@ -16,14 +17,7 @@ class OrderController extends Controller
     /* LISTAR TIENDAS PARA GENERAR ORDENES */
     public function index(Request $request) {
         try{
-            $rol = $request->user()->id_rol;
-    
-            if ($rol == 1) {
-                $showTiendas = $this->indexAdmin();
-            } else {
-                $userId = $request->user()->id;
-                $showTiendas = $this->indexEncargado($userId);
-            }
+            $showTiendas = $this->obtenerTiendasPorRol($request->user());
             $showTiendas = $this->verificarExistencia($showTiendas);
     
             return Inertia::render('Dashboard', [
@@ -45,9 +39,17 @@ class OrderController extends Controller
         
     }
 
+    private function obtenerTiendasPorRol($user) {
+        return match(RolEnum::from($user->id_rol)) {
+            RolEnum::ADMINISTRADOR  => $this->indexAdmin(),
+            RolEnum::USUARIO        => $this->indexEncargado($user->id),
+            default                 => throw new \Exception('Rol no permitido para acceder a las tiendas')
+        };
+    }
+
     private function indexAdmin() {
         return DB::table('tienda')
-            ->select('id_tienda', 'nombre', 'codigo', 'bloqueado')
+            ->select('id_tienda', 'nombre', 'codigo')
             ->where('estado', 'Activo')
             ->orderBy('nombre')
             ->paginate(5);
@@ -64,14 +66,22 @@ class OrderController extends Controller
     }
 
     private function validacionMostrar($tiendas) {
-        $horaInicio = 22;
-        $horaFin = 0;
-        $horaActual = date('H');
-        if ($horaActual >= $horaInicio || $horaActual == $horaFin) {
-            return $this->Procesados($tiendas);
-        } else {
-            return $this->verificarExistencia($tiendas);
-        }
+        // try{
+        //     $horaInicio = 22;
+        //     $horaFin = 0;
+        //     $horaActual = (int) date('H');
+
+            // Si el rango pasa la media noche 
+            // if ($horaActual >= $horaInicio || $horaActual == $horaFin) {
+            //     return $this->Procesados($tiendas);
+            // } else {
+            //     return $this->verificarExistencia($tiendas);
+            // }
+
+        // }catch(\Exception $e){
+        //     Log::error('Error al mostrar las tiendas por hora:' . $e->getMessage());
+        //     throw new \Exception('Error al mostrar las tiendas por hora: ' . $e->getMessage());
+        // }
     }
 
     private function Procesados($tiendas) {
@@ -82,27 +92,34 @@ class OrderController extends Controller
     }
 
     private function verificarExistencia($tiendas) {
-        $timezone = config('app.timezone'); 
-        $hoy = Carbon::now($timezone)->format('Y-m-d');
+        try{
+            $timezone = config('app.timezone'); 
+            $hoy = Carbon::now($timezone)->format('Y-m-d');
 
-        // Recorremos los datos de una pagina
-        foreach ($tiendas->items() as $tienda) {
-            $pedido = DB::selectOne("
-                SELECT 
-                    id_pedido
-                FROM pedidos 
-                WHERE id_tienda = :id_tienda 
-                AND fecha_pedido = :fecha",
-                [
-                    'id_tienda' => $tienda->id_tienda,
-                    'fecha' => $hoy
-                ]
-            );
+            // Obtenemos los ids de una tienda en el dashboard
+            $idsTiendas = collect($tiendas->items())
+                ->pluck('id_tienda');
+
+            // Obtenemos los pedidos de esas tiendas para hoy
+            $pedidosRegistrados = DB::table('pedidos')
+                ->select('id_tienda')
+                ->whereIn('id_tienda', $idsTiendas)
+                ->whereDate('fecha_pedido', $hoy)
+                ->get()
+                ->pluck('id_tienda')
+                ->toArray();
+
+            // Marcamos las tiendas segun si hay pedidos o no
+            foreach ($tiendas->items() as $tienda) {
+                $tienda->procesado = in_array($tienda->id_tienda, $pedidosRegistrados) ? 1 : 0;
+            }
     
-            $tienda->procesado = $pedido ? 1 : 0;
+            return $tiendas;
+
+        }catch(\Exception $e) {
+            Log::error('Error al generar existencia de pedidos: ' . $e->getMessage());
+            throw new \Exception('Error al generar existencia de pedidos: ' . $e->getMessage());
         }
-    
-        return $tiendas;
     }
 
     /* GENERAR ORDEN */
