@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 
@@ -17,16 +18,29 @@ class UserController extends Controller
 {
     /* INDEX */
     public function index() {
-        $users = DB::table('users as u')
-        ->join('roles as r', 'u.id_rol', '=', 'r.id_rol')
-        ->select('u.id', 'u.name', 'r.descripcion', 'u.email', 'u.telefono', 'u.estado')
-        ->orderBy('r.descripcion')
-        ->orderBy('u.name')
-        ->paginate(5);
+        try{
+            $users = DB::table('users as u')
+            ->join('roles as r', 'u.id_rol', '=', 'r.id_rol')
+            ->select('u.id', 'u.name', 'r.descripcion', 'u.email', 'u.telefono', 'u.estado')
+            ->orderBy('r.descripcion')
+            ->orderBy('u.name')
+            ->paginate(5);
+    
+            return Inertia::render('Admin/Users/Users', [
+                'users' => $users,
+            ]);
 
-        return Inertia::render('Admin/Users/Users', [
-            'users' => $users,
-        ]);
+        } catch (\Exception $e) {
+            Log::error('Error al cargar los usuarios: ' . $e->getMessage());
+            
+            return Inertia::render('Admin/Users/Users', [
+                'users' => [],
+                'error' => [
+                    'mensaje' => 'Error al cargar los usuarios: ' . $e->getMessage(),
+                    'duracionNotificacion' => 10
+                ]
+            ], 500);
+        }
     }
 
     /* NUEVO USUARIO */
@@ -41,111 +55,123 @@ class UserController extends Controller
     }
 
     public function store(Request $request) {
-        if(!$this->validarPermisosUsuario($request->user())) {
-            return redirect('dashboard')->with('error', 'No tienes permisos para realizar esta acción');
-        }
-
-        // Validación
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
-            'password' => ['required', 'confirmed'],
-            'telefono' => 'required|string|max:30',
-            'id_rol' => 'required',
-        ], [
-            'name.required' => 'El nombre es requerido',
-            'email.required' => 'El email es requerido',
-            'email.lowercase' => 'El email debe estar en minusculas',
-            'email.email' => 'El email debe estar en el formato adecuado',
-            'email.unique' => 'Este correo ya existe, por favor utilice otro',
-            'password.required' => 'La contraseña es requerida',
-            'password.confirmed' => 'Las contraseñas no coinciden',
-            'telefono.required' => 'El telefono es requerido',
-            'id_rol.required' => 'El rol es requerido'
-        ]);
-
-        // Creamos el Usuario
-        DB::beginTransaction();
-
-        $user = new User();
-        $user->name = $validatedData['name'];
-        $user->email = $validatedData['email'];
-        $user->password = Hash::make($request->password);
-        $user->telefono = $validatedData['telefono'];
-        $user->estado = 'Activo';
-        $user->id_rol = $validatedData['id_rol'];
-        $user->save();
-
-        // Obtenemos el ID para los permisos
-        $userId = $user->id;
-        if(!empty($request->tiendasAsignadas)) {
-            foreach ($request->tiendasAsignadas as $permiso) {
-                $acceso = new Access();
-                $acceso->id_user = $userId;
-                $acceso->id_tienda = $permiso;
-                $acceso->estado = 'Activo';
-                $acceso->usuario_crea = $request->user()->id;
-                if (!$acceso->save()) {
-                    DB::rollBack();
-                    return redirect()->back()->withInput()->with('error', 'Error al guardar los permisos.');
-                }
+        try {
+            if(!$this->validarPermisosUsuario($request->user())) {
+                return redirect('dashboard')->with('error', 'No tienes permisos para realizar esta acción');
             }
-        } 
-        
-        DB::commit();
 
-        return redirect()->route('users')->with('success', 'Usuario creado exitosamente');
+            // Validación
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+                'password' => ['required', 'confirmed'],
+                'telefono' => 'required|string|max:30',
+                'id_rol' => 'required',
+            ], [
+                'name.required' => 'El nombre es requerido',
+                'email.required' => 'El email es requerido',
+                'email.lowercase' => 'El email debe estar en minusculas',
+                'email.email' => 'El email debe estar en el formato adecuado',
+                'email.unique' => 'Este correo ya existe, por favor utilice otro',
+                'password.required' => 'La contraseña es requerida',
+                'password.confirmed' => 'Las contraseñas no coinciden',
+                'telefono.required' => 'El telefono es requerido',
+                'id_rol.required' => 'El rol es requerido'
+            ]);
+
+            // Creamos el Usuario
+            DB::beginTransaction();
+
+            $user = new User();
+            $user->name = $validatedData['name'];
+            $user->email = $validatedData['email'];
+            $user->password = Hash::make($request->password);
+            $user->telefono = $validatedData['telefono'];
+            $user->estado = 'Activo';
+            $user->id_rol = $validatedData['id_rol'];
+            $user->save();
+
+            // Obtenemos el ID para los permisos
+            $userId = $user->id;
+            if(!empty($request->tiendasAsignadas)) {
+                foreach ($request->tiendasAsignadas as $permiso) {
+                    $acceso = new Access();
+                    $acceso->id_user = $userId;
+                    $acceso->id_tienda = $permiso;
+                    $acceso->estado = 'Activo';
+                    $acceso->usuario_crea = $request->user()->id;
+                    if (!$acceso->save()) {
+                        DB::rollBack();
+                        return redirect()->back()->withInput()->with('error', 'Error al guardar los permisos.');
+                    }
+                }
+            } 
+            
+            DB::commit();
+
+            return redirect()->route('users')->with('success', 'Usuario creado exitosamente');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error al guardar la orden:' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Error al guardar la orden:' . $e->getMessage());
+        }
     }
 
     /* EDITAR USUARIO */
     public function renderEdit(Request $request, $id) {
-        // Validacion de rol de usuario
-        if(!$this->validarPermisosUsuario($request->user())) {
-            return redirect('dashboard')->with('error', 'No tienes permisos para realizar esta acción');
+        try {
+            // Validacion de rol de usuario
+            if(!$this->validarPermisosUsuario($request->user())) {
+                return redirect('dashboard')->with('error', 'No tienes permisos para realizar esta acción');
+            }
+
+            $roles = Rol::all();
+            $tiendas = $this->getTiendas();
+
+            $user = $this->getUser($id);
+            $accesos = $this->getAccesos($id);
+            //dd($accesos);
+            return Inertia::render('Admin/Users/EditUser', [
+                'roles' => $roles,
+                'tiendas' => $tiendas,
+                'accesos' => $accesos,
+                'user' => $user
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error al cargar la vista de editar usuario: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Error al cargar la vista de editar usuario: ' . $e->getMessage());
         }
-
-        $roles = Rol::all();
-        $tiendas = $this->getTiendas();
-
-        $user = $this->getUser($id);
-        $accesos = $this->getAccesos($id);
-        //dd($accesos);
-        return Inertia::render('Admin/Users/EditUser', [
-            'roles' => $roles,
-            'tiendas' => $tiendas,
-            'accesos' => $accesos,
-            'user' => $user
-        ]);
     }
 
     public function update(Request $request) {
-        if(!$this->validarPermisosUsuario($request->user())) {
-            return redirect('dashboard')->with('error', 'No tienes permisos para realizar esta acción');
-        }
-
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255',
-            'telefono' => 'required|string|max:30',
-            'id_rol' => 'required',
-            'id_user' => 'required',
-            'estado' => 'required|string'
-        ], [
-            'name.required' => 'El nombre es requerido',
-            'email.required' => 'El email es requerido',
-            'email.lowercase' => 'El email debe estar en minusculas',
-            'email.email' => 'El email debe estar en el formato adecuado',
-            'telefono.required' => 'El telefono es requerido',
-            'id_rol.required' => 'El rol es requerido'
-        ]);
-
-        DB::beginTransaction();
-
         try {
+            if(!$this->validarPermisosUsuario($request->user())) {
+                return redirect('dashboard')->with('error', 'No tienes permisos para realizar esta acción');
+            }
+
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|lowercase|email|max:255',
+                'telefono' => 'required|string|max:30',
+                'id_rol' => 'required',
+                'id_user' => 'required',
+                'estado' => 'required|string'
+            ], [
+                'name.required' => 'El nombre es requerido',
+                'email.required' => 'El email es requerido',
+                'email.lowercase' => 'El email debe estar en minusculas',
+                'email.email' => 'El email debe estar en el formato adecuado',
+                'telefono.required' => 'El telefono es requerido',
+                'id_rol.required' => 'El rol es requerido'
+            ]);
+
+            DB::beginTransaction();
+
             $user = User::find($validatedData['id_user']);
             $user->name = $validatedData['name'];
             $user->telefono = $validatedData['telefono'];
             $user->id_rol = $validatedData['id_rol'];
+            
             if($validatedData['estado'] == 'Inactivo') {
                 $user->estado = 'Activo';
             }
@@ -155,7 +181,8 @@ class UserController extends Controller
                 return redirect()->back()->withInput()->with('error', 'Error al actualizar los datos del usuario.');
             }
 
-            if ($validatedData['id_rol'] == 1) {
+            // if ($validatedData['id_rol'] == 1) {
+            if (PermisosController::esAdministradorSegunId($validatedData['id_rol'])) {
                 DB::table('accesos')->where('id_user', $user->id)->delete();
             } else {
                 DB::table('accesos')->where('id_user', $user->id)->delete();

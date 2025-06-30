@@ -207,6 +207,7 @@ class OrderController extends Controller
 
             return redirect()->route('dashboard')->with('success', 'Orden creada exitosamente');
         }catch(\Exception $e) {
+            DB::rollBack();
             Log::error('Error al guardar la orden:' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Error al guardar la orden:' . $e->getMessage());
         }
@@ -392,24 +393,6 @@ class OrderController extends Controller
     }
 
     /* FUNCIONES COMPARTIDAS */
-    // private function getProducts($buscador) {
-    //     try{
-    //         return DB::table('productos')
-    //             ->select('plus', 'nombre', 'id_producto', 'id')
-    //             ->where('nombre', 'LIKE', '%' . $buscador . '%')
-    //             ->orWhere('plus', 'LIKE', '%' . $buscador . '%')
-    //             ->orderBy('nombre')
-    //             ->paginate(6)
-    //             ->withQueryString()
-    //             ->through(fn ($producto) => [
-    //                 'plus' => $producto->plus,
-    //                 'nombre' => $producto->nombre,
-    //                 'id_producto' => $producto->id_producto,
-    //             ]);
-    //     }catch(\Exception $e) {
-    //         throw new \Exception('Hola');
-    //     }
-    // }
     private function getProducts($buscador) {
         try {
             return DB::table('productos')
