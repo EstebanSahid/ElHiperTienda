@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use app\Enums\RolEnum;
 
 class ReportController extends Controller
 {
@@ -20,7 +21,7 @@ class ReportController extends Controller
         $showTiendasDuplicar = [];
 
         // Control para mostrar las Tiendas según sus accesos
-        $showTiendas = $rol == 1 ? $this->showTiendasAdmin() : $this->showTiendasEncargado($userId);
+        $showTiendas = $rol === RolEnum::ADMINISTRADOR->value ? $this->showTiendasAdmin() : $this->showTiendasEncargado($userId);
         
         // Obtener la data del encabezado y el cuerpo cuando se uso algún filtro
         if (!empty($buscador)) {
