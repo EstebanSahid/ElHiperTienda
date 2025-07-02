@@ -212,54 +212,76 @@ class UserController extends Controller
     }
 
     private function getUser($id) {
-        return DB::table('users as u')
-            ->join('roles as r', 'r.id_rol', '=', 'u.id_rol')
-            ->select('u.id', 'u.name', 'u.telefono', 'u.email', 'u.id_rol', 'u.estado', 'r.descripcion')
-            ->where('id', $id)
-            ->first();
+        try {
+            return DB::table('users as u')
+                ->join('roles as r', 'r.id_rol', '=', 'u.id_rol')
+                ->select('u.id', 'u.name', 'u.telefono', 'u.email', 'u.id_rol', 'u.estado', 'r.descripcion')
+                ->where('id', $id)
+                ->first();
+        } catch (\Exception $e) {
+            Log::error('Error al obtener el usuario ID:' . $id . ' error::' . $e->getMessage());
+            throw $e;
+        }
     }
 
     private function getTiendas() {
-        return DB::table('tienda')
-        ->select('id_tienda', DB::raw('CONCAT("Tienda: ", codigo, " - ", nombre) as nombre_tienda'))
-        ->where('estado', 'Activo')
-        ->orderBy('codigo')
-        ->get();
+        try {
+            return DB::table('tienda')
+                ->select('id_tienda', DB::raw('CONCAT("Tienda: ", codigo, " - ", nombre) as nombre_tienda'))
+                ->where('estado', 'Activo')
+                ->orderBy('codigo')
+                ->get();
+        } catch (\Exception $e) {
+            Log::error('Error al obtener las tiendas::' . $e->getMessage());
+            throw $e;
+        }
     }
 
     private function getAccesos($id) {
-        return DB::table('accesos')
-            ->where('id_user', $id)
-            ->pluck('id_tienda');
+        try {
+            return DB::table('accesos')
+                ->where('id_user', $id)
+                ->pluck('id_tienda');
+        } catch (\Exception $e) {
+            Log::error('Error al obtener los accesos del usuario ID:' . $id . ' error::' . $e->getMessage());
+            throw $e;
+        }
     }
 
     /* DESACTIVAR USUARIO (BORRAR USUARIO) */
     public function deactivate(Request $request) {
         // Verificar rol del usuario
-        if(!$this->validarPermisosUsuario($request->user())) {
-            return redirect('dashboard')->with('error', 'No tienes permisos para realizar esta acción');
-        }
-
-        $validatedData = $request->validate([
-            'id_user' => 'required'
-        ]);
-
-        DB::beginTransaction();
-        $user = User::find($validatedData['id_user']);
-        $user->estado = 'Inactivo';
-
-        DB::table('sessions')
-            ->where('user_id', $validatedData['id_user'])
-            ->delete();
-
-        if (!$user->save()) {
+        try {
+            if(!$this->validarPermisosUsuario($request->user())) {
+                return redirect('dashboard')->with('error', 'No tienes permisos para realizar esta acción');
+            }
+    
+            $validatedData = $request->validate([
+                'id_user' => 'required'
+            ]);
+    
+            DB::beginTransaction();
+            $user = User::find($validatedData['id_user']);
+            $user->estado = 'Inactivo';
+    
+            DB::table('sessions')
+                ->where('user_id', $validatedData['id_user'])
+                ->delete();
+    
+            if (!$user->save()) {
+                DB::rollBack();
+                return redirect()->back()->withInput()->with('error', 'Error al dar de baja al usuario');
+            }
+    
+            DB::commit();
+            
+            return redirect()->route('users')->with('success', 'El usuario fue dado de baja');
+            
+        } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Error al deshabilitar al usuario: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Error al dar de baja al usuario');
         }
-
-        DB::commit();
-        
-        return redirect()->route('users')->with('success', 'El usuario fue dado de baja');
     }
 
     private function validarPermisosUsuario(User $user): bool {
