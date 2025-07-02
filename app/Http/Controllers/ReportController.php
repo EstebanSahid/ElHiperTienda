@@ -8,44 +8,59 @@ use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Carbon\Carbon;
 use app\Enums\RolEnum;
+use Illuminate\Support\Facades\Log;
+use app\Models\Tienda;
 
 class ReportController extends Controller
 {
     public function create(Request $request) {
-        $buscador = $request->input('dates');
-        $userId = $request->user()->id;
-        $rol = $request->user()->id_rol;
-        $showTiendasThead = [];
-        $showDataTBody = [];
-        $numerosPedido = [];
-        $showTiendasDuplicar = [];
+        try {
+            $buscador = $request->input('dates');
+            $userId = $request->user()->id;
+            $rol = $request->user()->id_rol;
 
-        // Control para mostrar las Tiendas según sus accesos
-        $showTiendas = $rol === RolEnum::ADMINISTRADOR->value ? $this->showTiendasAdmin() : $this->showTiendasEncargado($userId);
-        
-        // Obtener la data del encabezado y el cuerpo cuando se uso algún filtro
-        if (!empty($buscador)) {
-            $showTiendasDuplicar = $this->tiendasDisponiblesParaDuplicar($showTiendas);
-            $showTiendasThead = $this->showTiendasThead($showTiendas, $buscador['id_tienda']);
-            //$showDataTBody = $this->showDataTbody($showTiendas, $buscador);
+            $showTiendasThead = [];
+            $showDataTBody = [];
+            $numerosPedido = [];
+            $showTiendasDuplicar = [];
 
-            $resultado = $this->showDataTbody($showTiendas, $buscador);
-            $showDataTBody = $resultado['productosOrganizados'];
-            $numerosPedido = $resultado['numerosPedido'];
+            // Control para mostrar las Tiendas según sus accesos
+            $showTiendas = $this->ShowTiendasSegunRol($rol, $userId);
+
+            // Obtener la data del encabezado y el cuerpo cuando se uso algún filtro
+            if (!empty($buscador)) {
+                $showTiendasDuplicar = $this->tiendasDisponiblesParaDuplicar($showTiendas);
+                $showTiendasThead = $this->showTiendasThead($showTiendas, $buscador['id_tienda']);
+
+                $resultado = $this->showDataTbody($showTiendas, $buscador);
+                $showDataTBody = $resultado['productosOrganizados'];
+                $numerosPedido = $resultado['numerosPedido'];
+            }
+
+            $showTiendas->prepend((object) [
+                'id_tienda' => 0,
+                'nombre_tienda' => 'Todas las tiendas'
+            ]);
+
+            return Inertia::render('Reports/Reports', [
+                'tiendasDuplicar' => $showTiendasDuplicar,
+                'tiendas' => $showTiendas,
+                'dataThead' => $showTiendasThead,
+                'pedidos' => $showDataTBody,
+                'numerosPedido' => $numerosPedido
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error al generar el reporte : ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Ocurrió un error al generar el reporte.');
         }
+    }
 
-        $showTiendas->prepend((object) [
-            'id_tienda' => 0,
-            'nombre_tienda' => 'Todas las tiendas'
-        ]);
+    private function ShowTiendasSegunRol($rol, $userId) {
+        $showTiendas = $rol === RolEnum::ADMINISTRADOR->value 
+            ? $this->showTiendasAdmin() 
+            : $this->showTiendasEncargado($userId);
 
-        return Inertia::render('Reports/Reports', [
-            'tiendasDuplicar' => $showTiendasDuplicar,
-            'tiendas' => $showTiendas,
-            'dataThead' => $showTiendasThead,
-            'pedidos' => $showDataTBody,
-            'numerosPedido' => $numerosPedido
-        ]);
+        return $showTiendas;
     }
 
     private function showTiendasAdmin() {
@@ -66,96 +81,101 @@ class ReportController extends Controller
 
     private function showTiendasThead($tiendas, $id_tienda){
         // Retornar todas las tiendas
-        if ($id_tienda == 0) {
-            return $tiendas;
-        }
-
-        // Retornar la tienda especifica
-        foreach ($tiendas as $tienda) {
-            if ($tienda->id_tienda == $id_tienda) {
-                return [$tienda];
+        try {
+            if ($id_tienda == 0) {
+                return $tiendas;
             }
-        }
+            
+            $tienda = $tiendas->firstWhere('id_tienda', $id_tienda);
+            return $tienda ? collect([$tienda]) : collect();
 
-        return [];
+        } catch (\Exception $e) {
+            Log::error('Error al generar la cabecera de tiendas: ' . $e->getMessage());
+            throw $e;
+        }
     }
 
     private function showDataTbody($tiendas, $filtro){
         // Verificar si hay productos en la orden
-        $existenPedidos = $this->verificarExistencia($tiendas, $filtro);
-        if (empty($existenPedidos)) {
+        try {
+            $existenPedidos = $this->verificarExistencia($tiendas, $filtro);
+
+            if (empty($existenPedidos)) {
+                return [
+                    'productosOrganizados' => [],
+                    'numerosPedido' => []
+                ];
+            }
+            
+            $productos = $this->getProducts($existenPedidos);
+            $organizarProductos = $this->organizarProductos($productos);
+
+            // Extraer solo numero_pedido y formatear
+            $numerosPedido = array_map(function ($pedido) {
+                return str_pad($pedido->numero_pedido ?? '', 5, '0', STR_PAD_LEFT);
+            }, $existenPedidos);
+
             return [
-                'productosOrganizados' => [],
-                'numerosPedido' => []
+                'productosOrganizados' => $organizarProductos,
+                'numerosPedido' => $numerosPedido
             ];
+        } catch (\Exception $e) {
+            Log::error("Error en showDataTbody: " . $e->getMessage());
+            throw $e;    
         }
-        
-        $productos = $this->getProducts($existenPedidos);
-        $organizarProductos = $this->organizarProductos($productos);
-
-         // Extraer solo numero_pedido y formatear
-        $numerosPedido = array_map(function ($pedido) {
-            return str_pad($pedido->numero_pedido, 5, '0', STR_PAD_LEFT);
-        }, $existenPedidos);
-
-        return [
-            'productosOrganizados' => $organizarProductos,
-            'numerosPedido' => $numerosPedido
-        ];
     }
 
     private function verificarExistencia($tiendas, $filtro) {
-        $existeProducto = [];
-        
-        if ($filtro['id_tienda'] == 0) {
-            foreach($tiendas as $tienda) {
+        try {
+            if ($filtro['id_tienda'] == 0) {
+                $idsTiendas = $tiendas->pluck('id_tienda')->toArray();
+                
                 $data = DB::table('pedidos')
-                    ->select('id_pedido', 'fecha_pedido', 'numero_pedido', 'id_tienda')
-                    ->where('fecha_pedido', $filtro['fecha'])
-                    ->where('id_tienda', $tienda->id_tienda)
-                    ->get();
-
-                if (!$data->isEmpty()) {
-                    $existeProducto = array_merge($existeProducto, $data->toArray());
-                }
+                ->select('id_pedido', 'fecha_pedido', 'numero_pedido', 'id_tienda')
+                ->where('fecha_pedido', $filtro['fecha'])
+                ->whereIn('id_tienda', $idsTiendas)
+                ->get();
+                
+                return $data->toArray();
             }
-        } else {
+    
+            // Caso contrario verificamos por tienda
             $data = DB::table('pedidos')
                 ->select('id_pedido', 'fecha_pedido', 'numero_pedido', 'id_tienda')
                 ->where('fecha_pedido', $filtro['fecha'])
                 ->where('id_tienda', $filtro['id_tienda'])
                 ->get();
-            
-            if (!$data->isEmpty()) {
-                $existeProducto = array_merge($existeProducto, $data->toArray());
-            }
-        }
+    
+            return $data->toArray();
 
-        return $existeProducto;
+        } catch (\Exception $e) {
+            Log::error('Error al verificar la existencia de pedidos: ' . $e->getMessage());
+            throw$e;
+        }
+        // Si la tienda es cero, significa que quiere ver todas las tiendas
     }
 
     private function getProducts($pedidos) {
-        // Obtener los productos de la orden
-        $productos = [];
-        foreach ($pedidos as $pedido) {
-            $data = DB::table('pedidos_detalle as pd')
-                ->join('unidad_pedido as u', 'u.id_unidad_pedido', '=', 'pd.id_unidad_pedido')
-                ->join('pedidos as p', 'p.id_pedido', '=', 'pd.id_pedido')
-                ->select('p.id_tienda','pd.id_pedido', 'pd.plus_producto', 'pd.nombre_producto', DB::raw("CONCAT(pd.cantidad,' ', u.codigo) as cantidad_concat"), 'pd.id_producto', 'u.id_unidad_pedido', 'pd.cantidad', 'u.descripcion')
-                ->where('pd.id_pedido', $pedido->id_pedido)
-                ->orderBy('pd.nombre_producto')
-                ->get();
+        $pedidoIds = array_map(fn($pedido) => $pedido->id_pedido, $pedidos);
 
-                
-            if (!$data->isEmpty()) {
-                $productos = array_merge($productos, $data->toArray());
-            }
-        }
-
-        // Organizar Alfabéticamente los productos
-        usort($productos, function($a, $b) {
-            return strcmp($a->nombre_producto, $b->nombre_producto);
-        });
+        $productos = DB::table('pedidos_detalle as pd')
+        ->join('unidad_pedido as u', 'u.id_unidad_pedido', '=', 'pd.id_unidad_pedido')
+        ->join('pedidos as p', 'p.id_pedido', '=', 'pd.id_pedido')
+        ->select(
+            'p.id_tienda',
+            'pd.id_pedido',
+            'pd.plus_producto',
+            'pd.nombre_producto',
+            DB::raw("CONCAT(pd.cantidad,' ', u.codigo) as cantidad_concat"),
+            'pd.id_producto',
+            'u.id_unidad_pedido',
+            'pd.cantidad',
+            'u.descripcion'
+        )
+        ->whereIn('pd.id_pedido', $pedidoIds)
+        ->orderBy('pd.nombre_producto')
+        ->get()
+        ->toArray();
 
         return $productos;
     }
@@ -208,56 +228,67 @@ class ReportController extends Controller
 
     private function generarDatosParaReporte($rowData, $pedidos) {
         // Generamos y organizamos la tabla con los productos clasificados por producto
-        $output = [];
-        
-        foreach ($rowData as $idProducto => $productoData) {
-            $total = [];
-
-            foreach ($productoData['nombresUnidad'] as $key => $unidad) {
-                if (isset($productoData['totales'][$key])) {
-                    $cantidad = $productoData['totales'][$key];
-                    // Agregamos la cantidad y la unidad al arreglo de totales
-                    $totales[] = $cantidad . ' ' . $unidad;
-                }
-            }
-
-            $total = implode(', ', $totales);
-            $totales = [];
-
-            $fila = [
-                'plus' => $productoData['plus_producto'],
-                'producto' => $productoData['nombre_producto'],
-                'total' => $total,
-                'id_pedido' => $productoData['id_pedido']
-            ];
+        try {
+            $output = [];
+            
+            foreach ($rowData as $idProducto => $productoData) {
+                $total = [];
     
-            // Para cada Tienda, agregamos la cantidad o un guion si no existe
-            foreach ($pedidos as $idTienda) {
-                $fila['pedido_' . $idTienda] = $productoData['pedidos'][$idTienda] ?? '-';
-            }
+                foreach ($productoData['nombresUnidad'] as $key => $unidad) {
+                    if (isset($productoData['totales'][$key])) {
+                        $cantidad = $productoData['totales'][$key];
+                        // Agregamos la cantidad y la unidad al arreglo de totales
+                        $totales[] = $cantidad . ' ' . $unidad;
+                    }
+                }
+    
+                $total = implode(', ', $totales);
+                $totales = [];
+    
+                $fila = [
+                    'plus' => $productoData['plus_producto'],
+                    'producto' => $productoData['nombre_producto'],
+                    'total' => $total,
+                    'id_pedido' => $productoData['id_pedido']
+                ];
         
-            $output[] = $fila;
-        }
+                // Para cada Tienda, agregamos la cantidad o un guion si no existe
+                foreach ($pedidos as $idTienda) {
+                    $fila['pedido_' . $idTienda] = $productoData['pedidos'][$idTienda] ?? '-';
+                }
+            
+                $output[] = $fila;
+            }
+    
+            return $output;
 
-        return $output;
+        } catch (\Exception $e) {
+            Log::error('Error al generar los datos para el reporte: ' . $e->getMessage());
+            throw $e;
+        }
     }
 
     private function tiendasDisponiblesParaDuplicar($tiendas) {
-        $timezone = config('app.timezone'); 
-        $hoy = Carbon::now($timezone)->format('Y-m-d');
-        
-        $tiendasConOrden = DB::table('pedidos') 
-            ->where('fecha_pedido', '=', $hoy) 
-            ->pluck('id_tienda') 
-            ->toArray();
-        
-        $tiendasDisponibles = []; 
-        foreach ($tiendas as $tienda) { 
-            if (!in_array($tienda->id_tienda, $tiendasConOrden)) { 
-                $tiendasDisponibles[] = $tienda; 
+        try {
+            $timezone = config('app.timezone'); 
+            $hoy = Carbon::now($timezone)->format('Y-m-d');
+            
+            $tiendasConOrden = DB::table('pedidos') 
+                ->where('fecha_pedido', '=', $hoy) 
+                ->pluck('id_tienda') 
+                ->toArray();
+            
+            $tiendasDisponibles = []; 
+            foreach ($tiendas as $tienda) { 
+                if (!in_array($tienda->id_tienda, $tiendasConOrden)) { 
+                    $tiendasDisponibles[] = $tienda; 
+                } 
             } 
-        } 
-        
-        return $tiendasDisponibles;
+            
+            return $tiendasDisponibles;
+        } catch (\Exception $e) {
+            Log::error('Error al obtener tiendas disponibles para duplicar: ' . $e->getMessage());
+            throw $e;
+        }
     }
 }
