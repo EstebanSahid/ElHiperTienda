@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Symfony\Component\HttpFoundation\Response;
+use app\Enums\RolEnum;
 
 class CheckRol
 {
@@ -16,7 +17,7 @@ class CheckRol
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user()->id_rol != 1) {
+        if ($request->user()->id_rol !== RolEnum::ADMINISTRADOR->value) {
             return Redirect::to('/dashboard');
         }
 
