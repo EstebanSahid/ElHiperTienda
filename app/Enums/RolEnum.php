@@ -15,4 +15,13 @@ enum RolEnum: int
             self::VENDEDOR => 'Vendedor',
         };
     }
+
+    // Método estático para obtener los enums como un array
+    public static function values(): array {
+        return [
+            'ADMINISTRADOR' => self::ADMINISTRADOR->value,
+            'USUARIO' => self::USUARIO->value,
+            'VENDEDOR' => self::VENDEDOR->value,
+        ];
+    }
 }

@@ -52,6 +52,12 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     Informes
                                 </NavLink>
+
+                                <NavLink
+                                    v-if="$page.props.auth.user.id_rol === $page.props.enums.Rol.ADMINISTRADOR"
+                                >
+                                    Auditoría
+                                </NavLink>
                             </div>
                         </div>
                         
@@ -104,7 +110,10 @@ const showingNavigationDropdown = ref(false);
                                         >
                                             Perfil
                                         </DropdownLink>
-                                        <div v-if="$page.props.auth.user.id_rol  == 1" class="border-t border-b py-3 dark:border-gray-600">
+                                        <div 
+                                            v-if="$page.props.auth.user.id_rol === $page.props.enums.Rol.ADMINISTRADOR" 
+                                            class="border-t border-b py-3 dark:border-gray-600"
+                                        >
                                             <div class="px-4 py-2 w-full" >
                                                 <label class="dark:font-bold font-medium text-gray-600 dark:text-gray-300 text-sm">
                                                     Administración
@@ -217,7 +226,7 @@ const showingNavigationDropdown = ref(false);
 
                     <!-- Administrador-->
                     <div 
-                        v-if="$page.props.auth.user.id_rol  == 1"
+                        v-if="$page.props.auth.user.id_rol === $page.props.enums.Rol.ADMINISTRADOR"
                         class="border-t border-gray-200 pb-1 pt-4 dark:border-gray-600"
                     >
                         <div class="px-4">
