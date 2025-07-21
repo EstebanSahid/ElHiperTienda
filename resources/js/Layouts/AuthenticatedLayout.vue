@@ -47,17 +47,18 @@ const showingNavigationDropdown = ref(false);
                                 </NavLink>
 
                                 <NavLink
+                                    v-if="$page.props.auth.user.id_rol === $page.props.enums.Rol.ADMINISTRADOR"
+                                >
+                                    Pedidos
+                                </NavLink>
+
+                                <NavLink
                                     :href="route('reportes')"
                                     :active="route().current('reportes')"
                                 >
                                     Informes
                                 </NavLink>
 
-                                <NavLink
-                                    v-if="$page.props.auth.user.id_rol === $page.props.enums.Rol.ADMINISTRADOR"
-                                >
-                                    Auditoría
-                                </NavLink>
                             </div>
                         </div>
                         
