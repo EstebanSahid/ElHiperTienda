@@ -43,13 +43,12 @@ const showingNavigationDropdown = ref(false);
                                     :href="route('dashboard')"
                                     :active="route().current('dashboard')"
                                 >
-                                    Tiendas
+                                    Ordenes
                                 </NavLink>
 
-                                <NavLink
-                                    v-if="$page.props.auth.user.id_rol === $page.props.enums.Rol.ADMINISTRADOR"
-                                >
-                                    Pedidos
+                                <!-- v-if="$page.props.auth.user.id_rol === $page.props.enums.Rol.ADMINISTRADOR" -->
+                                <NavLink>
+                                    Historial
                                 </NavLink>
 
                                 <NavLink
@@ -62,11 +61,11 @@ const showingNavigationDropdown = ref(false);
                             </div>
                         </div>
                         
-                        <div class="flex items-center">
+                        <!-- <div class="flex items-center">
                             <label  class="text-sm font-medium text-gray-500 dark:text-gray-300">
                                 {{ 'Fecha: ' + obtenerFechaActual()  }}
                             </label>
-                        </div>
+                        </div> -->
                         
                         <!-- Dropdown Configuration -->
                         <div class="hidden sm:ms-6 sm:flex sm:items-center">
@@ -215,7 +214,13 @@ const showingNavigationDropdown = ref(false);
                             :href="route('dashboard')"
                             :active="route().current('dashboard')"
                         >
-                            Inicio
+                            Ordenes
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('dashboard')"
+                            :active="route().current('dashboard')"
+                        >
+                            Historial
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
                             :href="route('reportes')"
