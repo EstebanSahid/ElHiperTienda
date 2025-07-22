@@ -46,7 +46,7 @@ class PDFController extends Controller
         $usuarioGenera = $request->user()->name;
 
         $numerosPedido = array_map(function ($numero) {
-            return 'N°' . $numero;
+            return 'N° ' . $numero;
         }, $request->input('numerosPedido'));
 
         $nombreTiendas = '';

@@ -1,14 +1,6 @@
-<!-- Plantilla de estilos (Base verde) se desacopla para poder generar mas plantillas de reportería -->
 @extends('pdf.styles.baseVerde')
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Reporte {{ $fecha }}</title>
-</head>
-<body class="container">
-
-    <!-- Encabezado para el PDF -->
+@section('header')
     @include('pdf.partials.HeaderPDF', [
         'fecha' => $fecha,
         'nombreTiendas' => $nombreTiendas,
@@ -16,7 +8,9 @@
         'usuarioGenera' => $usuarioGenera,
         'titulo' => 'Listado de Productos'
     ])
+@endsection
 
+@section('content')
     <div class="border"></div>
 
     <div class="py-3">
@@ -49,5 +43,4 @@
             </tbody>
         </table>
     </div>
-</body>
-</html>
+@endsection
