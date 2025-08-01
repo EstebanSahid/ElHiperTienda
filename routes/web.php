@@ -9,6 +9,7 @@ use App\Http\Controllers\TiendaController;
 use App\Http\Controllers\UnidadMedidaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ExcelController;
+use app\Http\Controllers\AuditController;
 use App\http\Middleware\CheckRol;
 use App\Models\User;
 use Illuminate\Foundation\Application;
@@ -51,6 +52,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/order/{idPedido}/{idTienda}/duplicate', 'renderDuplicate')->name('show.duplicate');
         Route::post('/orders', 'store')->name('order.store');
         Route::put('/editOrders', 'update')->name('order.update');
+        Route::get('/orders', 'indexOrders')->name('index.orders');
+        Route::get('/order/{id}/view', 'viewOrder')->name('view.order');
         //Route::get('/getProducts', 'getProducts')->name('order.getProducts');
     });
 
@@ -108,6 +111,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/unidad/{id}/edit', 'renderEdit')->name('unidad.edit');
             Route::put('/unidadEdit', 'update')->name('unidad.update');
             Route::put('/unidadDelete', 'deactivate')->name('unidad.deactivate');
+        });
+
+        // Para ver auditorias
+        Route::controller(AuditController::class)->group(function() {
+            Route::get('/audits', 'index')->name('audits');
+            Route::get('/audits/{id}', 'show')->name('audits.show');
         });
     });
 });
