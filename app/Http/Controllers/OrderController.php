@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\PermisosController;
 use App\Enums\RolEnum;
 use App\Models\Order;
 use App\Models\OrderDetails;
+use app\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -17,7 +19,7 @@ class OrderController extends Controller
     /* LISTAR TIENDAS PARA GENERAR ORDENES */
     public function index(Request $request) {
         try{
-            $showTiendas = $this->obtenerTiendasPorRol($request->user());
+            $showTiendas = $this->obtenerTiendasPorRol($request->user(), true);
             $showTiendas = $this->verificarExistencia($showTiendas);
     
             return Inertia::render('Dashboard', [
@@ -39,30 +41,32 @@ class OrderController extends Controller
         
     }
 
-    private function obtenerTiendasPorRol($user) {
+    private function obtenerTiendasPorRol(User $user, bool $paginado = true) {
         return match(RolEnum::from($user->id_rol)) {
-            RolEnum::ADMINISTRADOR  => $this->indexAdmin(),
-            RolEnum::USUARIO        => $this->indexEncargado($user->id),
+            RolEnum::ADMINISTRADOR  => $this->tiendasAdmin($paginado),
+            RolEnum::USUARIO        => $this->tiendasUsuario($user->id, $paginado),
             default                 => throw new \Exception('Rol no permitido para acceder a las tiendas')
         };
     }
 
-    private function indexAdmin() {
-        return DB::table('tienda')
+    private function tiendasAdmin(bool $paginado) {
+        $tiendas = DB::table('tienda')
             ->select('id_tienda', 'nombre', 'codigo')
             ->where('estado', 'Activo')
-            ->orderBy('nombre')
-            ->paginate(5);
+            ->orderBy('nombre');
+            
+        return $paginado ? $tiendas->paginate(5) : $tiendas->get();
     }
 
-    private function indexEncargado($userId) {
-        return DB::table('tienda as t')
+    private function tiendasUsuario($userId, bool $paginado) {
+        $tiendas = DB::table('tienda as t')
             ->join('accesos as a', 'a.id_tienda', '=', 't.id_tienda')
             ->select('t.id_tienda', 't.nombre', 't.codigo')
             ->where('a.id_user', $userId)
             ->where('t.estado', 'Activo')
-            ->orderBy('t.nombre')
-            ->paginate(5);
+            ->orderBy('t.nombre');
+
+        return $paginado ? $tiendas->paginate(5) : $tiendas->get();
     }
 
     private function validacionMostrar($tiendas) {
@@ -368,6 +372,65 @@ class OrderController extends Controller
             ->where('p.id_pedido', '=', $idPedido)
             ->orderBy('pd.nombre_producto')
             ->get();
+    }
+
+    /* LISTAR ORDENES REGISTRADAS */
+
+    public function indexOrders(Request $request) {
+        try{
+            // dd($request->input('dates'));
+            $filtro = $request->input('dates', []);
+
+            $tiendas = $this->obtenerTiendasPorRol($request->user(), false);
+            $ordenes = $this->getOrders($tiendas, $request->user(), $filtro);
+
+            $tiendas->prepend((object) [
+                'id_tienda' => 0,
+                'nombre' => 'Todas las tiendas'
+            ]);
+    
+            return Inertia::render('Orders/HistoryOrders', [
+                'ordenes' => $ordenes,
+                'tiendas' => $tiendas
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error al cargar las ordenes: '. $e->getMessage());
+
+            return Inertia::render('Orders/HistoryOrders', [
+                'ordenes' => [],
+                'error' => [
+                    'mensaje' => 'Error al cargar las ordenes: '. $e->getMessage(),
+                    'duracionNotificacion' => 10
+                ]
+            ], 500);
+
+        }
+    }
+
+    private function getOrders($tiendas, $user, $filtro) {
+        $pedidos = DB::table('pedidos as p')
+        ->join('tienda as t', 'p.id_tienda', '=', 't.id_tienda')
+        ->select(
+            'p.id_pedido', 
+            DB::raw("CONCAT('N° ', LPAD(p.numero_pedido, 5, '0')) as numero_pedido"),
+            'p.fecha_pedido', 
+            't.nombre as nombre_tienda');
+        
+        if (!PermisosController::esAdministrador($user)) {
+            $idsTiendas = $tiendas->pluck('id_tienda')->toArray();
+            $pedidos->whereIn('p.id_tienda', $idsTiendas);
+        } 
+
+        $pedidos->where('p.estado', 'Activo');
+
+        if (!empty($filtro['id_tienda']) && $filtro['id_tienda'] != 0) {
+            $pedidos->where('p.id_tienda', '=', $filtro['id_tienda']);
+        }
+
+        $pedidos->orderBy('p.numero_pedido', 'desc');
+
+        return $pedidos->paginate(5);
     }
 
     /*  DUPLICAR ORDEN */

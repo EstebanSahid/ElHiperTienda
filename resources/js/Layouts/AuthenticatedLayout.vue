@@ -47,7 +47,10 @@ const showingNavigationDropdown = ref(false);
                                 </NavLink>
 
                                 <!-- v-if="$page.props.auth.user.id_rol === $page.props.enums.Rol.ADMINISTRADOR" -->
-                                <NavLink>
+                                <NavLink
+                                    :href="route('index.orders')"
+                                    :active="route().current('index.orders')"
+                                >
                                     Historial
                                 </NavLink>
 
@@ -217,8 +220,8 @@ const showingNavigationDropdown = ref(false);
                             Ordenes
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
-                            :href="route('dashboard')"
-                            :active="route().current('dashboard')"
+                            :href="route('index.orders')"
+                            :active="route().current('index.orders')"
                         >
                             Historial
                         </ResponsiveNavLink>
