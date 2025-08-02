@@ -21,7 +21,7 @@ const updateDropdownPosition = () => {
     const button = buttonRef.value;
     if (button) {
         const rect = button.getBoundingClientRect();
-        const offset = getResponsiveOffset(); // 🔽 Margen vertical en píxeles
+        const offset = getResponsiveOffset();
 
         dropdownPosition.value = {
             top: rect.bottom + window.scrollY - 4   , 
@@ -35,9 +35,9 @@ const updateDropdownPosition = () => {
 const getResponsiveOffset = () => {
     const width = window.innerWidth;
 
-    if (width < 640) return 70; // sm y menos
-    if (width < 768) return 32; // md
-    return 8; // lg y mayores
+    if (width < 640) return 70; // esto para pantallas pequeñas
+    if (width < 768) return 32; // esto para pantallas medianas
+    return 8; // esto para pantallas grandes
 };
 
 
