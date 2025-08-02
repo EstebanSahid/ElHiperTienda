@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
+import DropdownHiper from '@/Components/DropdownHiper.vue';
 import Pagination from '@/Components/Pagination.vue';
 import Table from '@/Components/Table.vue';
 import TableTh from '@/Components/TableTh.vue';
@@ -60,7 +60,47 @@ defineProps({
                                     </TableBodyTd>
                                     <!-- -->
                                     <TableBodyTd>
-                                        <Link
+                                        <DropdownHiper 
+                                                @open="mostrarDropdown = true" 
+                                                @close="mostrarDropdown = false"
+                                            >
+
+                                                <template #trigger>
+                                                    Acciones
+                                                </template>
+
+                                                <template #content>
+                                                    <a
+                                                        :href="tienda.procesado ? `/order/${tienda.id_tienda}/edit` : `/order/${tienda.id_tienda}/create`"
+                                                        class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 z-50">
+                                                        {{ tienda.procesado ? 'Editar' : 'Generar' }}
+                                                    </a>
+                                                    <a 
+                                                        v-if="tienda.procesado" 
+                                                        :href="`/order/${tienda.id_pedido}/view`"
+                                                        class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 z-50" 
+                                                    >
+                                                        Ver orden
+                                                    </a>
+                                                    <a 
+                                                        v-if="tienda.procesado" 
+                                                        href="#" 
+                                                        class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 z-50"
+                                                    >
+                                                        Descargar PDF
+                                                    </a>
+                                                    <!-- <a 
+                                                        v-if="$page.props.auth.user.id_rol === $page.props.enums.Rol.ADMINISTRADOR" 
+                                                        href="#" 
+                                                        class="block px-4 py-2 text-sm text-gray-700 dark:text-white 
+                                                            hover:bg-gray-100 dark:hover:bg-gray-600 z-50"
+                                                    >
+                                                        Auditoria
+                                                    </a> -->
+                                                </template>
+                                            </DropdownHiper>
+
+                                        <!-- <Link
                                             :href="tienda.procesado ? `/order/${tienda.id_tienda}/edit` : `/order/${tienda.id_tienda}/create`"
                                             class="p-2 button-hiper inline-flex items-center rounded-md border border-transparent bg-[#97a907]
                                                     px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:bg-[#59650f]
@@ -69,7 +109,7 @@ defineProps({
                                                     dark:active:bg-gray-300dark:bg-[#97a907] dark:hover:bg-[#eef85e]"
                                         >
                                             {{ tienda.procesado ? 'Editar' : 'Generar' }}
-                                        </Link>
+                                        </Link> -->
                                     </TableBodyTd>
                                     
                                 </TableBodyTr>
