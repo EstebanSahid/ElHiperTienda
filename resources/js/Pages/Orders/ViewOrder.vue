@@ -2,18 +2,12 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import Table from '@/Components/Table.vue';
 import TableTh from '@/Components/TableTh.vue';
-import SelectForm from '@/Components/SelectForm.vue';
-import OptionForm from '@/Components/OptionForm.vue';
 import TableBodyTr from '@/Components/TableBodyTr.vue';
 import TableBodyTd from '@/Components/TableBodyTd.vue';
 import { Head, router, Link } from '@inertiajs/vue3';
-import DropdownHiper from '@/Components/DropdownHiper.vue';
-import Dropdown from '@/Components/Dropdown.vue';
-import DangerButton from '@/Components/DangerButton.vue';
-import { setTransitionHooks } from 'vue';
+import { dameFechaFormateada } from '@/Services/DateHelper';
 </script>
 
 <template>
@@ -23,8 +17,7 @@ import { setTransitionHooks } from 'vue';
         <template #header>
             <div class="flex justify-between">
                 <h2 class="text-md font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                    <!-- Orden de {{ tienda?.nombre ?? 'esta tienda' }} de la fecha  -->
-                    hola
+                    Pedido de {{ pedido.tienda }} del {{ dameFechaFormateada(pedido.fecha) }}
                 </h2>
             </div>
         </template>
@@ -73,15 +66,15 @@ import { setTransitionHooks } from 'vue';
                                         </TableTh>
                                     </thead>
                                     <TableBodyTr
-                                        v-for="orden in ordenesFiltradas" :key="orden.id_pdetalle" :value="orden.id_pdetalle"
+                                        v-for="producto in productosFiltrados" :key="producto.id_pdetalle" :value="producto.id_pdetalle"
                                     >
-                                        <TableBodyTd> {{ orden.plus_producto }}</TableBodyTd>
-                                        <TableBodyTd> {{ orden.nombre_producto }}</TableBodyTd>
-                                        <TableBodyTd> {{ orden.cantidad }}</TableBodyTd>
-                                        <TableBodyTd> {{ orden.unidadMedida }}</TableBodyTd>
+                                        <TableBodyTd> {{ producto.plus_producto }}</TableBodyTd>
+                                        <TableBodyTd> {{ producto.nombre_producto }}</TableBodyTd>
+                                        <TableBodyTd> {{ producto.cantidad }}</TableBodyTd>
+                                        <TableBodyTd> {{ producto.unidadMedida }}</TableBodyTd>
                                     </TableBodyTr>
                                     
-                                    <TableBodyTr v-if="ordenes.length === 0">
+                                    <TableBodyTr v-if="productos.length === 0">
                                         <TableBodyTd colspan="4" class="font-semibold" >Sin Registros</TableBodyTd>
                                     </TableBodyTr>
                                 </Table>
@@ -97,7 +90,8 @@ import { setTransitionHooks } from 'vue';
 <script>
 export default {
     props: {
-        ordenes: Array,
+        productos: Array,
+        pedido: Object,
     },
 
     data() {
@@ -105,25 +99,25 @@ export default {
             buscadorText: '',
             sortBy: 'nombre_producto', // default
             sortAsc: true,
-            productosOriginales: this.ordenes, // viene del backend
+            productosOriginales: this.productos, // viene del backend
         }
     },
     
     mounted() {
         console.log("mounted")
-        console.log(this.ordenes);
+        console.log(this.productos);
     },
 
     computed: {
-        ordenesFiltradas() {
+        productosFiltrados() {
             let resultado = [...this.productosOriginales];
 
             // Filtramos por nombre o plus
             if (this.buscadorText) {
                 const texto = this.buscadorText.toLowerCase();
                 resultado = resultado.filter(orden =>
-                    orden.nombre_producto.toLowerCase().includes(texto) ||
-                    orden.plus_producto.toLowerCase().includes(texto)
+                    producto.nombre_producto.toLowerCase().includes(texto) ||
+                    producto.plus_producto.toLowerCase().includes(texto)
                 )
             }
 
