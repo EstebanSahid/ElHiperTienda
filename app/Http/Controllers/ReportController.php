@@ -16,6 +16,15 @@ class ReportController extends Controller
     public function create(Request $request) {
         try {
             $buscador = $request->input('dates');
+
+            // Si no hay buscador o está vacío, inicializamos con la fecha actual y tienda cero para mostrar las del dia
+            if (empty($buscador)) {
+                $buscador = [
+                    'fecha' => Carbon::now()->format('Y-m-d'),
+                    'id_tienda' => 0
+                ];
+            }
+
             $userId = $request->user()->id;
             $rol = $request->user()->id_rol;
 
@@ -28,14 +37,12 @@ class ReportController extends Controller
             $showTiendas = $this->ShowTiendasSegunRol($rol, $userId);
 
             // Obtener la data del encabezado y el cuerpo cuando se uso algún filtro
-            if (!empty($buscador)) {
-                $showTiendasDuplicar = $this->tiendasDisponiblesParaDuplicar($showTiendas);
-                $showTiendasThead = $this->showTiendasThead($showTiendas, $buscador['id_tienda']);
+            $showTiendasDuplicar = $this->tiendasDisponiblesParaDuplicar($showTiendas);
+            $showTiendasThead = $this->showTiendasThead($showTiendas, $buscador['id_tienda']);
 
-                $resultado = $this->showDataTbody($showTiendas, $buscador);
-                $showDataTBody = $resultado['productosOrganizados'];
-                $numerosPedido = $resultado['numerosPedido'];
-            }
+            $resultado = $this->showDataTbody($showTiendas, $buscador);
+            $showDataTBody = $resultado['productosOrganizados'];
+            $numerosPedido = $resultado['numerosPedido'];
 
             $showTiendas->prepend((object) [
                 'id_tienda' => 0,
