@@ -20,3 +20,7 @@ const formatearFecha = (formatoSalida) => {
 export const obtenerFechaActual = () => formatearFecha('dd/mm/yyyy');
 
 export const obtenerFechaActualGuardarBD = () => formatearFecha('yyyy-mm-dd');
+
+export const dameFechaFormateada = (fecha) => {
+    return new Date(fecha).toLocaleDateString('es-ES');
+}
