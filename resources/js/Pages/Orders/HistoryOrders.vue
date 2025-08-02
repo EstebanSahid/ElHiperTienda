@@ -13,6 +13,7 @@ import { Head, router, Link } from '@inertiajs/vue3';
 import DropdownHiper from '@/Components/DropdownHiper.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DangerButton from '@/Components/DangerButton.vue';
+import { dameFechaFormateada } from '@/Services/DateHelper';
 </script>
 
 <template>
@@ -81,7 +82,7 @@ import DangerButton from '@/Components/DangerButton.vue';
                                         v-for="orden in ordenes.data" :key="orden.id_pedido" :value="orden.id_pedido"
                                     >
                                         <TableBodyTd> {{ orden.numero_pedido }}</TableBodyTd>
-                                        <TableBodyTd> {{ orden.fecha_pedido }}</TableBodyTd>
+                                        <TableBodyTd> {{ dameFechaFormateada(orden.fecha_pedido) }}</TableBodyTd>
                                         <TableBodyTd> {{ orden.nombre_tienda }}</TableBodyTd>
                                         <TableBodyTd class="w-48 z-50">
                                             <DropdownHiper 
