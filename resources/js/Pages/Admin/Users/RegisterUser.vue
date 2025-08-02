@@ -204,7 +204,6 @@ export default {
     
     methods: {
         store() {
-            console.log(this.form);
             this.form.post('/users');
         },
 

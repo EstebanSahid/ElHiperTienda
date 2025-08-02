@@ -229,8 +229,6 @@ export default {
     },
 
     mounted() {
-        console.log("Tiendas Duplicar")
-        console.log(this.pedidos);
     },
 
     methods: {
@@ -277,10 +275,6 @@ export default {
         duplicarOrden() {
             this.showModal = true
             this.idPedido = this.pedidos[0].id_pedido
-            console.log("Pedido", this.pedidos[0].id_pedido)
-            console.log(this.pedidos)
-            console.log(this.pedidos[0].id_pedido)
-            console.log('Aqui se duplicara la orden para a tienda ' + this.buscador.id_tienda);
         }
     },
 }

@@ -149,10 +149,6 @@ export default {
     },
 
     mounted() {
-        console.log("mounted")
-        console.log(this.ordenes);
-        console.log(this.ordenes.data);
-        console.log(this.ordenes.data.length);
     },
 
     methods: {
@@ -192,7 +188,6 @@ export default {
 
         // Obtener los datos para el reporte
         getData() {
-            console.log('Buscando datos con el buscador:', this.buscador);
             const data = router.get('/orders', {dates: this.buscador}, {preserveState: true})
         },
     },

@@ -107,8 +107,6 @@ export default {
 
         obtenerHojasExcel() {
             this.excel.file = document.getElementById('file').files[0];
-            console.log("obtenerhojas")
-            console.log(this.excel.file)
             if (!this.excel.file) {
                 alert("Por favor, selecciona un archivo Excel.");
                 return;
@@ -116,8 +114,6 @@ export default {
 
             const formData = new FormData();
             formData.append('file', this.excel.file);
-            console.log("h")
-            console.log(this.excel)
             axios
                 .post('/ObtenerHojasExcel', formData)
                 .then((response) => {

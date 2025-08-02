@@ -211,10 +211,6 @@ export default {
     methods: {
         // Quitar un producto de la orden
         deleteProductArray(producto){
-            /*
-            console.log("Productos Orden:", this.productosOrden);
-            console.log(producto);
-            */
             const indexOrden = this.productosOrden.findIndex(po => po.id_producto == producto.id_producto);
             const indexPedido = this.cambios.findIndex(pc => pc.id_producto == producto.id_producto);
 
@@ -287,7 +283,6 @@ export default {
 
         // Validar antes de guardar la Orden
         validarOrden(orden) {
-            console.log(orden)
             if (orden.length < 1) {
                 alert('Debe haber por lo menos un registro para Actualizar');
                 return;
@@ -297,12 +292,6 @@ export default {
         },
 
         verificarData(orden) {
-            /*
-            console.log("Productos Originales:", this.productosOriginal);
-            console.log("Productos Orden:", this.productosOrden);
-            console.log("Productos desde la funcion:", orden);
-            */
-
             orden.forEach((productoNuevo) => {
                 const existe = this.productosOriginal.find(
                     (productoExistente) => productoExistente.id_producto === productoNuevo.id_producto
@@ -327,9 +316,6 @@ export default {
                     (producto) => producto.id_producto === productoEliminado.id_producto
                 )
 
-                console.log("Eliminado");
-                console.log(eliminado);
-
                 if (!eliminado) {
                     productoEliminado.accion = 'd';
                     this.cambios.push(productoEliminado);
@@ -337,7 +323,6 @@ export default {
             });
 
             // Imprimir para verificar el estado de cambios
-            console.log("Productos nuevos (creados):", this.cambios);
             this.validarCantidadProductos(this.cambios);
         },
 

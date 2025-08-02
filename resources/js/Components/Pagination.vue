@@ -35,8 +35,6 @@ export default {
     },
 
     mounted(){
-        console.log("links");
-        console.log(this.links);
     }
 }
 </script>

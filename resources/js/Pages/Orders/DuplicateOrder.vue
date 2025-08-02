@@ -255,7 +255,6 @@ export default {
 
         // Validar antes de guardar la Orden
         validarOrden(orden) {
-            console.log(orden)
             if (orden.length < 1) {
                 alert('Debe haber por lo menos un registro para Actualizar');
                 return;
@@ -289,9 +288,6 @@ export default {
                     (producto) => producto.id_producto === productoEliminado.id_producto
                 )
 
-                console.log("Eliminado");
-                console.log(eliminado);
-
                 if (!eliminado) {
                     productoEliminado.accion = 'd';
                     this.cambios.push(productoEliminado);
@@ -299,7 +295,6 @@ export default {
             });
 
             // Imprimir para verificar el estado de cambios
-            console.log("Productos nuevos (creados):", this.cambios);
             this.validarCantidadProductos(this.cambios);
         },
 
@@ -347,8 +342,6 @@ export default {
     },
     
     mounted() {
-        console.log("productos")
-        // console.log(this.productosOrden)
     }
 }
 </script>

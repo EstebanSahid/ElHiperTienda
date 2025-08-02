@@ -137,8 +137,6 @@ export default {
     },
 
     mounted() {
-        console.log("Tiendas");
-        console.log(this.productos)
     }
 }
 </script>

@@ -243,7 +243,6 @@ export default {
     
     methods: {
         update() {
-            //console.log(this.form);
             this.form.put('/usersEdit');
         },
 
@@ -272,8 +271,6 @@ export default {
         },
     },
     mounted() {
-        console.log("user");
-        console.log(this.user);
     }
 }
 </script>
