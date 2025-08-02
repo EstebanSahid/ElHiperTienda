@@ -96,31 +96,31 @@ class OrderController extends Controller
     }
 
     private function verificarExistencia($tiendas) {
-        try{
+        try {
             $timezone = config('app.timezone'); 
             $hoy = Carbon::now($timezone)->format('Y-m-d');
 
-            // Obtenemos los ids de una tienda en el dashboard
-            $idsTiendas = collect($tiendas->items())
-                ->pluck('id_tienda');
+            // Obtenemos los ids de las tiendas
+            $idsTiendas = collect($tiendas->items())->pluck('id_tienda');
 
-            // Obtenemos los pedidos de esas tiendas para hoy
+            // Obtenemos los pedidos registrados hoy por tienda
             $pedidosRegistrados = DB::table('pedidos')
-                ->select('id_tienda')
+                ->select('id_tienda', 'id_pedido')
                 ->whereIn('id_tienda', $idsTiendas)
                 ->whereDate('fecha_pedido', $hoy)
                 ->get()
-                ->pluck('id_tienda')
-                ->toArray();
+                ->keyBy('id_tienda'); // indexamos por la tienda
 
             // Marcamos las tiendas segun si hay pedidos o no
             foreach ($tiendas->items() as $tienda) {
-                $tienda->procesado = in_array($tienda->id_tienda, $pedidosRegistrados) ? 1 : 0;
+                $pedido = $pedidosRegistrados->get($tienda->id_tienda);
+                $tienda->procesado = $pedido ? 1 : 0;
+                $tienda->id_pedido = $pedido ? $pedido->id_pedido : null;
             }
-    
+
             return $tiendas;
 
-        }catch(\Exception $e) {
+        } catch(\Exception $e) {
             Log::error('Error al generar existencia de pedidos: ' . $e->getMessage());
             throw new \Exception('Error al generar existencia de pedidos: ' . $e->getMessage());
         }
@@ -434,9 +434,9 @@ class OrderController extends Controller
     }
 
     public function viewOrder(Request $request, $idPedido) {
-        // dd($idPedido);
+        // dd($idPedido); 
         try {
-            $pedidos = DB::table('pedidos_detalle as pd')
+            $productos = DB::table('pedidos_detalle as pd')
             ->join('unidad_pedido as up', 'pd.id_unidad_pedido', '=', 'up.id_unidad_pedido')
             ->select(
                 "pd.id_pdetalle", 
@@ -449,14 +449,22 @@ class OrderController extends Controller
             ->where('pd.id_pedido', '=', $idPedido)
             ->get();
 
+            $pedido = DB::table('pedidos as p')
+                ->join('tienda as t', 'p.id_tienda', '=', 't.id_tienda')
+                ->select('p.id_pedido', 'p.fecha_pedido as fecha', 'p.id_tienda', 't.nombre as tienda')
+                ->where('p.id_pedido', '=', $idPedido)
+                ->first();
+
             return Inertia::render('Orders/ViewOrder', [
-                'ordenes' => $pedidos,
+                'productos' => $productos,
+                'pedido' => $pedido,
             ]);
         }catch (\Exception $e) {
             Log::error('Error al cargar el pedido: '. $e->getMessage());
 
             return Inertia::render('Orders/ViewOrder', [
-                'ordenes' => [],
+                'productos' => [],
+                'pedido' => [],
                 'error' => [
                     'mensaje' => 'Error al cargar el pedido: '. $e->getMessage(),
                     'duracionNotificacion' => 10
