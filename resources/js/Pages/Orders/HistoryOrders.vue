@@ -11,8 +11,7 @@ import TableBodyTr from '@/Components/TableBodyTr.vue';
 import TableBodyTd from '@/Components/TableBodyTd.vue';
 import { Head, router, Link } from '@inertiajs/vue3';
 import DropdownHiper from '@/Components/DropdownHiper.vue';
-import Dropdown from '@/Components/Dropdown.vue';
-import DangerButton from '@/Components/DangerButton.vue';
+import Pagination from '@/Components/Pagination.vue';
 import { dameFechaFormateada } from '@/Services/DateHelper';
 </script>
 
@@ -118,6 +117,8 @@ import { dameFechaFormateada } from '@/Services/DateHelper';
                         </div>
                     </div>
                 </div>
+            <!-- Paginación -->
+            <Pagination :links="ordenes.links" />
             </div>
         </div>
     </AuthenticatedLayout>

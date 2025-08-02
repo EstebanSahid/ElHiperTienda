@@ -430,7 +430,7 @@ class OrderController extends Controller
 
         $pedidos->orderBy('p.numero_pedido', 'desc');
 
-        return $pedidos->paginate(5);
+        return $pedidos->paginate(8);
     }
 
     public function viewOrder(Request $request, $idPedido) {
