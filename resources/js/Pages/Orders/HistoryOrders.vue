@@ -69,7 +69,7 @@ import DangerButton from '@/Components/DangerButton.vue';
 
                         <!-- Aqui la Tabla de Datos -->
                         <div class="py-3">
-                            <div class="rounded-md shadow">
+                            <div class="bg-white rounded-md shadow overflow-x-auto dark:bg-gray-800">
                                 <Table>
                                     <thead>
                                         <TableTh>N° Pedido</TableTh>
@@ -83,20 +83,24 @@ import DangerButton from '@/Components/DangerButton.vue';
                                         <TableBodyTd> {{ orden.numero_pedido }}</TableBodyTd>
                                         <TableBodyTd> {{ orden.fecha_pedido }}</TableBodyTd>
                                         <TableBodyTd> {{ orden.nombre_tienda }}</TableBodyTd>
-                                        <TableBodyTd class="w-48">
-                                            <DropdownHiper>
+                                        <TableBodyTd class="w-48 z-50">
+                                            <DropdownHiper 
+                                                @open="mostrarDropdown = true" 
+                                                @close="mostrarDropdown = false"
+                                            >
+
                                                 <template #trigger>
                                                     Acciones
                                                 </template>
 
                                                 <template #content>
-                                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600">Ver orden</a>
-                                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600">Descargar PDF</a>
+                                                    <a :href="`/order/${orden.id_pedido}/view`" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 z-50">Ver orden</a>
+                                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 z-50">Descargar PDF</a>
                                                     <a 
                                                         v-if="$page.props.auth.user.id_rol === $page.props.enums.Rol.ADMINISTRADOR" 
                                                         href="#" 
                                                         class="block px-4 py-2 text-sm text-gray-700 dark:text-white 
-                                                            hover:bg-gray-100 dark:hover:bg-gray-600"
+                                                            hover:bg-gray-100 dark:hover:bg-gray-600 z-50"
                                                     >
                                                         Auditoria
                                                     </a>
@@ -133,6 +137,7 @@ export default {
             buscador: {
                 id_tienda: idTiendaParam
             },
+            mostrarDropDown: false,
         }
     },
 

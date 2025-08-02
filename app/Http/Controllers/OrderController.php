@@ -433,6 +433,38 @@ class OrderController extends Controller
         return $pedidos->paginate(5);
     }
 
+    public function viewOrder(Request $request, $idPedido) {
+        // dd($idPedido);
+        try {
+            $pedidos = DB::table('pedidos_detalle as pd')
+            ->join('unidad_pedido as up', 'pd.id_unidad_pedido', '=', 'up.id_unidad_pedido')
+            ->select(
+                "pd.id_pdetalle", 
+                "pd.nombre_producto",
+                "pd.plus_producto", 
+                "pd.cantidad", 
+                "up.descripcion as unidadMedida"
+            )
+            ->orderBy('pd.nombre_producto')
+            ->where('pd.id_pedido', '=', $idPedido)
+            ->get();
+
+            return Inertia::render('Orders/ViewOrder', [
+                'ordenes' => $pedidos,
+            ]);
+        }catch (\Exception $e) {
+            Log::error('Error al cargar el pedido: '. $e->getMessage());
+
+            return Inertia::render('Orders/ViewOrder', [
+                'ordenes' => [],
+                'error' => [
+                    'mensaje' => 'Error al cargar el pedido: '. $e->getMessage(),
+                    'duracionNotificacion' => 10
+                ]
+            ], 500);
+        }
+    }
+
     /*  DUPLICAR ORDEN */
     public function renderDuplicate(Request $request, $idPedido, $idTienda) {
         $buscador = $request->input('search');

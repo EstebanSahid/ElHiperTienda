@@ -1,22 +1,63 @@
 <script setup>
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch, nextTick } from 'vue';
+
+const emit = defineEmits(['open', 'close']);
 
 const props = defineProps({
-    align: {
-        type: String,
-        default: 'right',
-    },
-    width: {
-        type: String,
-        default: '48',
-    },
-    contentClasses: {
-        type: String,
-        default: 'py-1 bg-white dark:bg-gray-700',
-    },
+    align: { type: String, default: 'right' },
+    width: { type: String, default: '48' },
+    contentClasses: { type: String, default: 'py-1 bg-white dark:bg-gray-700' },
 });
 
 const open = ref(false);
+const buttonRef = ref(null);
+const dropdownPosition = ref({ top: 0, left: 0 });
+const dropdownStyles = computed(() => ({
+    top: `${dropdownPosition.value.top}px`,
+    left: `${dropdownPosition.value.left}px`,
+}));
+
+const updateDropdownPosition = () => {
+    const button = buttonRef.value;
+    if (button) {
+        const rect = button.getBoundingClientRect();
+        const offset = getResponsiveOffset(); // 🔽 Margen vertical en píxeles
+
+        dropdownPosition.value = {
+            top: rect.bottom + window.scrollY - 4   , 
+            left: props.align === 'left'
+                ? rect.left + window.scrollX
+                : rect.right + window.scrollX - getWidthPx(props.width),
+        };
+    }
+};
+
+const getResponsiveOffset = () => {
+    const width = window.innerWidth;
+
+    if (width < 640) return 70; // sm y menos
+    if (width < 768) return 32; // md
+    return 8; // lg y mayores
+};
+
+
+const getWidthPx = (width) => {
+    return {
+        48: 192,
+        40: 160,
+        32: 128,
+    }[width.toString()] ?? 192;
+};
+
+watch(open, async (val) => {
+    if (val) {
+        await nextTick();
+        updateDropdownPosition();
+        emit('open');
+    } else {
+        emit('close');
+    }
+});
 
 const closeOnEscape = (e) => {
     if (open.value && e.key === 'Escape') {
@@ -34,21 +75,13 @@ const widthClass = computed(() => {
         32: 'w-32',
     }[props.width.toString()] ?? 'w-48';
 });
-
-const alignmentClasses = computed(() => {
-    if (props.align === 'left') {
-        return 'ltr:origin-top-left rtl:origin-top-right start-0';
-    } else if (props.align === 'right') {
-        return 'ltr:origin-top-right rtl:origin-top-left end-0';
-    } else {
-        return 'origin-top';
-    }
-});
 </script>
 
 <template>
     <div class="relative">
         <button
+            ref="buttonRef"
+            @click="open = !open"
             class="p-2 button-hiper inline-flex items-center 
             rounded-md border border-transparent 
             bg-[#97a907]
@@ -59,8 +92,8 @@ const alignmentClasses = computed(() => {
             focus:bg-[#59650f] focus:outline-none focus:ring-2 
             focus:ring-[#59650f] focus:ring-offset-2 
             dark:focus:bg-[#97a907]
-            dark:bg-[#71800b] dark:hover:bg-[#97a907]"
-            @click="open = !open"
+            dark:bg-[#71800b] dark:hover:bg-[#97a907]
+            z-[9999999]"
         >
             <slot name="trigger" />
             <svg
@@ -80,33 +113,35 @@ const alignmentClasses = computed(() => {
         <!-- Fondo oscuro para cerrar -->
         <div
             v-show="open"
-            class="fixed inset-0 z-50"
+            class="fixed inset-0 z-[9999999]"
             @click="open = false"
         ></div>
 
-        <!-- Menú -->
-        <Transition
-            enter-active-class="transition ease-out duration-200"
-            enter-from-class="opacity-0 scale-95"
-            enter-to-class="opacity-100 scale-100"
-            leave-active-class="transition ease-in duration-75"
-            leave-from-class="opacity-100 scale-100"
-            leave-to-class="opacity-0 scale-95"
-        >
-            <div
-                v-show="open"
-                class="absolute z-[9999999] mt-2 rounded-md shadow-lg"
-                :class="[widthClass, alignmentClasses]"
-                style="display: none"
+        <!-- Dropdown teletransportado al body -->
+        <Teleport to="body">
+            <Transition
+                enter-active-class="transition ease-out duration-200"
+                enter-from-class="opacity-0 scale-95"
+                enter-to-class="opacity-100 scale-100"
+                leave-active-class="transition ease-in duration-75"
+                leave-from-class="opacity-100 scale-100"
+                leave-to-class="opacity-0 scale-95"
             >
                 <div
-                    class="rounded-md ring-1 ring-black ring-opacity-5"
-                    :class="contentClasses"
-                    @click="open = false"
+                    v-show="open"
+                    class="fixed z-[9999999] mt-2 rounded-md shadow-lg"
+                    :class="[widthClass]"
+                    :style="dropdownStyles"
                 >
-                    <slot name="content" />
+                    <div
+                        class="rounded-md ring-1 ring-black ring-opacity-5"
+                        :class="contentClasses"
+                        @click="open = false"
+                    >
+                        <slot name="content" />
+                    </div>
                 </div>
-            </div>
-        </Transition>
+            </Transition>
+        </Teleport>
     </div>
 </template>
