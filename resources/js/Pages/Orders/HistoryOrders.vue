@@ -1,7 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
-import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import Table from '@/Components/Table.vue';
 import TableTh from '@/Components/TableTh.vue';
@@ -13,6 +12,7 @@ import { Head, router, Link } from '@inertiajs/vue3';
 import DropdownHiper from '@/Components/DropdownHiper.vue';
 import Pagination from '@/Components/Pagination.vue';
 import { dameFechaFormateada } from '@/Services/DateHelper';
+import { descargarPdfPedido } from '@/Services/DownloadPdfHelper';
 </script>
 
 <template>
@@ -95,7 +95,9 @@ import { dameFechaFormateada } from '@/Services/DateHelper';
 
                                                 <template #content>
                                                     <a :href="`/order/${orden.id_pedido}/view`" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 z-50">Ver orden</a>
-                                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 z-50">Descargar PDF</a>
+                                                    <a href="#" 
+                                                        @click.prevent="iniciarDescargaPDF(orden)" 
+                                                    class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 z-50">Descargar PDF</a>
                                                     <a 
                                                         v-if="$page.props.auth.user.id_rol === $page.props.enums.Rol.ADMINISTRADOR" 
                                                         href="#" 
@@ -154,40 +156,10 @@ export default {
 
     methods: {
         // Generar el PDF
-        generarPDF() {
-            const dataToSend = { 
-                pedidos: this.pedidos,
-                tiendas: this.tiendas,
-                dataThead: this.dataThead,
-                fecha: this.buscador.fecha,
-                numerosPedido: this.numerosPedido,
-            };
-
-            axios.post('/generatePDF', dataToSend, { responseType: 'blob' })
-            .then(response => {
-                const url = window.URL.createObjectURL(new Blob([response.data]));
-                const link = document.createElement('a');
-                link.href = url;
-
-                link.setAttribute('download', `Reporte-${this.buscador.fecha}.pdf`);
-                document.body.appendChild(link);
-                link.click();
-            })
-            .catch(error => {
-                console.error('Error generando el PDF:', error);
-            });
+        iniciarDescargaPDF(tienda) {
+            descargarPdfPedido(tienda);
         },
 
-        // Formatear la fecha para que sea valido en el input de la fecha
-        /* formatDate(date) {
-            let anio = date.getFullYear();
-            let mes = (date.getMonth() + 1).toString().padStart(2, '0');
-            let dia = date.getDate().toString().padStart(2, '0');
-
-            return `${anio}-${mes}-${dia}`;
-        },*/
-
-        // Obtener los datos para el reporte
         getData() {
             const data = router.get('/orders', {dates: this.buscador}, {preserveState: true})
         },

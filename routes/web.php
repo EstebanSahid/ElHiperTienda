@@ -56,8 +56,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/order/{id}/view', 'viewOrder')->name('view.order');
         //Route::get('/getProducts', 'getProducts')->name('order.getProducts');
     });
-
-    Route::post('/generatePDF', [PDFController::class, 'generatePDF'])->name('generatePDF');
+    // GenerarPDF
+    Route::controller(PDFController::class)->group(function () {
+        Route::post('/generatePDF', 'generatePDF')->name('generatePDF');
+        Route::post('/order/{idPedido}/generatePDF', 'generarPDFPorPedido')->name('reporte.pedido');
+    });
 
     // Reportes
     Route::controller(ReportController::class)->group(function () {

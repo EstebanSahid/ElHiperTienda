@@ -105,7 +105,7 @@ class OrderController extends Controller
 
             // Obtenemos los pedidos registrados hoy por tienda
             $pedidosRegistrados = DB::table('pedidos')
-                ->select('id_tienda', 'id_pedido')
+                ->select('id_tienda', 'id_pedido', 'fecha_pedido')
                 ->whereIn('id_tienda', $idsTiendas)
                 ->whereDate('fecha_pedido', $hoy)
                 ->get()
@@ -116,6 +116,7 @@ class OrderController extends Controller
                 $pedido = $pedidosRegistrados->get($tienda->id_tienda);
                 $tienda->procesado = $pedido ? 1 : 0;
                 $tienda->id_pedido = $pedido ? $pedido->id_pedido : null;
+                $tienda->fecha_pedido = $pedido ? $pedido->fecha_pedido : null;
             }
 
             return $tiendas;

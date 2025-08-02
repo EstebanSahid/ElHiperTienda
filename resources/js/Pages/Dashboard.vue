@@ -7,12 +7,23 @@ import Table from '@/Components/Table.vue';
 import TableTh from '@/Components/TableTh.vue';
 import TableBodyTr from '@/Components/TableBodyTr.vue';
 import TableBodyTd from '@/Components/TableBodyTd.vue';
+import { descargarPdfPedido } from '@/Services/DownloadPdfHelper';
+import { dameFechaFormateada } from '@/Services/DateHelper';
+import { onMounted } from 'vue'
 
-defineProps({
+const props = defineProps({
     tiendas: {
-        type: Array,
+        type: Object,
     },
 });
+
+onMounted(() => {
+   console.log('Datos de tiendas:', props.tiendas.data)
+})
+
+function iniciarDescargaPDF(tienda) {
+    descargarPdfPedido(tienda);
+}
 
 </script>
 
@@ -84,7 +95,8 @@ defineProps({
                                                     </a>
                                                     <a 
                                                         v-if="tienda.procesado" 
-                                                        href="#" 
+                                                        href="#"
+                                                        @click.prevent="iniciarDescargaPDF(tienda)" 
                                                         class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 z-50"
                                                     >
                                                         Descargar PDF
