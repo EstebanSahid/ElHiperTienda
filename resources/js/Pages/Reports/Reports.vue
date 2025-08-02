@@ -54,9 +54,9 @@ import DangerButton from '@/Components/DangerButton.vue';
                             <DropdownLinkButton @click="generarPDF">
                                 Generar PDF
                             </DropdownLinkButton>
-                            <DropdownLinkButton v-if="buscador.id_tienda !== 0" @click="duplicarOrden" >
+                            <!-- <DropdownLinkButton v-if="buscador.id_tienda !== 0" @click="duplicarOrden" >
                                 Duplicar Orden
-                            </DropdownLinkButton>
+                            </DropdownLinkButton> -->
                         </template>
                     </Dropdown>
                 </div>
@@ -77,7 +77,6 @@ import DangerButton from '@/Components/DangerButton.vue';
                                     class="mt-1 block w-full"
                                     v-model="buscador.fecha"
                                     required
-                                    autofocus
                                     autocomplete="fecha"
                                 />
                             </div>                            
@@ -231,7 +230,7 @@ export default {
 
     mounted() {
         console.log("Tiendas Duplicar")
-        console.log(this.buscador.id_tienda);
+        console.log(this.pedidos);
     },
 
     methods: {
