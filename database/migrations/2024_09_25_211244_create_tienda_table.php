@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id('id_tienda');
             $table->string('nombre');
             $table->string('codigo');
-            $table->string('direccion');
-            $table->string('telefono');
-            $table->string('estado', 25);
-            $table->unsignedBigInteger('usuario_crea');
+            $table->string('direccion')->nullable();
+            $table->string('telefono')->nullable();
+            $table->string('estado', 25)->nullable();
+            $table->unsignedBigInteger('usuario_crea')->nullable();
             $table->unsignedBigInteger('usuario_modifica')->nullable();
             $table->timestamps();
         });

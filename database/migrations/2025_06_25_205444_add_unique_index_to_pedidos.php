@@ -25,6 +25,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('pedidos', function (Blueprint $table) {
+            // Quitamos el FK para despues quitar el indice único
+            $table->dropForeign(['id_tienda']);
+
             $table->dropUnique('unique_tienda_fecha_pedido_index');
         });
     }
