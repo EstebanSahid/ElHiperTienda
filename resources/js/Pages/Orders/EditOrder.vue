@@ -50,6 +50,7 @@ import { FocoUltimoInputConTransicion } from '@/Services/utils'
                                         <InputLabel for="search" value="Buscar Producto" />
 
                                         <TextInput
+                                            ref="buscador"
                                             id="search"
                                             type="text"
                                             class="mt-1 block w-full"
@@ -127,7 +128,7 @@ import { FocoUltimoInputConTransicion } from '@/Services/utils'
                                                     <TableBodyTd>
                                                         <input
                                                             ref='inputsCantidad'
-                                                            @keyup="validarMayorCero(producto)"
+                                                            @keyup="validarMayorCero($event,producto)"
                                                             min="1"
                                                             class="rounded-md w-28 border-gray-300
                                                             focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700
@@ -259,9 +260,18 @@ export default {
         },
 
         // Validar que siempre se registre una cantidad al producto
-        validarMayorCero(producto){
-            if (producto.cantidad < 1) {
-                producto.cantidad = null;
+        validarMayorCero(event, producto){
+            if (event.key === 'Enter') {
+                if (producto.cantidad < 1) {
+                    alert('La cantidad debe ser mayor a 0');
+                    producto.cantidad = null;
+                } else {
+                    this.$refs.buscador.focus();
+                }
+            }else {
+                if (producto.cantidad < 1) {
+                    producto.cantidad = null;
+                }
             }
         },
 
