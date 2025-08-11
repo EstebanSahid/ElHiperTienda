@@ -55,7 +55,7 @@ class OrderController extends Controller
             ->where('estado', 'Activo')
             ->orderBy('nombre');
             
-        return $paginado ? $tiendas->paginate(5) : $tiendas->get();
+        return $paginado ? $tiendas->paginate(10) : $tiendas->get();
     }
 
     private function tiendasUsuario($userId, bool $paginado) {
@@ -66,7 +66,7 @@ class OrderController extends Controller
             ->where('t.estado', 'Activo')
             ->orderBy('t.nombre');
 
-        return $paginado ? $tiendas->paginate(5) : $tiendas->get();
+        return $paginado ? $tiendas->paginate(10) : $tiendas->get();
     }
 
     private function validacionMostrar($tiendas) {
@@ -497,7 +497,7 @@ class OrderController extends Controller
     }
 
     /* FUNCIONES COMPARTIDAS */
-    private function getProducts($buscador) {
+    private function getProductsold($buscador) {
         try {
             return DB::table('productos')
                 ->select('plus', 'nombre', 'id_producto')
@@ -518,7 +518,17 @@ class OrderController extends Controller
         } catch (\Exception $e) {
             Log::error('Error al obtener productos: ' . $e->getMessage());
             throw $e;
-            // return collect(); // o return []; dependiendo de cómo lo manejes en Vue/Inertia
+        }
+    }
+
+    private function getProducts() {
+        try {
+            return DB::table('productos')
+                ->select('plus', 'nombre', 'id_producto')
+                ->get();
+        } catch (\Exception $e) {
+            Log::error('Error al obtener productos: ' . $e->getMessage());
+            throw $e;
         }
     }
 

@@ -18,7 +18,7 @@ const props = defineProps({
 });
 
 onMounted(() => {
-   console.log('Datos de tiendas:', props.tiendas.data)
+    
 })
 
 function iniciarDescargaPDF(tienda) {
