@@ -10,7 +10,25 @@ import TextInput from '@/Components/TextInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { obtenerFechaActualGuardarBD } from '@/Services/DateHelper';
-import { FocoUltimoInputConTransicion } from '@/Services/utils'
+import { FocoUltimoInputConTransicion } from '@/Services/utils';
+import { useFiltroOrdenDataTable } from '@/Composables/FiltroOrdenDataTable';
+
+const props = defineProps({
+    productos: Array,
+    unidadMedida: Array,
+    productosOrden: Array,
+    productosOriginal: Array,
+    tienda: Object,
+    id_pedido: String,
+})
+
+const {
+    buscadorText,
+    ordenarPor,
+    ordenAscendente,
+    dataFiltrada,
+    ordenar
+} = useFiltroOrdenDataTable(props.productos, 10);
 </script>
 
 <template>
@@ -54,7 +72,7 @@ import { FocoUltimoInputConTransicion } from '@/Services/utils'
                                             id="search"
                                             type="text"
                                             class="mt-1 block w-full"
-                                            v-model="buscador.search"
+                                            v-model="buscadorText"
                                             required
                                         />
                                     </div>
@@ -64,27 +82,36 @@ import { FocoUltimoInputConTransicion } from '@/Services/utils'
                                             <Table>
                                                 <thead>
                                                     <tr class="text-center font-bold">
-                                                        <TableTh>PLUS</TableTh>
-                                                        <TableTh>Nombre</TableTh>
+                                                        <TableTh @click="ordenar('plus')">
+                                                            PLUS
+                                                            <span v-if="ordenarPor === 'plus'">
+                                                                {{ ordenAscendente ? '↑' : '↓' }}
+                                                            </span>
+                                                        </TableTh>
+                                                        <TableTh @click="ordenar('nombre')">
+                                                            Nombre
+                                                            <span v-if="ordenarPor === 'nombre'">
+                                                                {{ ordenAscendente ? '↑' : '↓' }}
+                                                            </span>
+                                                        </TableTh>
                                                     </tr>
                                                 </thead>
 
                                                 <tbody>
                                                     <TableBodyTr
-                                                        v-for="producto in productos.data" :key="producto.id_producto"
+                                                        v-for="producto in dataFiltrada" :key="producto.id_producto"
                                                     >
                                                         <TableBodyTd @click="agregarProducto(producto)" >{{ producto.plus }}</TableBodyTd>
                                                         <TableBodyTd @click="agregarProducto(producto)" >{{ producto.nombre }}</TableBodyTd>
                                                     </TableBodyTr>
 
-                                                    <TableBodyTr v-if="productos.links.length > 0">
-                                                        <TableBodyTd colspan="2" class="font-semibold" >Para mostrar mas productos, por favor utilice el buscador o digite el código.</TableBodyTd>
+                                                    <TableBodyTr v-if="dataFiltrada.length >= 10">
+                                                        <TableBodyTd colspan="2" class="font-semibold" >Para mostrar mas productos, por favor utilice el buscador y digite el código o el producto.</TableBodyTd>
                                                     </TableBodyTr>
 
-                                                    <TableBodyTr v-if="productos.data.length === 0">
+                                                    <TableBodyTr v-if="dataFiltrada.length === 0">
                                                         <TableBodyTd colspan="2" class="font-semibold" >No se encontro el producto.</TableBodyTd>
                                                     </TableBodyTr>
-
                                                 </tbody>
 
                                             </Table>
@@ -171,16 +198,6 @@ import { FocoUltimoInputConTransicion } from '@/Services/utils'
 
 <script>
 export default {
-    props: {
-        productos: Array,
-        unidadMedida: Array,
-        productosOrden: Array,
-        productosOriginal: Array,
-        filtro: Object,
-        tienda: Object,
-        id_pedido: String,
-    },
-
     computed: {
         cantidadProductosTexto() {
             const cantidad = this.productosOrden.length;
@@ -193,10 +210,6 @@ export default {
 
     data() {
         return {
-            buscador: {
-                search: this.filtro.search
-            },
-
             form: this.$inertia.form({
                 fecha: null,
                 idTienda: null,
@@ -371,21 +384,5 @@ export default {
             this.form.put('/editOrders');
         },
     },
-
-
-    watch: {
-        buscador: {
-            deep: true,
-            handler: function () {
-                setTimeout(() => {
-                    router.get(`/order/${this.tienda.id_tienda}/edit`, {search: this.buscador.search }, { preserveState: true });
-                }, 150);
-            },
-        },
-    },
-
-    mounted() {
-        
-    }
 }
 </script>

@@ -155,36 +155,6 @@ class OrderController extends Controller
         }
     }
 
-    public function create_old(Request $request, $id) {
-        try {
-            $buscador = $request->input('search');
-    
-            $productos = $this->getProducts($buscador);
-            $unidadPedido = $this->getUnidad();
-            $tienda = $this->obtenerTiendaPorId($id);
-    
-            return Inertia::render('Orders/InsertOrder', [
-                'productos' => $productos,
-                'filtro' => $request->all('search'),
-                'unidadMedida' => $unidadPedido,
-                'tienda' => $tienda
-            ]);
-        }catch (\Exception $e) {
-            Log::error('Error al cargar la vista de crear orden: ' . $e->getMessage());
-
-            return Inertia::render('Orders/InsertOrder', [
-                'productos' => [],
-                'filtro' => $request->all('search'),
-                'unidadMedida' => $this->getUnidad(),
-                'tienda' => $this->obtenerTiendaPorId($id),
-                'error' => [
-                    'mensaje' => 'Error al cargar la vista de crear orden: ' . $e->getMessage(),
-                    'duracionNotificacion' => 10
-                ]
-            ]);
-        }
-    }
-
     public function store(Request $request) {
         try{
             $validatedData = $request->validate([
@@ -248,10 +218,8 @@ class OrderController extends Controller
     /* EDITAR ORDEN */
     public function renderEdit(Request $request, $id) {
         try{
-            $buscador = $request->input('search');
-
             // Construimos la consulta con el QueryBuilder
-            $productos = $this->getProducts($buscador);
+            $productos = $this->getProducts();
             $unidadPedido = $this->getUnidad();
             $tienda = $this->obtenerTiendaPorId($id);
             $productosRegistrados = $this->getProductsOrder($id);
@@ -259,7 +227,6 @@ class OrderController extends Controller
 
             return Inertia::render('Orders/EditOrder', [
                 'productos' => $productos,
-                'filtro' => $request->all('search'),
                 'unidadMedida' => $unidadPedido,
                 'tienda' => $tienda,
                 'productosOrden' => $productosRegistrados,
@@ -270,7 +237,6 @@ class OrderController extends Controller
             Log::error('Error al cargar la vista de editar orden: ' . $e->getMessage());
             return Inertia::render('Orders/EditOrder', [
                 'productos' => [],
-                'filtro' => $request->all('search'),
                 'unidadMedida' => $this->getUnidad(),
                 'tienda' => $this->obtenerTiendaPorId($id),
                 'error' => [
@@ -524,29 +490,6 @@ class OrderController extends Controller
     }
 
     /* FUNCIONES COMPARTIDAS */
-    private function getProductsold($buscador) {
-        try {
-            return DB::table('productos')
-                ->select('plus', 'nombre', 'id_producto')
-                ->when($buscador, function ($query, $buscador) {
-                    $query->where(function ($q) use ($buscador) {
-                        $q->where('nombre', 'LIKE', '%' . $buscador . '%')
-                        ->orWhere('plus', 'LIKE', '%' . $buscador . '%');
-                    });
-                })
-                ->orderBy('nombre')
-                ->paginate(6)
-                ->withQueryString()
-                ->through(fn ($producto) => [
-                    'plus' => $producto->plus,
-                    'nombre' => $producto->nombre,
-                    'id_producto' => $producto->id_producto,
-                ]);
-        } catch (\Exception $e) {
-            Log::error('Error al obtener productos: ' . $e->getMessage());
-            throw $e;
-        }
-    }
 
     private function getProducts() {
         try {
