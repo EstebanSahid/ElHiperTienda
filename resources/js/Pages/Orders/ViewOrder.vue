@@ -8,7 +8,7 @@ import TableBodyTr from '@/Components/TableBodyTr.vue';
 import TableBodyTd from '@/Components/TableBodyTd.vue';
 import { Head, router, Link } from '@inertiajs/vue3';
 import { dameFechaFormateada } from '@/Services/DateHelper';
-import { useFiltroOrdenDataTable } from '@/composables/FiltroOrdenDataTable';
+import { useFiltroOrdenDataTable } from '@/Composables/FiltroOrdenDataTable';
 
 const props = defineProps({
     productos: Array,

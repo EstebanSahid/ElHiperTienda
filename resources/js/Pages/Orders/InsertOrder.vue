@@ -11,7 +11,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { obtenerFechaActualGuardarBD } from '@/Services/DateHelper';
 import { FocoUltimoInputConTransicion } from '@/Services/utils';
-import { useFiltroOrdenDataTable } from '@/composables/FiltroOrdenDataTable';
+import { useFiltroOrdenDataTable } from '@/Composables/FiltroOrdenDataTable';
 
 const props = defineProps({
     productos: Array,
