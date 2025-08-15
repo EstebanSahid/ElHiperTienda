@@ -8,6 +8,21 @@ import TableBodyTr from '@/Components/TableBodyTr.vue';
 import TableBodyTd from '@/Components/TableBodyTd.vue';
 import { Head, router, Link } from '@inertiajs/vue3';
 import { dameFechaFormateada } from '@/Services/DateHelper';
+import { useFiltroOrdenDataTable } from '@/composables/FiltroOrdenDataTable';
+
+const props = defineProps({
+    productos: Array,
+    pedido: Object,
+});
+
+const {
+    dataOriginal,
+    buscadorText,
+    ordenarPor,
+    ordenAscendente,
+    dataFiltrada,
+    ordenar
+} = useFiltroOrdenDataTable(props.productos);
 </script>
 
 <template>
@@ -28,7 +43,7 @@ import { dameFechaFormateada } from '@/Services/DateHelper';
                     <div class="p-6 text-gray-900 dark:text-gray-100">
                         <!-- Aqui los Reportes por filtro -->
                         <div class="grid grid-cols-2 md:grid-cols-4">
-                            <TextInput 
+                            <TextInput
                                 id="name"
                                 type="text"
                                 class="mt-1 block w-full"
@@ -44,37 +59,37 @@ import { dameFechaFormateada } from '@/Services/DateHelper';
                             <div class="bg-white rounded-md shadow overflow-x-auto dark:bg-gray-800">
                                 <Table>
                                     <thead>
-                                        <TableTh @click="ordenar('plus_producto')">Plus 
-                                            <span v-if="sortBy === 'plus_producto'">
-                                                {{ sortAsc ? '↑' : '↓' }}
+                                        <TableTh @click="ordenar('plus_producto')">Plus
+                                            <span v-if="ordenarPor === 'plus_producto'">
+                                                {{ ordenAscendente ? '↑' : '↓' }}
                                             </span>
                                         </TableTh>
-                                        <TableTh @click="ordenar('nombre_producto')">Producto 
-                                            <span v-if="sortBy === 'nombre_producto'">
-                                                {{ sortAsc ? '↑' : '↓' }}
+                                        <TableTh @click="ordenar('nombre_producto')">Producto
+                                            <span v-if="ordenarPor === 'nombre_producto'">
+                                                {{ ordenAscendente ? '↑' : '↓' }}
                                             </span>
                                         </TableTh>
-                                        <TableTh @click="ordenar('cantidad')">Cantidad 
-                                            <span v-if="sortBy === 'cantidad'">
-                                                {{ sortAsc ? '↑' : '↓' }}
+                                        <TableTh @click="ordenar('cantidad')">Cantidad
+                                            <span v-if="ordenarPor === 'cantidad'">
+                                                {{ ordenAscendente ? '↑' : '↓' }}
                                             </span>
                                         </TableTh>
-                                        <TableTh @click="ordenar('unidadMedida')">Unidad de Medida 
-                                            <span v-if="sortBy === 'unidadMedida'">
-                                                {{ sortAsc ? '↑' : '↓' }}
+                                        <TableTh @click="ordenar('unidadMedida')">Unidad de Medida
+                                            <span v-if="ordenarPor === 'unidadMedida'">
+                                                {{ ordenAscendente ? '↑' : '↓' }}
                                             </span>
                                         </TableTh>
                                     </thead>
                                     <TableBodyTr
-                                        v-for="producto in productosFiltrados" :key="producto.id_pdetalle" :value="producto.id_pdetalle"
+                                        v-for="producto in dataFiltrada" :key="producto.id_pdetalle" :value="producto.id_pdetalle"
                                     >
                                         <TableBodyTd> {{ producto.plus_producto }}</TableBodyTd>
                                         <TableBodyTd> {{ producto.nombre_producto }}</TableBodyTd>
                                         <TableBodyTd> {{ producto.cantidad }}</TableBodyTd>
                                         <TableBodyTd> {{ producto.unidadMedida }}</TableBodyTd>
                                     </TableBodyTr>
-                                    
-                                    <TableBodyTr v-if="productos.length === 0">
+
+                                    <TableBodyTr v-if="dataFiltrada.length === 0">
                                         <TableBodyTd colspan="4" class="font-semibold" >Sin Registros</TableBodyTd>
                                     </TableBodyTr>
                                 </Table>
@@ -86,87 +101,3 @@ import { dameFechaFormateada } from '@/Services/DateHelper';
         </div>
     </AuthenticatedLayout>
 </template>
-
-<script>
-export default {
-    props: {
-        productos: Array,
-        pedido: Object,
-    },
-
-    data() {
-        return {
-            buscadorText: '',
-            sortBy: 'nombre_producto', // default
-            sortAsc: true,
-            productosOriginales: this.productos, // viene del backend
-        }
-    },
-    
-    mounted() {
-    },
-
-    computed: {
-        productosFiltrados() {
-            let resultado = [...this.productosOriginales];
-
-            // Filtramos por nombre o plus
-            if (this.buscadorText) {
-                const texto = this.buscadorText.toLowerCase();
-                resultado = resultado.filter(orden =>
-                    producto.nombre_producto.toLowerCase().includes(texto) ||
-                    producto.plus_producto.toLowerCase().includes(texto)
-                )
-            }
-
-            // Ordenamos
-            resultado.sort((a, b) => {
-                const valA = a[this.sortBy]?.toString().toLowerCase();
-                const valB = b[this.sortBy]?.toString().toLowerCase();
-                if (valA < valB) return this.sortAsc ? -1 : 1;
-                if (valA > valB) return this.sortAsc ? 1 : -1;
-                return 0;
-            }); 
-
-            return resultado;
-
-        }
-    },
-
-    methods: {
-        // Generar el PDF
-        generarPDF() {
-            const dataToSend = { 
-                pedidos: this.pedidos,
-                tiendas: this.tiendas,
-                dataThead: this.dataThead,
-                fecha: this.buscador.fecha,
-                numerosPedido: this.numerosPedido,
-            };
-
-            axios.post('/generatePDF', dataToSend, { responseType: 'blob' })
-            .then(response => {
-                const url = window.URL.createObjectURL(new Blob([response.data]));
-                const link = document.createElement('a');
-                link.href = url;
-
-                link.setAttribute('download', `Reporte-${this.buscador.fecha}.pdf`);
-                document.body.appendChild(link);
-                link.click();
-            })
-            .catch(error => {
-                console.error('Error generando el PDF:', error);
-            });
-        },
-
-        ordenar(campo) {
-            if (this.sortBy === campo) {
-                this.sortAsc = !this.sortAsc;
-            } else {
-                this.sortBy = campo;
-                this.sortAsc = true;
-            }
-        }
-    },
-}
-</script>
