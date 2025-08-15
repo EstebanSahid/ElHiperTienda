@@ -11,6 +11,25 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { obtenerFechaActualGuardarBD } from '@/Services/DateHelper';
 import { FocoUltimoInputConTransicion } from '@/Services/utils';
+import { useFiltroOrdenDataTable } from '@/composables/FiltroOrdenDataTable';
+import { onMounted } from 'vue';
+
+const props = defineProps({
+    productos: Array,
+    filtro: Object,
+    unidadMedida: Array,
+    tienda: Object
+});
+
+const {
+    dataOriginal,
+    buscadorText,
+    ordenarPor,
+    ordenAscendente,
+    dataFiltrada,
+    ordenar
+} = useFiltroOrdenDataTable(props.productos, 10);
+
 </script>
 
 <template>
@@ -51,13 +70,22 @@ import { FocoUltimoInputConTransicion } from '@/Services/utils';
                                     <div class="p-3">
                                         <InputLabel for="search" value="Buscar Producto" />
 
-                                        <TextInput
+                                        <!-- <TextInput
                                             ref="buscador"
                                             id="search"
                                             type="text"
                                             class="mt-1 block w-full"
                                             v-model="buscador.search"
                                             required
+                                        /> -->
+
+                                        <TextInput
+                                            ref="buscador"
+                                            id="search"
+                                            type="text"
+                                            class="mt-1 block w-full"
+                                            v-model="buscadorText"
+                                            placeholder="Buscar por nombre o plus"
                                         />
                                     </div>
                                     <!-- Tabla -->
@@ -67,22 +95,32 @@ import { FocoUltimoInputConTransicion } from '@/Services/utils';
                                             <Table>
                                                 <thead>
                                                     <tr class="text-center font-bold">
-                                                        <TableTh>PLUS</TableTh>
-                                                        <TableTh>Nombre</TableTh>
+                                                        <TableTh @click="ordenar('plus')">
+                                                            PLUS
+                                                            <span v-if="ordenarPor === 'plus'">
+                                                                {{ ordenAscendente ? '↑' : '↓' }}
+                                                            </span>
+                                                        </TableTh>
+                                                        <TableTh @click="ordenar('nombre')">
+                                                            Nombre
+                                                            <span v-if="ordenarPor === 'nombre'">
+                                                                {{ ordenAscendente ? '↑' : '↓' }}
+                                                            </span>
+                                                        </TableTh>
                                                     </tr>
                                                 </thead>
                                                 
                                                 <tbody>
-                                                    <TableBodyTr v-for="producto in productos.data" :key="producto.id_producto">
+                                                    <TableBodyTr v-for="producto in dataFiltrada" :key="producto.id_producto">
                                                         <TableBodyTd @click="agregarProducto(producto)" >{{ producto.plus }}</TableBodyTd>
                                                         <TableBodyTd @click="agregarProducto(producto)" >{{ producto.nombre }}</TableBodyTd>
                                                     </TableBodyTr>
-                                                    
-                                                    <TableBodyTr v-if="productos.links.length > 3">
-                                                        <TableBodyTd colspan="2" class="font-semibold" >Para mostrar mas productos, por favor utilice el buscador o digite el código.</TableBodyTd>
+
+                                                    <TableBodyTr v-if="dataFiltrada.length >= 10">
+                                                        <TableBodyTd colspan="2" class="font-semibold" >Para mostrar mas productos, por favor utilice el buscador y digite el código o el producto.</TableBodyTd>
                                                     </TableBodyTr>
-                                                    
-                                                    <TableBodyTr v-if="productos.data.length === 0">
+
+                                                    <TableBodyTr v-if="dataFiltrada.length === 0">
                                                         <TableBodyTd colspan="2" class="font-semibold" >No se encontro el producto.</TableBodyTd>
                                                     </TableBodyTr>
                                                     
@@ -168,12 +206,6 @@ import { FocoUltimoInputConTransicion } from '@/Services/utils';
 
 <script>
 export default {
-    props: {
-        productos: Array,
-        filtro: Object,
-        unidadMedida: Array,
-        tienda: Object
-    },
 
     computed: {
         cantidadProductosTexto() {
@@ -187,10 +219,6 @@ export default {
     
     data() {
         return {
-            buscador: {
-                search: this.filtro.search
-            },
-
             form: this.$inertia.form({
                 fecha: null,
                 idTienda: null,
@@ -301,18 +329,6 @@ export default {
             this.form.fecha = this.fechaActual;
             this.form.pedido = orden;
             this.form.post('/orders');
-        },
-    },
-    
-
-    watch: {
-        buscador: {
-            deep: true,
-            handler: function () {
-                setTimeout(() => {
-                    router.get(`/order/${this.tienda.id_tienda}/create`, {search: this.buscador.search }, { preserveState: true });
-                }, 150);
-            },
         },
     },
 }

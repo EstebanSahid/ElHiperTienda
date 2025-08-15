@@ -130,6 +130,33 @@ class OrderController extends Controller
     /* GENERAR ORDEN */
     public function create(Request $request, $id) {
         try {
+            $productos = $this->getProducts();
+            $unidadPedido = $this->getUnidad();
+            $tienda = $this->obtenerTiendaPorId($id);
+    
+            // dd($productos);
+            return Inertia::render('Orders/InsertOrder', [
+                'productos' => $productos,
+                'unidadMedida' => $unidadPedido,
+                'tienda' => $tienda
+            ]);
+        }catch (\Exception $e) {
+            Log::error('Error al cargar la vista de crear orden: ' . $e->getMessage());
+
+            return Inertia::render('Orders/InsertOrder', [
+                'productos' => [],
+                'unidadMedida' => $this->getUnidad(),
+                'tienda' => $this->obtenerTiendaPorId($id),
+                'error' => [
+                    'mensaje' => 'Error al cargar la vista de crear orden: ' . $e->getMessage(),
+                    'duracionNotificacion' => 10
+                ]
+            ]);
+        }
+    }
+
+    public function create_old(Request $request, $id) {
+        try {
             $buscador = $request->input('search');
     
             $productos = $this->getProducts($buscador);
