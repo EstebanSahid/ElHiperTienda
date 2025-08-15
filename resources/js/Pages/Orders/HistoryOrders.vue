@@ -94,18 +94,19 @@ import { descargarPdfPedido } from '@/Services/DownloadPdfHelper';
                                                 </template>
 
                                                 <template #content>
-                                                    <a :href="`/order/${orden.id_pedido}/view`" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 z-50">Ver orden</a>
-                                                    <a href="#" 
+                                                    <Link :href="`/order/${orden.id_pedido}/view`" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 z-50">Ver orden</Link>
+                                                    <Link href="#" 
                                                         @click.prevent="iniciarDescargaPDF(orden)" 
-                                                    class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 z-50">Descargar PDF</a>
-                                                    <a 
-                                                        v-if="$page.props.auth.user.id_rol === $page.props.enums.Rol.ADMINISTRADOR" 
-                                                        href="#" 
-                                                        class="block px-4 py-2 text-sm text-gray-700 dark:text-white 
+                                                        class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 z-50">Descargar PDF
+                                                    </Link>
+                                                    <Link
+                                                        v-if="$page.props.auth.user.id_rol === $page.props.enums.Rol.ADMINISTRADOR"
+                                                        href="#"
+                                                        class="block px-4 py-2 text-sm text-gray-700 dark:text-white
                                                             hover:bg-gray-100 dark:hover:bg-gray-600 z-50"
                                                     >
                                                         Auditoria
-                                                    </a>
+                                                    </Link>
                                                 </template>
                                             </DropdownHiper>
                                         </TableBodyTd>

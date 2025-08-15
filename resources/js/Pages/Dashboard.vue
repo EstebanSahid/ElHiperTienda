@@ -81,26 +81,26 @@ function iniciarDescargaPDF(tienda) {
                                                 </template>
 
                                                 <template #content>
-                                                    <a
+                                                    <Link
                                                         :href="tienda.procesado ? `/order/${tienda.id_tienda}/edit` : `/order/${tienda.id_tienda}/create`"
                                                         class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 z-50">
-                                                        {{ tienda.procesado ? 'Editar' : 'Generar' }}
-                                                    </a>
-                                                    <a 
-                                                        v-if="tienda.procesado" 
+                                                        {{ tienda.procesado ? 'Editar orden' : 'Generar orden' }}
+                                                    </Link>
+                                                    <Link
+                                                        v-if="tienda.procesado"
                                                         :href="`/order/${tienda.id_pedido}/view`"
                                                         class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 z-50" 
                                                     >
                                                         Ver orden
-                                                    </a>
-                                                    <a 
-                                                        v-if="tienda.procesado" 
+                                                    </Link>
+                                                    <Link
+                                                        v-if="tienda.procesado"
                                                         href="#"
                                                         @click.prevent="iniciarDescargaPDF(tienda)" 
                                                         class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 z-50"
                                                     >
                                                         Descargar PDF
-                                                    </a>
+                                                    </Link>
                                                     <!-- <a 
                                                         v-if="$page.props.auth.user.id_rol === $page.props.enums.Rol.ADMINISTRADOR" 
                                                         href="#" 
